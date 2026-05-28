@@ -1,0 +1,161 @@
+---
+description: StudyFill Git workflow — branch naming, commits, and pull requests
+alwaysApply: true
+---
+
+# StudyFill Git Rules
+
+## Branch Strategy
+
+Two long-lived branches:
+
+| Branch | Purpose |
+|--------|---------|
+| `main` | Production / deployment |
+| `develop` | Active development integration |
+
+Flow:
+
+```txt
+develop → feat/fix/refactor/... → PR → develop
+develop → (release) → PR → main
+```
+
+Rules:
+
+- Start all feature work from `develop`
+- Branch off: `feat/*`, `fix/*`, `refactor/*`, etc.
+- Merge feature branches back into `develop` via PR
+- Deploy by merging `develop` into `main` (not feature branches directly into `main`)
+
+## When to Act
+
+- Create commits **only when explicitly requested**
+- Push and create PRs **only when explicitly requested**
+- Default PR base branch: `develop` (use `main` only for release/deploy PRs)
+
+## Branch Naming
+
+```
+<type>/<scope>-<short-kebab-description>
+```
+
+Examples:
+
+```txt
+feat/blank-study-answer-check
+fix/auth-empty-input
+refactor/pdf-workspace-layout
+chore/deps-update-next
+```
+
+## Allowed Types
+
+`feat`, `fix`, `refactor`, `chore`, `docs`, `test`
+
+## Allowed Scopes
+
+Match feature folders: `auth`, `dashboard`, `pdf`, `explanation`, `blank-study`, `ui`, `lib`, `deps`
+
+## Commit Title (required)
+
+```
+<type>(<scope>): <imperative verb phrase, lowercase, no period>
+```
+
+Examples:
+
+```txt
+feat(dashboard): add pdf list section
+feat(blank-study): implement answer checking
+refactor(pdf): separate workspace layout
+fix(auth): handle empty input validation
+```
+
+- Title language: **English**
+
+## Commit Body
+
+**Small fix** (single file, obvious change): title only
+
+**All other commits** — include body in this format:
+
+```markdown
+## Summary
+- 변경 내용 1~3줄
+
+## Why
+- 변경이 필요한 이유 (1줄)
+
+## Test plan
+- [ ] 확인 항목
+```
+
+- Body language: **Korean**
+
+## Pull Request
+
+Use `gh pr create`. PR title matches commit title (or a summary title if multiple commits).
+
+**Base branch:**
+
+- Feature/fix/refactor PRs → target `develop`
+- Release/deploy PRs → target `main` (source: `develop`)
+
+PR body template:
+
+```markdown
+## Summary
+- 이 PR이 하는 일 (1~3 bullets)
+
+## Changes
+- 변경된 파일/기능 단위 설명
+
+## Test plan
+- [ ] 확인 항목
+- [ ] 확인 항목
+
+## Screenshots
+<!-- UI 변경 시 첨부, 해당 없으면 N/A -->
+N/A
+```
+
+- PR body language: **Korean**
+- PR title language: **English**
+
+## Workflow Order
+
+When asked to commit and open a PR:
+
+1. Ensure `develop` is up to date (`git checkout develop && git pull`)
+2. Create and switch to feature branch from `develop`
+3. Stage relevant files (never commit secrets: `.env`, credentials)
+4. Commit with formatted message
+5. Push with `-u origin HEAD` if new branch
+6. Create PR against `develop`
+
+For release/deploy (only when explicitly requested):
+
+1. Create PR from `develop` into `main`
+2. PR title example: `release: merge develop into main`
+
+## Examples
+
+**Commit:**
+
+```txt
+feat(blank-study): add inline answer checking with feedback
+
+## Summary
+- 빈칸 입력 후 정답/오답 피드백 UI 추가
+- 오답 시 재시도 버튼 노출
+
+## Why
+- active recall 학습 플로우의 핵심 상호작용 구현
+
+## Test plan
+- [ ] 정답 제출 시 success 상태 확인
+- [ ] 오답 제출 시 retry 버튼 동작 확인
+```
+
+**PR title:** `feat(blank-study): add inline answer checking with feedback`

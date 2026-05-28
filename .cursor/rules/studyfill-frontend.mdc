@@ -1,0 +1,99 @@
+---
+description: StudyFill frontend stack, architecture, UI/UX, code style, and development standards
+alwaysApply: true
+---
+
+# StudyFill Frontend Cursor Rules
+
+## Core Stack
+
+- Next.js App Router
+- React
+- TypeScript
+- TailwindCSS
+- shadcn/ui
+- Radix UI
+- lucide-react
+
+## Architecture
+
+Use scalable, feature-based structure:
+
+```txt
+src/~
+  app/
+  components/
+    common/
+    layout/
+    ui/
+  features/
+    auth/
+    dashboard/
+    pdf/
+    explanation/
+    blank-study/
+  lib/
+    api/
+    mocks/
+    utils/
+  hooks/
+  types/
+  constants/
+```
+
+- Separate UI and business logic
+- Keep components small and reusable; avoid large page components
+- Extract repeated logic into hooks/utils
+- Use mock APIs before backend integration
+
+## UI / UX Direction
+
+StudyFill is an AI-powered PDF study platform — not a generic AI chat or flashcard product.
+
+Core flow: Upload PDF → AI lecture explanation → exam-important concepts → fill-in-the-blank memorization → repeated review
+
+UI should feel: white background, compact, beginner-friendly, modern productivity SaaS, calm and focused.
+
+Inspired by: Notion, Linear, Perplexity
+
+Avoid: dark mode style, colorful educational UI, cluttered dashboards, enterprise admin feel
+
+## Code Style
+
+- TypeScript only; no semicolons
+- Use `const` arrow functions with descriptive names
+- Event handlers start with `handle` (e.g. `const handleSubmit = () => {}`)
+- Use early returns; prioritize readability over cleverness
+
+## Styling
+
+- TailwindCSS only; avoid separate CSS files unless necessary
+- Use shadcn/ui components
+- Subtle borders, soft shadows, compact spacing, minimal blue accent
+
+## Accessibility
+
+- Add `aria-label` for icon buttons
+- Prefer `<button>` over div click handlers
+- Keep forms accessible; use keyboard-friendly interactions
+
+## Blank Study
+
+Blank study is NOT flashcards. Use workbook-style active recall with inline blank inputs:
+
+```txt
+프로세스는 실행 중인 ______ 이다.
+```
+
+Include: answer input, correctness feedback, hint button, retry incorrect answers, progress indicator
+
+## Development Workflow
+
+Before coding:
+1. Briefly explain implementation plan
+2. Briefly explain folder/component structure
+3. Then implement
+
+Never leave TODOs, placeholders, or incomplete code. Always ship production-quality, reusable, maintainable code.
+
+For branch naming, commits, and PRs, follow `studyfill-git` rule.
