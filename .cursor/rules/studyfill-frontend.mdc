@@ -29,9 +29,13 @@ src/~
   features/
     auth/
     dashboard/
+    materials/
     pdf/
     explanation/
+    quiz/
     blank-study/
+    review/
+    tutor/
   lib/
     api/
     mocks/

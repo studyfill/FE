@@ -101,6 +101,8 @@ docs  → --label ":memo: Docs" --label documentation
 
 **Workflow:** Issue → branch from `develop` → commit → PR to `develop`
 
+**Auto-close:** PR body 마지막 줄에 `Closes #N` 추가. GitHub는 **default branch**로 merge될 때만 Issue를 자동 close함. repo default branch는 `develop`이어야 develop merge 시 자동 close됨. 자동 close 안 되면 merge 후 `gh issue close N` 실행.
+
 ## Branch Naming
 
 ```
@@ -185,6 +187,8 @@ PR body template:
 ## Screenshots
 <!-- UI 변경 시 첨부, 해당 없으면 N/A -->
 N/A
+
+Closes #ISSUE_NUMBER
 ```
 
 - PR body language: **Korean**

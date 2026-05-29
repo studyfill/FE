@@ -41,9 +41,13 @@ src/
   features/
     auth/
     dashboard/
+    materials/      # folders, list, search
     pdf/
     explanation/
+    quiz/
     blank-study/
+    review/         # study session, review mode
+    tutor/
   lib/
     api/            # API client (Spring Boot 연동 준비)
     mocks/          # Mock data layer
