@@ -1,0 +1,56 @@
+name: Docs
+description: 문서 추가 또는 수정
+title: "docs(scope): "
+labels:
+  - ":memo: Docs"
+  - documentation
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Title은 영어 conventional commit 형식으로 작성해주세요.
+        예: `docs(readme): add project structure section`
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Scope
+      options:
+        - auth
+        - dashboard
+        - pdf
+        - explanation
+        - blank-study
+        - ui
+        - lib
+        - deps
+        - readme
+    validations:
+      required: true
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: 문서 변경 내용
+    validations:
+      required: true
+  - type: textarea
+    id: background
+    attributes:
+      label: Background
+      description: 왜 필요한지
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: "- [ ] 형식으로 작성"
+    validations:
+      required: true
+  - type: checkboxes
+    id: extras
+    attributes:
+      label: Additional labels
+      options:
+        - label: good first issue
+        - label: help wanted
