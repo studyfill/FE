@@ -1,5 +1,5 @@
 ---
-description: StudyFill Git workflow — branch naming, commits, and pull requests
+description: StudyFill Git workflow — issues, branches, commits, and pull requests
 alwaysApply: true
 ---
 
@@ -30,9 +30,76 @@ Rules:
 
 ## When to Act
 
+- Create issues **only when explicitly requested**
 - Create commits **only when explicitly requested**
 - Push and create PRs **only when explicitly requested**
 - Default PR base branch: `develop` (use `main` only for release/deploy PRs)
+
+## Issue Labels
+
+Type labels (pick one per issue):
+
+| Type | Label | Branch prefix |
+|------|-------|---------------|
+| Feature | `:sparkles: Feat` | `feat/` |
+| Bug fix | `:fire: Fix` | `fix/` |
+| Refactor | `:recycle: Refactor` | `refactor/` |
+| Chore | `:wrench: Chore` | `chore/` |
+| Docs | `:memo: Docs` | `docs/` |
+
+Supplementary labels:
+
+- `enhancement` — use with Feat
+- `bug` — use with Fix
+- `documentation` — use with Docs
+- `good first issue`, `help wanted` — optional, beginner-friendly tasks
+- `duplicate`, `wontfix`, `question`, `invalid` — triage only (do not use when creating new work issues)
+
+Run `gh label list` if label names do not match exactly.
+
+## Issue
+
+Use `gh issue create`. Prefer GitHub issue templates in `.github/ISSUE_TEMPLATE/`.
+
+**Title format** (same as commit):
+
+```
+<type>(<scope>): <imperative verb phrase, lowercase, no period>
+```
+
+- Title language: **English**
+
+**Body template:**
+
+```markdown
+## Summary
+- 이 Issue가 해결할 일 (1~3 bullets)
+
+## Background
+- 왜 필요한지
+
+## Acceptance criteria
+- [ ] 완료 조건 1
+- [ ] 완료 조건 2
+
+## Notes
+N/A
+```
+
+- Body language: **Korean**
+- Fix issues: include Steps to reproduce, Expected behavior, Actual behavior
+
+**Label mapping when using `gh issue create`:**
+
+```txt
+feat  → --label ":sparkles: Feat" --label enhancement
+fix   → --label ":fire: Fix" --label bug
+refactor → --label ":recycle: Refactor"
+chore → --label ":wrench: Chore"
+docs  → --label ":memo: Docs" --label documentation
+```
+
+**Workflow:** Issue → branch from `develop` → commit → PR to `develop`
 
 ## Branch Naming
 

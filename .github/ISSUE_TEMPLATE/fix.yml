@@ -1,0 +1,66 @@
+name: Fix
+description: 버그 수정
+title: "fix(scope): "
+labels:
+  - ":fire: Fix"
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Title은 영어 conventional commit 형식으로 작성해주세요.
+        예: `fix(auth): handle empty input validation`
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Scope
+      options:
+        - auth
+        - dashboard
+        - pdf
+        - explanation
+        - blank-study
+        - ui
+        - lib
+        - deps
+    validations:
+      required: true
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: 버그 증상 요약
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: 재현 방법
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: 기대 동작
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: 실제 동작
+    validations:
+      required: true
+  - type: checkboxes
+    id: extras
+    attributes:
+      label: Additional labels
+      options:
+        - label: good first issue
+        - label: help wanted
