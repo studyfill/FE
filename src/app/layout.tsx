@@ -1,7 +1,6 @@
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 
-import { AppShell } from "@/components/layout/AppShell"
 import { APP_NAME } from "@/constants"
 
 import "./globals.css"
@@ -23,9 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko" className={`${inter.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">
-        <AppShell>{children}</AppShell>
-      </body>
+      <body className="min-h-full flex flex-col">{children}</body>
     </html>
   )
 }

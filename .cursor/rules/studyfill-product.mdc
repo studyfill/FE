@@ -76,11 +76,11 @@ alwaysApply: true
 - **On-demand AI**: 업로드 시 추출만; 설명·퀴즈·빈칸·요약은 사용자 버튼 요청 시 생성 (S-JDOXPD, S-WGLUOG)
 - UI: white, compact, productivity SaaS (see `studyfill-frontend.mdc`)
 
-## Repo implementation status (2026-05-29)
+## Repo implementation status
 
-- `src/features`: `auth`, `dashboard`, `materials`, `pdf`, `explanation`, `quiz`, `blank-study`, `review`, `tutor` — **scaffold only (`.gitkeep`), no implementation**
-- `src/app`: **`/` home placeholder** only (upload button non-functional)
-- Manyfast completion: **0/61** items done in planning tool
+- **MVP P0 (mock)**: auth, dashboard, materials, pdf viewer, explanation, blank-study — implemented with `NEXT_PUBLIC_USE_MOCK=true`
+- **P1 not exposed in UI**: `quiz`, `tutor`, `review` (folders exist, no routes)
+- Manyfast planning tool completion tracked separately from FE repo
 
 ## Agent workflow
 
