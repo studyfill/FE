@@ -28,8 +28,7 @@ src/~
     ui/
   features/
     auth/
-    dashboard/
-    materials/
+    dashboard/      # 내 라이브러리: 폴더, 검색, 업로드, PDF 그리드
     pdf/
     explanation/
     quiz/
@@ -73,7 +72,7 @@ Avoid: dark mode style, colorful educational UI, cluttered dashboards, enterpris
 
 - TailwindCSS only; avoid separate CSS files unless necessary
 - Use shadcn/ui components
-- Subtle borders, soft shadows, compact spacing, minimal blue accent
+- Subtle borders, soft shadows, compact spacing, minimal green primary accent (library brand)
 
 ## Accessibility
 

@@ -40,8 +40,7 @@ src/
     ui/             # shadcn/ui components
   features/
     auth/
-    dashboard/
-    materials/      # folders, list, search
+    dashboard/      # 내 라이브러리: folders, search, upload, PDF grid
     pdf/
     explanation/
     quiz/

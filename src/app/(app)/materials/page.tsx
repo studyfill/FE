@@ -1,5 +1,7 @@
-import { MaterialsPageContent } from "@/features/materials/components/MaterialsPageContent"
+import { redirect } from "next/navigation"
+
+import { ROUTES } from "@/constants/routes"
 
 export default function MaterialsPage() {
-  return <MaterialsPageContent />
+  redirect(ROUTES.dashboard)
 }

@@ -26,9 +26,9 @@ export const StudyShell = ({ materialId, children }: StudyShellProps) => {
     return (
       <div className="space-y-4">
         <p className="text-sm text-destructive">자료를 찾을 수 없습니다.</p>
-        <Link href={ROUTES.materials}>
+        <Link href={ROUTES.dashboard}>
           <Button type="button" variant="outline" size="sm">
-            자료 관리로 돌아가기
+            내 라이브러리로 돌아가기
           </Button>
         </Link>
       </div>
@@ -39,9 +39,9 @@ export const StudyShell = ({ materialId, children }: StudyShellProps) => {
     <div className="flex flex-col gap-4">
       <div className="flex items-start justify-between gap-4">
         <StudyWorkspaceHeader material={material} />
-        <Link href={ROUTES.materials}>
+        <Link href={ROUTES.dashboard}>
           <Button type="button" variant="outline" size="sm">
-            자료 목록
+            내 라이브러리
           </Button>
         </Link>
       </div>

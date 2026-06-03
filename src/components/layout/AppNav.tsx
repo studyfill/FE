@@ -13,10 +13,7 @@ type AppNavProps = {
   userName?: string
 }
 
-const navItems = [
-  { href: ROUTES.dashboard, label: "대시보드" },
-  { href: ROUTES.materials, label: "자료 관리" },
-]
+const navItems = [{ href: ROUTES.dashboard, label: "내 라이브러리" }]
 
 export const AppNav = ({ userName }: AppNavProps) => {
   const pathname = usePathname()

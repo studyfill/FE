@@ -1,8 +1,11 @@
-import type { Material } from "@/types/material"
+import type { ListMaterialsOptions, Material } from "@/types/material"
 
-import { getRootFolderId, loadMockStore, saveMockStore } from "./mock-store"
+import { PDF_UPLOAD_MAX_SIZE_MB } from "@/constants/upload"
+import { DEFAULT_UPLOAD_FOLDER_ID } from "./folder-ids"
+import { getFolderName, getFolderScopeIds } from "./folders"
+import { loadMockStore, saveMockStore } from "./mock-store"
 
-const MAX_FILE_SIZE_MB = 20
+const MAX_FILE_SIZE_MB = PDF_UPLOAD_MAX_SIZE_MB
 const ALLOWED_EXTENSION = ".pdf"
 
 export const validatePdfFile = (file: File): string | null => {
@@ -15,16 +18,50 @@ export const validatePdfFile = (file: File): string | null => {
   return null
 }
 
-export const listMaterials = (folderId?: string): Material[] => {
+export const searchMaterials = (query: string): Material[] => {
+  const q = query.trim().toLowerCase()
+  if (!q) return []
+
   const store = loadMockStore()
-  if (!folderId || folderId === getRootFolderId()) {
-    return [...store.materials].sort(
-      (a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime()
-    )
+  return store.materials.filter((m) => m.name.toLowerCase().includes(q))
+}
+
+export const listMaterials = (options: ListMaterialsOptions = {}): Material[] => {
+  const { folderId = null, searchQuery = "", sort = "date" } = options
+  const store = loadMockStore()
+  let items = [...store.materials]
+
+  const q = searchQuery.trim().toLowerCase()
+  if (q) {
+    items = items.filter((m) => m.name.toLowerCase().includes(q))
+  } else {
+    const scope = getFolderScopeIds(folderId, store.folders)
+    if (scope) {
+      items = items.filter(
+        (m) => m.folderId !== null && scope.includes(m.folderId)
+      )
+    }
   }
-  return store.materials
-    .filter((m) => m.folderId === folderId)
-    .sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime())
+
+  if (sort === "date") {
+    items.sort(
+      (a, b) =>
+        new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime()
+    )
+  } else {
+    items.sort((a, b) => {
+      const folderCmp = getFolderName(a.folderId).localeCompare(
+        getFolderName(b.folderId),
+        "ko"
+      )
+      if (folderCmp !== 0) return folderCmp
+      return (
+        new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime()
+      )
+    })
+  }
+
+  return items
 }
 
 export const getMaterial = (id: string): Material | undefined => {
@@ -32,17 +69,30 @@ export const getMaterial = (id: string): Material | undefined => {
   return store.materials.find((m) => m.id === id)
 }
 
-export const uploadMaterial = async (file: File): Promise<Material> => {
+export const uploadMaterial = async (
+  file: File,
+  folderId: string | null = null,
+  pageCount = 1
+): Promise<Material> => {
   const error = validatePdfFile(file)
   if (error) {
     throw new Error(error)
   }
 
   const store = loadMockStore()
+  if (folderId) {
+    const targetFolder = store.folders.find((f) => f.id === folderId)
+    if (!targetFolder) {
+      throw new Error("폴더를 찾을 수 없습니다.")
+    }
+  }
+
+  const safePageCount = pageCount > 0 ? pageCount : 1
+
   const material: Material = {
     id: `mat-${Date.now()}`,
     name: file.name,
-    folderId: getRootFolderId(),
+    folderId,
     uploadedAt: new Date().toISOString(),
     extractionStatus: "processing",
     pageCount: 0,
@@ -60,7 +110,7 @@ export const uploadMaterial = async (file: File): Promise<Material> => {
   const target = updated.materials.find((m) => m.id === material.id)
   if (target) {
     target.extractionStatus = "done"
-    target.pageCount = 12 + Math.floor(Math.random() * 20)
+    target.pageCount = safePageCount
     saveMockStore(updated)
   }
 
