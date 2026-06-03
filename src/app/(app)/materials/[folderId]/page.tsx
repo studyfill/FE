@@ -1,12 +1,14 @@
-import { MaterialsPageContent } from "@/features/materials/components/MaterialsPageContent"
+import { redirect } from "next/navigation"
 
-type MaterialsFolderPageProps = {
+import { ROUTES } from "@/constants/routes"
+
+type MaterialsFolderRedirectProps = {
   params: Promise<{ folderId: string }>
 }
 
-export default async function MaterialsFolderPage({
+export default async function MaterialsFolderRedirectPage({
   params,
-}: MaterialsFolderPageProps) {
+}: MaterialsFolderRedirectProps) {
   const { folderId } = await params
-  return <MaterialsPageContent folderId={folderId} />
+  redirect(ROUTES.dashboardFolder(folderId))
 }

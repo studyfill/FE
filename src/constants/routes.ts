@@ -3,7 +3,10 @@ export const ROUTES = {
   login: "/login",
   signup: "/signup",
   dashboard: "/dashboard",
+  dashboardFolder: (folderId: string) => `/dashboard/${folderId}`,
+  /** @deprecated Use ROUTES.dashboard — redirects for compatibility */
   materials: "/materials",
+  /** @deprecated Use ROUTES.dashboardFolder */
   materialsFolder: (folderId: string) => `/materials/${folderId}`,
   study: (id: string) => `/study/${id}`,
   studyExplanation: (id: string) => `/study/${id}/explanation`,

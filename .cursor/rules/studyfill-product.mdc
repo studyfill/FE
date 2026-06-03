@@ -1,90 +1,81 @@
----
-description: StudyFill product context from Manyfast (PRD, requirements, features, user flows)
-alwaysApply: true
----
-
-# StudyFill Product Context
-
-> **Source of truth**: Manyfast project `AI 기반 PDF 학습 플랫폼` (`a9c557f4-caaa-4159-95c2-b7d82e9c316b`).
-> **How to build**: `studyfill-frontend.mdc` (stack, UX, blank-study interaction pattern).
-> **Refresh**: `read_project_meta` / `read_project` / `read_user_flow` on Manyfast MCP before large features.
-
-## Product summary
-
-- **Goal**: PDF를 AI가 분석해 핵심을 빠르게 이해하고, 퀴즈·빈칸 암기·튜터 등으로 개인화 학습
-- **Target**: 시험 준비 대학생·고등학생·일반 학습자 (방대한 PDF에서 핵심·어려운 개념 정리)
-- **Differentiation**: 단순 요약이 아닌 강의 노트형 설명, 출처(페이지/문단), 시험 핵심·헷갈림 정리, 온디맨드 생성
-- **Device**: Desktop (MVP)
-- **Core journey**: 로그인 → 대시보드 → 자료 관리(폴더·업로드) → 학습 뷰어(PDF·설명·퀴즈·빈칸·복습) → AI 튜터
-
-## Manyfast requirements (7)
-
-| ID | Name | Importance | Features |
-|----|------|------------|----------|
-| R-UHNFKE | AI 기반 학습 자료 분석 및 요약 | high | F-KSALIY, F-SNORSO, F-LIYQPP |
-| R-IBIDUF | 개인 맞춤형 퀴즈 생성 및 학습 | high | F-XVIATX, F-FUATKW |
-| R-YESAGY | 빈칸 암기 도구 | high | F-GVXHSY, F-TLNABJ |
-| R-BHOLAR | AI 튜터 채팅 | medium | F-XUKWLY |
-| R-PLFYYC | 학습 대시보드 및 진도 관리 | medium | F-HCJIFZ, F-ADBTOV |
-| R-MJJFLK | 계정 및 자료 관리 | high | F-ANSJWS, F-HBKJBD, F-DNSICC |
-| R-MGLUWI | 학습 세션 및 복습 모드 | medium | (기능 미할당) |
-
-## User flow sections (Manyfast v1)
-
-1. **인증**: 로그인/회원가입, 이메일·소셜
-2. **대시보드**: 진도, 퀴즈 성적, 목표, 복습 알림
-3. **자료 관리**: 폴더, 자료 목록, 업로드, 검색
-4. **학습 기능**: PDF 뷰어, 강의식 설명, 개념 설명, 퀴즈, 빈칸 암기, 복습 모드
-5. **AI 튜터**: 질문, 답변, 원문 이동, 대화 기록
-
-## Screen ↔ `src/features` mapping
-
-| User flow / Manyfast | Planned route (suggested) | Current `src/features` | Notes |
-|----------------------|---------------------------|------------------------|-------|
-| 인증 | `/login`, `/signup` | `auth` | scaffold only |
-| 대시보드 | `/dashboard` | `dashboard` | 진도·목표·알림; 자료 목록과 분리 |
-| 자료 관리 (폴더·목록·검색) | `/materials`, `/materials/[folderId]` | `materials` | scaffold only; `dashboard`와 분리 |
-| PDF 업로드·뷰어·워크스페이스 | `/pdf/[id]`, `/study/[id]` | `pdf` | 업로드·추출·뷰어; 학습 탭은 workspace 조합 |
-| 강의식 설명·개념 설명 | `/study/[id]/explanation` | `explanation` | F-SNORSO, F-LIYQPP |
-| 퀴즈 | `/study/[id]/quiz` | `quiz` | scaffold only (P1) |
-| 빈칸 암기 | `/study/[id]/blank-study` | `blank-study` | 인라인 빈칸 UX (카드 뒤집기 UI 금지) |
-| 복습 모드·학습 세션 | `/study/[id]/review` | `review` | scaffold only; R-MGLUWI |
-| AI 튜터 | `/study/[id]/tutor` | `tutor` | scaffold only (P1); 자료 맥락 Q&A만 |
-
-## MVP scope (from Manyfast high + user flow)
-
-**P0 — implement first**
-
-- `auth`: 이메일/소셜 로그인·회원가입 (R-MJJFLK AC)
-- `materials` + `pdf`: 폴더·목록·업로드·검증·텍스트 추출 (F-KSALIY, F-ANSJWS, F-HBKJBD)
-- `pdf` + `explanation`: PDF 뷰어, 온디맨드 강의식 설명·출처 링크 (F-SNORSO 핵심 스펙)
-- `blank-study`: 빈칸 생성·입력·힌트·정오답 (F-GVXHSY; workbook-style UI)
-- `dashboard`: 자료별 진도 위젯 (F-HCJIFZ 최소)
-
-**P1 — after P0**
-
-- `quiz`: 생성·풀이·피드백 (R-IBIDUF)
-- `tutor`: 자료 기반 Q&A (R-BHOLAR)
-- `blank-study` + `review`: 복습 큐·스케줄 (F-TLNABJ, R-MGLUWI)
-- `dashboard`: 목표·알림 (F-ADBTOV)
-- `materials`: 본문 검색 (F-DNSICC)
-
-## Product constraints
-
-- **Not** a generic AI chat app: 튜터는 업로드 PDF 맥락·출처 기반만
-- **Not** flashcard UI for blank study: Manyfast says "빈칸 카드" but FE uses **inline blanks** per `studyfill-frontend.mdc`
-- **On-demand AI**: 업로드 시 추출만; 설명·퀴즈·빈칸·요약은 사용자 버튼 요청 시 생성 (S-JDOXPD, S-WGLUOG)
-- UI: white, compact, productivity SaaS (see `studyfill-frontend.mdc`)
-
-## Repo implementation status
-
-- **MVP P0 (mock)**: auth, dashboard, materials, pdf viewer, explanation, blank-study — implemented with `NEXT_PUBLIC_USE_MOCK=true`
-- **P1 not exposed in UI**: `quiz`, `tutor`, `review` (folders exist, no routes)
-- Manyfast planning tool completion tracked separately from FE repo
-
-## Agent workflow
-
-1. Manyfast MCP: `read_project` or `read_project_meta` for feature/spec IDs
-2. Match task to feature folder; add folder if missing (see mapping table)
-3. Follow `studyfill-frontend.mdc` for code structure and blank-study UX
-4. Do not implement P1 scope when task is P0 unless user confirms
+---
+description: StudyFill product context from Manyfast (PRD, requirements, features, user flows)
+alwaysApply: true
+---
+
+# StudyFill Product Context
+
+> **Source of truth**: Manyfast project `AI 기반 PDF 학습 플랫폼` (`a9c557f4-caaa-4159-95c2-b7d82e9c316b`).
+> **How to build**: `studyfill-frontend.mdc` (stack, UX, blank-study interaction pattern).
+> **Refresh**: `read_project_meta` / `read_project` / `read_user_flow` on Manyfast MCP before large features.
+
+## Product summary
+
+- **Goal**: PDF를 AI가 분석해 핵심을 빠르게 이해하고, 퀴즈·빈칸 암기·튜터 등으로 개인화 학습
+- **Target**: 시험 준비 대학생·고등학생·일반 학습자 (방대한 PDF에서 핵심·어려운 개념 정리)
+- **Differentiation**: 단순 요약이 아닌 강의 노트형 설명, 출처(페이지/문단), 시험 핵심·헷갈림 정리, 온디맨드 생성
+- **Device**: Desktop (MVP)
+- **Core journey**: 로그인 → **대시보드(내 라이브러리: 폴더·검색·업로드·PDF 그리드)** → 학습 뷰어(PDF·설명·빈칸) → (P1: 퀴즈·복습·튜터)
+
+## Manyfast requirements (7)
+
+| ID | Name | Importance | Features |
+|----|------|------------|----------|
+| R-UHNFKE | AI 기반 학습 자료 분석 및 요약 | high | F-KSALIY, F-SNORSO, F-LIYQPP |
+| R-IBIDUF | 개인 맞춤형 퀴즈 생성 및 학습 | high | F-XVIATX, F-FUATKW |
+| R-YESAGY | 빈칸 암기 도구 | high | F-GVXHSY, F-TLNABJ |
+| R-BHOLAR | AI 튜터 채팅 | medium | F-XUKWLY |
+| R-PLFYYC | 학습 대시보드 및 진도 관리 | medium | F-HCJIFZ, F-ADBTOV |
+| R-MJJFLK | 계정 및 자료 관리 | high | F-ANSJWS, F-HBKJBD, F-DNSICC |
+| R-MGLUWI | 학습 세션 및 복습 모드 | medium | (기능 미할당) |
+
+## User flow sections (Manyfast v1)
+
+1. **인증**: 로그인/회원가입, 이메일·소셜
+2. **내 라이브러리 (대시보드)**: 폴더 계층, 검색, 업로드, PDF 그리드
+3. **학습 기능**: PDF 뷰어, 강의식 설명, 개념 설명, 퀴즈, 빈칸 암기, 복습 모드
+4. **AI 튜터**: 질문, 답변, 원문 이동, 대화 기록
+
+## Screen ↔ `src/features` mapping
+
+| User flow / Manyfast | Route | `src/features` | Notes |
+|----------------------|-------|----------------|-------|
+| 인증 | `/login`, `/signup` | `auth` | mock 세션 |
+| 내 라이브러리 | `/dashboard`, `/dashboard/[folderId]` | `dashboard` | F-ANSJWS, F-HBKJBD, F-DNSICC(검색 P1); `/materials` → redirect |
+| PDF·학습 워크스페이스 | `/study/[id]`, … | `pdf`, `explanation`, `blank-study` | 업로드는 대시보드에서 |
+| 퀴즈 | `/study/[id]/quiz` (P1) | `quiz` | 미노출 |
+| 복습 모드 | `/study/[id]/review` (P1) | `review` | 미노출 |
+| AI 튜터 | `/study/[id]/tutor` (P1) | `tutor` | 미노출 |
+
+## MVP scope (from Manyfast high + user flow)
+
+**P0 — implemented (mock)**
+
+- `auth`: 이메일 로그인·회원가입
+- `dashboard`: 폴더 트리, 검색(파일명), 정렬, 업로드, PDF 카드 그리드
+- `pdf` + `explanation` + `blank-study`: 학습 워크스페이스
+
+**P1 — after P0**
+
+- `dashboard`: 진도 위젯(F-HCJIFZ), 목표·알림(F-ADBTOV), 본문 검색(F-DNSICC)
+- `quiz`, `tutor`, `review`
+
+## Product constraints
+
+- **Not** a generic AI chat app: 튜터는 업로드 PDF 맥락·출처 기반만
+- **Not** flashcard UI for blank study: Manyfast says "빈칸 카드" but FE uses **inline blanks** per `studyfill-frontend.mdc`
+- **On-demand AI**: 업로드 시 추출만; 설명·퀴즈·빈칸은 사용자 버튼 요청 시 생성 (S-JDOXPD, S-WGLUOG)
+- UI: white, compact, productivity SaaS; library primary accent green
+
+## Repo implementation status
+
+- **Library home**: `/dashboard` with sidebar shell (search, folders, grid)
+- **Legacy**: `/materials` redirects to `/dashboard`
+- **P1 routes hidden**: `quiz`, `tutor`, `review`
+
+## Agent workflow
+
+1. Manyfast MCP: `read_project` or `read_project_meta` for feature/spec IDs
+2. Library UX changes → `features/dashboard`; study tabs → `pdf` / `explanation` / `blank-study`
+3. Follow `studyfill-frontend.mdc` for code structure and blank-study UX
+4. Do not implement P1 scope when task is P0 unless user confirms
