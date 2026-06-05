@@ -1,7 +1,12 @@
 import type { BlankItem } from "@/types/blank-study"
-import type { LectureExplanation } from "@/types/explanation"
+import type { ExplanationEdits, LectureExplanation } from "@/types/explanation"
 import type { Folder, Material } from "@/types/material"
 import type { User } from "@/types/auth"
+
+import {
+  DEFAULT_FOLDER_COLOR,
+  type FolderColorId,
+} from "@/constants/folder-colors"
 
 import { FOLDER_IDS } from "./folder-ids"
 
@@ -10,17 +15,18 @@ export type MockStoreData = {
   folders: Folder[]
   materials: Material[]
   explanations: Record<string, LectureExplanation>
+  explanationEdits: Record<string, ExplanationEdits>
   blankItems: Record<string, BlankItem[]>
 }
 
 const now = Date.now()
 
 const seedFolders: Folder[] = [
-  { id: FOLDER_IDS.major, name: "전공", parentId: null },
-  { id: FOLDER_IDS.ds, name: "자료구조", parentId: FOLDER_IDS.major },
-  { id: FOLDER_IDS.os, name: "운영체제", parentId: FOLDER_IDS.major },
-  { id: FOLDER_IDS.liberal, name: "교양", parentId: null },
-  { id: FOLDER_IDS.exam, name: "시험대비", parentId: null, pinned: true },
+  { id: FOLDER_IDS.major, name: "전공", parentId: null, color: "blue" },
+  { id: FOLDER_IDS.ds, name: "자료구조", parentId: FOLDER_IDS.major, color: "green" },
+  { id: FOLDER_IDS.os, name: "운영체제", parentId: FOLDER_IDS.major, color: "indigo" },
+  { id: FOLDER_IDS.liberal, name: "교양", parentId: null, color: "yellow" },
+  { id: FOLDER_IDS.exam, name: "시험대비", parentId: null, color: "red", pinned: true },
 ]
 
 const seedMaterials: Material[] = [
@@ -125,6 +131,7 @@ const defaultStore: MockStoreData = {
   folders: seedFolders,
   materials: seedMaterials,
   explanations: {},
+  explanationEdits: {},
   blankItems: {},
 }
 
@@ -133,6 +140,24 @@ const STORAGE_KEY = "studyfill-mock-store-v2"
 let memoryStore: MockStoreData = structuredClone(defaultStore)
 
 const isBrowser = () => typeof window !== "undefined"
+
+const LEGACY_FOLDER_COLORS: Record<string, FolderColorId> = {
+  [FOLDER_IDS.major]: "blue",
+  [FOLDER_IDS.ds]: "green",
+  [FOLDER_IDS.os]: "indigo",
+  [FOLDER_IDS.liberal]: "yellow",
+  [FOLDER_IDS.exam]: "red",
+}
+
+const normalizeFolders = (folders: Folder[]): Folder[] =>
+  folders.map((folder) => ({
+    ...folder,
+    parentId: folder.parentId ?? null,
+    color:
+      folder.color ??
+      LEGACY_FOLDER_COLORS[folder.id] ??
+      DEFAULT_FOLDER_COLOR,
+  }))
 
 const isLegacyStore = (data: MockStoreData) =>
   data.folders.some((f) => !("parentId" in f) || f.parentId === undefined)
@@ -157,7 +182,10 @@ export const loadMockStore = (): MockStoreData => {
       memoryStore = {
         ...defaultStore,
         ...parsed,
-        folders: parsed.folders?.length ? parsed.folders : defaultStore.folders,
+        folders: normalizeFolders(
+          parsed.folders?.length ? parsed.folders : defaultStore.folders
+        ),
+        explanationEdits: parsed.explanationEdits ?? {},
       }
     }
     return structuredClone(memoryStore)

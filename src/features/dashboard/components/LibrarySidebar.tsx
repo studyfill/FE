@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { useState } from "react"
 import { BookOpen, Layers, Plus, Search } from "lucide-react"
 
 import { APP_NAME } from "@/constants"
@@ -8,9 +9,11 @@ import { ROUTES } from "@/constants/routes"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
+import { CreateFolderDialog } from "@/features/dashboard/components/CreateFolderDialog"
 import { FolderTree } from "@/features/dashboard/components/FolderTree"
 import { LibrarySidebarFooter } from "@/features/dashboard/components/LibrarySidebarFooter"
 import { cn } from "@/lib/utils"
+import type { FolderColorId } from "@/constants/folder-colors"
 import type { FolderTreeNode } from "@/types/material"
 
 type LibrarySidebarProps = {
@@ -19,6 +22,8 @@ type LibrarySidebarProps = {
   folderTree: FolderTreeNode[]
   activeFolderId: string | null
   userName?: string
+  onCreateFolder: (name: string, color: FolderColorId) => Promise<void>
+  isCreatingFolder?: boolean
 }
 
 export const LibrarySidebar = ({
@@ -27,7 +32,11 @@ export const LibrarySidebar = ({
   folderTree,
   activeFolderId,
   userName,
+  onCreateFolder,
+  isCreatingFolder = false,
 }: LibrarySidebarProps) => {
+  const [createFolderOpen, setCreateFolderOpen] = useState(false)
+
   return (
     <aside className="flex h-full w-[272px] shrink-0 flex-col overflow-hidden border-r border-sidebar-border bg-sidebar">
       <div className="flex shrink-0 flex-col gap-4 px-4 pb-3 pt-5">
@@ -86,6 +95,7 @@ export const LibrarySidebar = ({
               type="button"
               className="flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-foreground"
               aria-label="폴더 추가"
+              onClick={() => setCreateFolderOpen(true)}
             >
               <Plus className="size-4" />
             </button>
@@ -99,6 +109,13 @@ export const LibrarySidebar = ({
         <Separator className="mb-3 bg-sidebar-border" />
         <LibrarySidebarFooter userName={userName} />
       </div>
+
+      <CreateFolderDialog
+        open={createFolderOpen}
+        onOpenChange={setCreateFolderOpen}
+        onCreate={onCreateFolder}
+        isSubmitting={isCreatingFolder}
+      />
     </aside>
   )
 }

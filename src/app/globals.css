@@ -128,3 +128,61 @@
     @apply font-sans;
   }
 }
+
+@layer components {
+  .ex-highlight-yellow {
+    background-color: rgb(253 224 71 / 45%);
+    border-radius: 0.125rem;
+    padding-inline: 0.1em;
+  }
+
+  .ex-highlight-green {
+    background-color: rgb(134 239 172 / 45%);
+    border-radius: 0.125rem;
+    padding-inline: 0.1em;
+  }
+
+  .ex-highlight-blue {
+    background-color: rgb(147 197 253 / 45%);
+    border-radius: 0.125rem;
+    padding-inline: 0.1em;
+  }
+
+  .ex-highlight-pink {
+    background-color: rgb(249 168 212 / 45%);
+    border-radius: 0.125rem;
+    padding-inline: 0.1em;
+  }
+
+  .ex-pen-red {
+    color: #dc2626;
+  }
+
+  .ex-pen-blue {
+    color: #2563eb;
+  }
+
+  .ex-pen-green {
+    color: #16a34a;
+  }
+
+  .ex-pen-purple {
+    color: #9333ea;
+  }
+
+  .ex-editable-dark .ex-pen-red {
+    color: #fca5a5;
+  }
+
+  .ex-editable-dark .ex-pen-blue {
+    color: #93c5fd;
+  }
+
+  .ex-editable-dark .ex-pen-green {
+    color: #86efac;
+  }
+
+  .ex-editable-dark .ex-pen-purple {
+    color: #d8b4fe;
+  }
+}

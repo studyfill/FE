@@ -1,9 +1,12 @@
+import type { FolderColorId } from "@/constants/folder-colors"
+
 import { getFolderScopeIds } from "./folders"
 import { loadMockStore } from "./mock-store"
 
 export type RecentFolderItem = {
   id: string
   name: string
+  color: FolderColorId
   materialCount: number
 }
 
@@ -82,6 +85,7 @@ export const listRecentFolders = (): RecentFolderItem[] => {
       {
         id: folder.id,
         name: folder.name,
+        color: folder.color,
         materialCount: getFolderMaterialCount(folder.id),
       },
     ]

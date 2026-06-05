@@ -1,3 +1,5 @@
+import type { FolderColorId } from "@/constants/folder-colors"
+
 export type ExtractionStatus = "pending" | "processing" | "done" | "failed"
 
 export type Material = {
@@ -16,6 +18,7 @@ export type Folder = {
   id: string
   name: string
   parentId: string | null
+  color: FolderColorId
   pinned?: boolean
 }
 

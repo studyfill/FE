@@ -1,8 +1,9 @@
 import type { Folder, FolderTreeNode } from "@/types/material"
 
+import { isFolderColorId, type FolderColorId } from "@/constants/folder-colors"
 import { UNASSIGNED_FOLDER_LABEL } from "@/constants/folder"
 import { DEFAULT_UPLOAD_FOLDER_ID, FOLDER_IDS } from "./folder-ids"
-import { loadMockStore } from "./mock-store"
+import { loadMockStore, saveMockStore } from "./mock-store"
 
 export { DEFAULT_UPLOAD_FOLDER_ID, FOLDER_IDS, UNASSIGNED_FOLDER_LABEL }
 
@@ -101,6 +102,53 @@ export const listRootFolderSummaries = (): RootFolderSummary[] => {
       materialCount: countMaterialsInScope(folder.id, folders, materials),
       pinned: folder.pinned,
     }))
+}
+
+export const createFolder = (
+  name: string,
+  color: FolderColorId,
+  parentId: string | null = null
+): Folder => {
+  const trimmed = name.trim()
+  if (!trimmed) {
+    throw new Error("폴더 이름을 입력해 주세요.")
+  }
+  if (trimmed.length > 40) {
+    throw new Error("폴더 이름은 40자 이하로 입력해 주세요.")
+  }
+  if (!isFolderColorId(color)) {
+    throw new Error("색상을 선택해 주세요.")
+  }
+
+  const store = loadMockStore()
+
+  if (parentId) {
+    const parent = store.folders.find((f) => f.id === parentId)
+    if (!parent) {
+      throw new Error("상위 폴더를 찾을 수 없습니다.")
+    }
+  }
+
+  const duplicate = store.folders.some(
+    (f) =>
+      f.parentId === parentId &&
+      f.name.trim().toLowerCase() === trimmed.toLowerCase()
+  )
+  if (duplicate) {
+    throw new Error("같은 위치에 동일한 이름의 폴더가 있습니다.")
+  }
+
+  const folder: Folder = {
+    id: `folder-${Date.now()}`,
+    name: trimmed,
+    parentId,
+    color,
+  }
+
+  store.folders.push(folder)
+  saveMockStore(store)
+
+  return folder
 }
 
 export const listFolderTree = (): FolderTreeNode[] => {

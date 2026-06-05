@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils"
 type SegmentedOption<T extends string> = {
   value: T
   label: string
-  description?: string
+  sublabel?: string
 }
 
 type SegmentedOptionGroupProps<T extends string> = {
@@ -13,6 +13,7 @@ type SegmentedOptionGroupProps<T extends string> = {
   value: T
   options: SegmentedOption<T>[]
   onChange: (value: T) => void
+  columns?: 2 | 3
 }
 
 export const SegmentedOptionGroup = <T extends string>({
@@ -20,13 +21,22 @@ export const SegmentedOptionGroup = <T extends string>({
   value,
   options,
   onChange,
+  columns = 3,
 }: SegmentedOptionGroupProps<T>) => {
   return (
-    <fieldset className="space-y-2">
-      <legend className="text-sm font-medium text-foreground">{label}</legend>
-      <div className="flex flex-wrap gap-2" role="group" aria-label={label}>
+    <div className="w-full space-y-2.5">
+      <p className="text-[15px] font-medium text-muted-foreground">{label}</p>
+      <div
+        className={cn(
+          "grid w-full gap-2.5",
+          columns === 2 ? "grid-cols-2" : "grid-cols-3"
+        )}
+        role="group"
+        aria-label={label}
+      >
         {options.map((option) => {
           const isSelected = option.value === value
+          const hasSublabel = Boolean(option.sublabel)
 
           return (
             <button
@@ -35,22 +45,31 @@ export const SegmentedOptionGroup = <T extends string>({
               aria-pressed={isSelected}
               onClick={() => onChange(option.value)}
               className={cn(
-                "rounded-lg border px-3 py-2 text-left text-sm transition-colors",
+                "flex w-full flex-col items-center justify-center rounded-[10px] border px-2 text-center transition-colors",
+                hasSublabel ? "h-[52px] py-2" : "h-12",
+                hasSublabel ? "text-sm leading-none" : "text-[14px] leading-tight",
                 isSelected
-                  ? "border-primary/40 bg-primary/10 text-primary"
-                  : "border-border bg-background text-muted-foreground hover:bg-muted/40 hover:text-foreground"
+                  ? "border-primary/45 bg-primary/[0.08] text-primary"
+                  : "border-border bg-background text-muted-foreground hover:border-border hover:bg-muted/15"
               )}
             >
-              <span className="font-medium">{option.label}</span>
-              {option.description ? (
-                <span className="mt-0.5 block text-xs opacity-80">
-                  {option.description}
+              <span className={cn("px-0.5", isSelected && "font-semibold")}>
+                {option.label}
+              </span>
+              {option.sublabel ? (
+                <span
+                  className={cn(
+                    "mt-1 px-0.5 text-xs leading-none",
+                    isSelected ? "font-medium text-primary/90" : "text-muted-foreground/90"
+                  )}
+                >
+                  {option.sublabel}
                 </span>
               ) : null}
             </button>
           )
         })}
       </div>
-    </fieldset>
+    </div>
   )
 }
