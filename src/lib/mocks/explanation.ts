@@ -1,4 +1,7 @@
-import type { LectureExplanation } from "@/types/explanation"
+import type {
+  ExplanationGenerateOptions,
+  LectureExplanation,
+} from "@/types/explanation"
 
 import { getMaterial } from "./materials"
 import { loadMockStore, saveMockStore } from "./mock-store"
@@ -9,7 +12,8 @@ export const getExplanation = (materialId: string): LectureExplanation | null =>
 }
 
 export const generateExplanation = async (
-  materialId: string
+  materialId: string,
+  options: ExplanationGenerateOptions
 ): Promise<LectureExplanation> => {
   const material = getMaterial(materialId)
   if (!material) {
@@ -24,6 +28,7 @@ export const generateExplanation = async (
   const explanation: LectureExplanation = {
     materialId,
     generatedAt: new Date().toISOString(),
+    options,
     coreConcepts: [
       {
         id: "c1",

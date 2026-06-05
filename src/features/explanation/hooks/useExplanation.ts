@@ -6,16 +6,26 @@ import {
   generateExplanation,
   getExplanation,
 } from "@/lib/mocks/explanation"
-import type { LectureExplanation } from "@/types/explanation"
+import {
+  DEFAULT_EXPLANATION_OPTIONS,
+  type ExplanationGenerateOptions,
+  type LectureExplanation,
+} from "@/types/explanation"
 
 export const useExplanation = (materialId: string) => {
   const [explanation, setExplanation] = useState<LectureExplanation | null>(null)
+  const [options, setOptions] = useState<ExplanationGenerateOptions>(
+    DEFAULT_EXPLANATION_OPTIONS
+  )
   const [isGenerating, setIsGenerating] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [highlightPage, setHighlightPage] = useState<number | null>(null)
 
   const refresh = useCallback(() => {
-    setExplanation(getExplanation(materialId))
+    const stored = getExplanation(materialId)
+    setExplanation(stored)
+    if (stored?.options) {
+      setOptions(stored.options)
+    }
   }, [materialId])
 
   useEffect(() => {
@@ -26,7 +36,7 @@ export const useExplanation = (materialId: string) => {
     setIsGenerating(true)
     setError(null)
     try {
-      const result = await generateExplanation(materialId)
+      const result = await generateExplanation(materialId, options)
       setExplanation(result)
     } catch (err) {
       setError(err instanceof Error ? err.message : "설명 생성에 실패했습니다.")
@@ -37,10 +47,10 @@ export const useExplanation = (materialId: string) => {
 
   return {
     explanation,
+    options,
+    setOptions,
     isGenerating,
     error,
-    highlightPage,
-    setHighlightPage,
     handleGenerate,
     refresh,
   }
