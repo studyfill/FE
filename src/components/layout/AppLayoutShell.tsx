@@ -13,9 +13,11 @@ type AppLayoutShellProps = {
 const isDashboardPath = (pathname: string) =>
   pathname === "/dashboard" || pathname.startsWith("/dashboard/")
 
+const isStudyPath = (pathname: string) => pathname.startsWith("/study/")
+
 export const AppLayoutShell = ({ children, userName }: AppLayoutShellProps) => {
   const pathname = usePathname()
-  const hideNav = isDashboardPath(pathname)
+  const hideNav = isDashboardPath(pathname) || isStudyPath(pathname)
 
   if (hideNav) {
     return (

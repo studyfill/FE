@@ -5,7 +5,7 @@ import { ChevronDown, ChevronRight, Folder, Pin } from "lucide-react"
 import { useEffect, useState } from "react"
 
 import { ROUTES } from "@/constants/routes"
-import { getFolderIconClassName } from "@/lib/utils/folder-theme"
+import { getFolderIconClassNameForColor } from "@/lib/utils/folder-theme"
 import { cn } from "@/lib/utils"
 import type { FolderTreeNode } from "@/types/material"
 
@@ -85,7 +85,9 @@ const FolderTreeItem = ({
           <Folder
             className={cn(
               "size-4 shrink-0",
-              isActive ? "text-primary" : getFolderIconClassName(node.name)
+              isActive
+                ? "text-primary"
+                : getFolderIconClassNameForColor(node.color)
             )}
             aria-hidden
           />

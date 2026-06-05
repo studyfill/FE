@@ -1,47 +1,23 @@
 "use client"
 
-import { Suspense, use } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
-import { useEffect } from "react"
+import { use } from "react"
 
-import { PdfViewer } from "@/features/pdf/components/PdfViewer"
+import { ExplanationGeneratePanel } from "@/features/explanation/components/ExplanationGeneratePanel"
+import { useExplanation } from "@/features/explanation/hooks/useExplanation"
 import { useMaterial } from "@/features/pdf/hooks/useMaterial"
 
-type StudyPdfPageProps = {
+type StudyPageProps = {
   params: Promise<{ id: string }>
 }
 
-const StudyPdfPageInner = ({ id }: { id: string }) => {
-  const searchParams = useSearchParams()
-  const router = useRouter()
-  const { material, setPage } = useMaterial(id)
-
-  useEffect(() => {
-    const pageParam = searchParams.get("page")
-    if (pageParam && material) {
-      const page = Number(pageParam)
-      if (!Number.isNaN(page) && page >= 1) {
-        setPage(page)
-        router.replace(`/study/${id}`)
-      }
-    }
-  }, [searchParams, material, id, setPage, router])
+export default function StudyPage({ params }: StudyPageProps) {
+  const { id } = use(params)
+  const { material } = useMaterial(id)
+  const explanation = useExplanation(id)
 
   if (!material) return null
 
-  return <PdfViewer material={material} onPageChange={setPage} />
-}
-
-export default function StudyPdfPage({ params }: StudyPdfPageProps) {
-  const { id } = use(params)
-
   return (
-    <Suspense
-      fallback={
-        <p className="text-sm text-muted-foreground">PDF 뷰어 로딩 중…</p>
-      }
-    >
-      <StudyPdfPageInner id={id} />
-    </Suspense>
+    <ExplanationGeneratePanel material={material} explanation={explanation} />
   )
 }

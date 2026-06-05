@@ -1,8 +1,11 @@
 "use client"
 
+import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useMemo, useState } from "react"
 
-import { getFolder, listFolderTree } from "@/lib/mocks/folders"
+import { ROUTES } from "@/constants/routes"
+import type { FolderColorId } from "@/constants/folder-colors"
+import { createFolder, getFolder, listFolderTree } from "@/lib/mocks/folders"
 import {
   listRecentFolders,
   recordRecentFolder,
@@ -13,6 +16,7 @@ import { getPdfPageCountFromFile } from "@/lib/utils/pdf-page-count"
 import type { MaterialSort } from "@/types/material"
 
 export const useDashboardLibrary = (folderId: string | null) => {
+  const router = useRouter()
   const [searchQuery, setSearchQuery] = useState("")
   const [sort, setSort] = useState<MaterialSort>("date")
   const [materials, setMaterials] = useState<ReturnType<typeof listMaterials>>([])
@@ -24,6 +28,8 @@ export const useDashboardLibrary = (folderId: string | null) => {
   >([])
   const [isUploading, setIsUploading] = useState(false)
   const [uploadError, setUploadError] = useState<string | null>(null)
+  const [isCreatingFolder, setIsCreatingFolder] = useState(false)
+  const [createFolderError, setCreateFolderError] = useState<string | null>(null)
 
   const uploadFolderId = useMemo(() => {
     if (!folderId) return null
@@ -62,6 +68,24 @@ export const useDashboardLibrary = (folderId: string | null) => {
     setRecentFolders(listRecentFolders())
   }, [folderId])
 
+  const handleCreateFolder = async (name: string, color: FolderColorId) => {
+    setIsCreatingFolder(true)
+    setCreateFolderError(null)
+    try {
+      const folder = createFolder(name, color, null)
+      recordRecentFolder(folder.id)
+      refresh()
+      router.push(ROUTES.dashboardFolder(folder.id))
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "폴더를 만들지 못했습니다."
+      setCreateFolderError(message)
+      throw err
+    } finally {
+      setIsCreatingFolder(false)
+    }
+  }
+
   const handleUpload = async (file: File) => {
     setIsUploading(true)
     setUploadError(null)
@@ -91,6 +115,9 @@ export const useDashboardLibrary = (folderId: string | null) => {
     isUploading,
     uploadError,
     handleUpload,
+    handleCreateFolder,
+    isCreatingFolder,
+    createFolderError,
     refresh,
   }
 }

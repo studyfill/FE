@@ -16,12 +16,10 @@ const scanPdfPageCountFromBytes = (bytes: Uint8Array): number | null => {
   return Math.max(...counts)
 }
 
-const getPageCountWithPdfJs = async (bytes: Uint8Array): Promise<number | null> => {
-  const pdfjs = await import("pdfjs-dist")
+import { loadPdfJs } from "@/lib/pdf/pdfjs-config"
 
-  if (typeof window !== "undefined" && !pdfjs.GlobalWorkerOptions.workerSrc) {
-    pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`
-  }
+const getPageCountWithPdfJs = async (bytes: Uint8Array): Promise<number | null> => {
+  const pdfjs = await loadPdfJs()
 
   const loadingTask = pdfjs.getDocument({ data: bytes, useSystemFonts: true })
   const pdf = await loadingTask.promise

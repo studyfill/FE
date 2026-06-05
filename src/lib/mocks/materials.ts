@@ -1,6 +1,7 @@
 import type { ListMaterialsOptions, Material } from "@/types/material"
 
 import { PDF_UPLOAD_MAX_SIZE_MB } from "@/constants/upload"
+import { savePdfBlob } from "@/lib/storage/pdf-blob-store"
 import { DEFAULT_UPLOAD_FOLDER_ID } from "./folder-ids"
 import { getFolderName, getFolderScopeIds } from "./folders"
 import { loadMockStore, saveMockStore } from "./mock-store"
@@ -88,6 +89,7 @@ export const uploadMaterial = async (
   }
 
   const safePageCount = pageCount > 0 ? pageCount : 1
+  const pdfBytes = await file.arrayBuffer()
 
   const material: Material = {
     id: `mat-${Date.now()}`,
@@ -103,6 +105,7 @@ export const uploadMaterial = async (
 
   store.materials.unshift(material)
   saveMockStore(store)
+  await savePdfBlob(material.id, pdfBytes)
 
   await new Promise((resolve) => setTimeout(resolve, 1500))
 

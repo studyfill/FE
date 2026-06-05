@@ -4,7 +4,7 @@ import Link from "next/link"
 import { Folder } from "lucide-react"
 
 import { ROUTES } from "@/constants/routes"
-import { getFolderIconClassName } from "@/lib/utils/folder-theme"
+import { getFolderIconClassNameForColor } from "@/lib/utils/folder-theme"
 import { cn } from "@/lib/utils"
 import type { RecentFolderItem } from "@/lib/mocks/recent-folders"
 
@@ -31,7 +31,7 @@ export const RecentFoldersStrip = ({ folders }: RecentFoldersStripProps) => {
                 <Folder
                   className={cn(
                     "size-5 shrink-0 fill-none",
-                    getFolderIconClassName(folder.name)
+                    getFolderIconClassNameForColor(folder.color)
                   )}
                   strokeWidth={2.25}
                   aria-hidden

@@ -1,1 +1,1 @@
-export { getFolderTagClassName } from "@/lib/utils/folder-theme"
+export { getFolderTagClassNameForFolderId as getFolderTagClassName } from "@/lib/utils/folder-theme"
