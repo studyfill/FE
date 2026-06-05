@@ -1,5 +1,6 @@
-import type { BlankItem } from "@/types/blank-study"
+import type { BlankItem, BlankStudySession } from "@/types/blank-study"
 import type { ExplanationEdits, LectureExplanation } from "@/types/explanation"
+import type { MaterialPdfText } from "@/types/pdf-text"
 import type { Folder, Material } from "@/types/material"
 import type { User } from "@/types/auth"
 
@@ -16,6 +17,9 @@ export type MockStoreData = {
   materials: Material[]
   explanations: Record<string, LectureExplanation>
   explanationEdits: Record<string, ExplanationEdits>
+  pdfTexts: Record<string, MaterialPdfText>
+  blankSessions: Record<string, BlankStudySession>
+  /** @deprecated migrated to blankSessions */
   blankItems: Record<string, BlankItem[]>
 }
 
@@ -132,6 +136,8 @@ const defaultStore: MockStoreData = {
   materials: seedMaterials,
   explanations: {},
   explanationEdits: {},
+  pdfTexts: {},
+  blankSessions: {},
   blankItems: {},
 }
 
@@ -186,6 +192,9 @@ export const loadMockStore = (): MockStoreData => {
           parsed.folders?.length ? parsed.folders : defaultStore.folders
         ),
         explanationEdits: parsed.explanationEdits ?? {},
+        pdfTexts: parsed.pdfTexts ?? {},
+        blankSessions: parsed.blankSessions ?? {},
+        blankItems: parsed.blankItems ?? {},
       }
     }
     return structuredClone(memoryStore)

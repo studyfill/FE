@@ -1,5 +1,12 @@
 export type { User, Session } from "./auth"
-export type { BlankItem, BlankItemStatus } from "./blank-study"
+export type {
+  BlankGenerateOptions,
+  BlankItem,
+  BlankItemStatus,
+  BlankSource,
+  BlankDensity,
+  BlankStudySession,
+} from "./blank-study"
 export type {
   ExplanationConceptBlock,
   ExplanationEdits,

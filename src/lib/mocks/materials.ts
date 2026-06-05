@@ -2,9 +2,12 @@ import type { ListMaterialsOptions, Material } from "@/types/material"
 
 import { PDF_UPLOAD_MAX_SIZE_MB } from "@/constants/upload"
 import { savePdfBlob } from "@/lib/storage/pdf-blob-store"
+import { extractPdfTextFromBytes } from "@/lib/pdf/extract-pdf-text"
 import { DEFAULT_UPLOAD_FOLDER_ID } from "./folder-ids"
 import { getFolderName, getFolderScopeIds } from "./folders"
 import { loadMockStore, saveMockStore } from "./mock-store"
+import { saveMaterialPdfText } from "./pdf-text"
+import { getSeedPdfText } from "./pdf-text-seeds"
 
 const MAX_FILE_SIZE_MB = PDF_UPLOAD_MAX_SIZE_MB
 const ALLOWED_EXTENSION = ".pdf"
@@ -109,6 +112,23 @@ export const uploadMaterial = async (
 
   await new Promise((resolve) => setTimeout(resolve, 1500))
 
+  try {
+    const pages = await extractPdfTextFromBytes(pdfBytes)
+    if (pages.length) {
+      saveMaterialPdfText({
+        materialId: material.id,
+        extractedAt: new Date().toISOString(),
+        pages,
+      })
+    } else {
+      const seed = getSeedPdfText(material)
+      if (seed) saveMaterialPdfText(seed)
+    }
+  } catch {
+    const seed = getSeedPdfText(material)
+    if (seed) saveMaterialPdfText(seed)
+  }
+
   const updated = loadMockStore()
   const target = updated.materials.find((m) => m.id === material.id)
   if (target) {
@@ -137,6 +157,9 @@ export const deleteMaterial = (id: string): void => {
   const store = loadMockStore()
   store.materials = store.materials.filter((m) => m.id !== id)
   delete store.explanations[id]
+  delete store.explanationEdits[id]
+  delete store.pdfTexts[id]
+  delete store.blankSessions[id]
   delete store.blankItems[id]
   saveMockStore(store)
 }
