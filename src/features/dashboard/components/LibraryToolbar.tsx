@@ -1,8 +1,14 @@
 "use client"
 
 import Link from "next/link"
-import { useState } from "react"
-import { ArrowDownUp, LayoutGrid, List } from "lucide-react"
+import { useEffect, useRef, useState } from "react"
+import {
+  ArrowDownUp,
+  Check,
+  ChevronDown,
+  LayoutGrid,
+  List,
+} from "lucide-react"
 
 import { APP_NAME } from "@/constants"
 import { ROUTES } from "@/constants/routes"
@@ -17,29 +23,60 @@ import {
 import { Button } from "@/components/ui/button"
 import { PdfUploadButton } from "@/features/dashboard/components/PdfUploadButton"
 import { cn } from "@/lib/utils"
-import type { MaterialSort } from "@/types/material"
+import type { Folder, MaterialSort, MaterialViewLayout } from "@/types/material"
+
+const SORT_OPTIONS: { value: MaterialSort; label: string }[] = [
+  { value: "date", label: "최신순" },
+  { value: "folder", label: "폴더순" },
+]
 
 type LibraryToolbarProps = {
-  folderLabel: string
+  folderPath: Folder[]
   sort: MaterialSort
+  viewLayout: MaterialViewLayout
   onSortChange: (sort: MaterialSort) => void
+  onViewLayoutChange: (layout: MaterialViewLayout) => void
   onUpload: (file: File) => Promise<void>
   isUploading: boolean
 }
 
 export const LibraryToolbar = ({
-  folderLabel,
+  folderPath,
   sort,
+  viewLayout,
   onSortChange,
+  onViewLayoutChange,
   onUpload,
   isUploading,
 }: LibraryToolbarProps) => {
-  const [view, setView] = useState<"grid" | "list">("grid")
+  const [sortOpen, setSortOpen] = useState(false)
+  const sortRef = useRef<HTMLDivElement>(null)
+
+  const sortLabel =
+    SORT_OPTIONS.find((option) => option.value === sort)?.label ?? "최신순"
+
+  useEffect(() => {
+    if (!sortOpen) return
+
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!sortRef.current?.contains(event.target as Node)) {
+        setSortOpen(false)
+      }
+    }
+
+    document.addEventListener("pointerdown", handlePointerDown)
+    return () => document.removeEventListener("pointerdown", handlePointerDown)
+  }, [sortOpen])
+
+  const handleSortSelect = (value: MaterialSort) => {
+    onSortChange(value)
+    setSortOpen(false)
+  }
 
   return (
     <header className="flex flex-wrap items-center justify-between gap-4 pb-5">
       <Breadcrumb>
-        <BreadcrumbList className="text-sm">
+        <BreadcrumbList className="flex-wrap text-sm">
           <BreadcrumbItem>
             <BreadcrumbLink
               render={<Link href={ROUTES.dashboard} />}
@@ -48,12 +85,53 @@ export const LibraryToolbar = ({
               {APP_NAME}
             </BreadcrumbLink>
           </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage className="font-normal text-foreground/80">
-              {folderLabel}
-            </BreadcrumbPage>
-          </BreadcrumbItem>
+
+          {folderPath.length === 0 ? (
+            <>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage className="font-normal text-foreground/80">
+                  내 라이브러리
+                </BreadcrumbPage>
+              </BreadcrumbItem>
+            </>
+          ) : (
+            <>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink
+                  render={<Link href={ROUTES.dashboard} />}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  내 라이브러리
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              {folderPath.map((folder, index) => {
+                const isLast = index === folderPath.length - 1
+                return (
+                  <span key={folder.id} className="contents">
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                      {isLast ? (
+                        <BreadcrumbPage className="font-normal text-foreground/80">
+                          {folder.name}
+                        </BreadcrumbPage>
+                      ) : (
+                        <BreadcrumbLink
+                          render={
+                            <Link href={ROUTES.dashboardFolder(folder.id)} />
+                          }
+                          className="text-muted-foreground hover:text-foreground"
+                        >
+                          {folder.name}
+                        </BreadcrumbLink>
+                      )}
+                    </BreadcrumbItem>
+                  </span>
+                )
+              })}
+            </>
+          )}
         </BreadcrumbList>
       </Breadcrumb>
 
@@ -65,45 +143,82 @@ export const LibraryToolbar = ({
         >
           <Button
             type="button"
-            variant={view === "grid" ? "secondary" : "ghost"}
+            variant={viewLayout === "grid" ? "secondary" : "ghost"}
             size="icon-sm"
             className="size-8"
-            aria-label="그리드 보기"
-            aria-pressed={view === "grid"}
-            onClick={() => setView("grid")}
+            aria-label="카드 보기"
+            aria-pressed={viewLayout === "grid"}
+            onClick={() => onViewLayoutChange("grid")}
           >
             <LayoutGrid className="size-4" />
           </Button>
           <Button
             type="button"
-            variant={view === "list" ? "secondary" : "ghost"}
+            variant={viewLayout === "list" ? "secondary" : "ghost"}
             size="icon-sm"
             className="size-8"
             aria-label="목록 보기"
-            aria-pressed={view === "list"}
-            onClick={() => setView("list")}
+            aria-pressed={viewLayout === "list"}
+            onClick={() => onViewLayoutChange("list")}
           >
             <List className="size-4" />
           </Button>
         </div>
 
-        <div className="relative">
-          <ArrowDownUp
-            className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
-            aria-hidden
-          />
-          <select
-            value={sort}
-            onChange={(e) => onSortChange(e.target.value as MaterialSort)}
-            className={cn(
-              "h-9 min-w-[96px] appearance-none rounded-lg border border-border bg-background py-1 pr-8 pl-9 text-[15px]",
-              "cursor-pointer transition-colors hover:bg-muted/40 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
-            )}
+        <div ref={sortRef} className="relative">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="h-9 gap-1 px-2.5 text-sm font-normal"
             aria-label="정렬"
+            aria-expanded={sortOpen}
+            aria-haspopup="menu"
+            onClick={() => setSortOpen((open) => !open)}
           >
-            <option value="date">정렬</option>
-            <option value="folder">과목별</option>
-          </select>
+            <ArrowDownUp className="size-4 shrink-0 text-muted-foreground" />
+            <span>{sortLabel}</span>
+            <ChevronDown
+              className={cn(
+                "size-3.5 shrink-0 text-muted-foreground transition-transform",
+                sortOpen && "rotate-180"
+              )}
+            />
+          </Button>
+
+          {sortOpen ? (
+            <div
+              role="menu"
+              className="absolute top-full right-0 z-50 mt-1 min-w-[7.5rem] rounded-lg border border-border bg-popover p-1 shadow-md"
+            >
+              {SORT_OPTIONS.map((option) => {
+                const isActive = sort === option.value
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    role="menuitemradio"
+                    aria-checked={isActive}
+                    className={cn(
+                      "flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-sm transition-colors",
+                      isActive
+                        ? "bg-accent text-accent-foreground"
+                        : "text-foreground hover:bg-muted/60"
+                    )}
+                    onClick={() => handleSortSelect(option.value)}
+                  >
+                    <Check
+                      className={cn(
+                        "size-3.5 shrink-0",
+                        isActive ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                    {option.label}
+                  </button>
+                )
+              })}
+            </div>
+          ) : null}
         </div>
 
         <PdfUploadButton onUpload={onUpload} isUploading={isUploading} />
