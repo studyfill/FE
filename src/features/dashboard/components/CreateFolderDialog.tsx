@@ -98,7 +98,7 @@ export const CreateFolderDialog = ({
         role="dialog"
         aria-modal="true"
         aria-labelledby="create-folder-title"
-        className="relative z-10 w-full max-w-[420px] overflow-hidden rounded-xl bg-card shadow-xl ring-1 ring-border/80"
+        className="relative z-10 w-full max-w-dialog-sm overflow-hidden rounded-xl bg-card shadow-xl ring-1 ring-border/80"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between px-5 py-4">
@@ -136,7 +136,7 @@ export const CreateFolderDialog = ({
               }}
               placeholder="예) 전공 수업"
               disabled={isSubmitting}
-              className="h-11 rounded-lg text-[15px]"
+              className="h-11 rounded-lg text-body"
               autoFocus
             />
           </div>
@@ -194,11 +194,11 @@ export const CreateFolderDialog = ({
               aria-hidden
             >
               <Folder
-                className={cn("size-[18px]", previewTheme.iconText)}
+                className={cn("size-icon-md", previewTheme.iconText)}
                 strokeWidth={2.25}
               />
             </span>
-            <span className="text-[15px] font-medium text-foreground">
+            <span className="text-body font-medium text-foreground">
               {previewName}
             </span>
           </div>
@@ -215,7 +215,7 @@ export const CreateFolderDialog = ({
           </Button>
           <Button
             type="button"
-            className="min-w-[72px] bg-emerald-600 text-white hover:bg-emerald-700"
+            className="min-w-[4.5rem] bg-emerald-600 text-white hover:bg-emerald-700"
             disabled={isSubmitting}
             onClick={() => void handleSubmit()}
           >

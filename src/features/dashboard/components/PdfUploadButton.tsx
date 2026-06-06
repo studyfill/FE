@@ -25,13 +25,14 @@ export const PdfUploadButton = ({
     <>
       <Button
         type="button"
+        size="lg"
         disabled={isUploading}
-        className="h-9 gap-2 px-3.5 text-[15px] shadow-sm"
+        className="gap-1.5 px-3.5 text-body font-medium leading-none bg-emerald-600 text-white shadow-sm hover:bg-emerald-700"
         aria-label="PDF 업로드"
         onClick={handleOpen}
       >
-        <Plus className="size-4" strokeWidth={2.5} />
-        {isUploading ? "업로드 중…" : "업로드"}
+        <Plus className="size-3.5 shrink-0" strokeWidth={2.25} aria-hidden />
+        <span>{isUploading ? "업로드 중…" : "업로드"}</span>
       </Button>
 
       <PdfUploadDialog

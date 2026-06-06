@@ -38,7 +38,7 @@ export const LibrarySidebar = ({
   const [createFolderOpen, setCreateFolderOpen] = useState(false)
 
   return (
-    <aside className="flex h-full w-[272px] shrink-0 flex-col overflow-hidden border-r border-sidebar-border bg-sidebar">
+    <aside className="flex h-full w-sidebar shrink-0 flex-col overflow-hidden border-r border-sidebar-border bg-sidebar">
       <div className="flex shrink-0 flex-col gap-4 px-4 pb-3 pt-5">
         <Link
           href={ROUTES.dashboard}
@@ -48,7 +48,7 @@ export const LibrarySidebar = ({
             className="flex size-9 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm"
             aria-hidden
           >
-            <Layers className="size-[18px]" strokeWidth={2.25} />
+            <Layers className="size-icon-md" strokeWidth={2.25} />
           </span>
           <span className="text-base font-semibold tracking-tight text-sidebar-foreground">
             {APP_NAME}
@@ -57,7 +57,7 @@ export const LibrarySidebar = ({
 
         <div className="relative">
           <Search
-            className="pointer-events-none absolute top-1/2 left-3 size-[18px] -translate-y-1/2 text-muted-foreground"
+            className="pointer-events-none absolute top-1/2 left-3 size-icon-md -translate-y-1/2 text-muted-foreground"
             aria-hidden
           />
           <Input
@@ -65,10 +65,10 @@ export const LibrarySidebar = ({
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="자료 · 내용 검색"
-            className="h-10 rounded-lg border-sidebar-border bg-background/80 pr-12 pl-10 text-[15px] shadow-none"
+            className="h-10 rounded-lg border-sidebar-border bg-background/80 pr-12 pl-10 text-body shadow-none"
             aria-label="자료 검색"
           />
-          <kbd className="pointer-events-none absolute top-1/2 right-2.5 hidden -translate-y-1/2 rounded border border-border bg-muted/60 px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground sm:inline">
+          <kbd className="pointer-events-none absolute top-1/2 right-2.5 hidden -translate-y-1/2 rounded border border-border bg-muted/60 px-1.5 py-0.5 font-mono text-micro text-muted-foreground sm:inline">
             ⌘K
           </kbd>
         </div>
@@ -79,18 +79,18 @@ export const LibrarySidebar = ({
           <Link
             href={ROUTES.dashboard}
             className={cn(
-              "mb-3 flex items-center gap-2.5 rounded-lg px-2.5 py-2.5 text-[15px] transition-colors",
+              "mb-3 flex items-center gap-2.5 rounded-lg px-2.5 py-2.5 text-body transition-colors",
               activeFolderId === null
                 ? "bg-sidebar-accent font-medium text-sidebar-accent-foreground"
                 : "text-muted-foreground hover:bg-sidebar-accent/70 hover:text-sidebar-foreground"
             )}
           >
-            <BookOpen className="size-[18px] shrink-0" aria-hidden />
+            <BookOpen className="size-icon-md shrink-0" aria-hidden />
             내 라이브러리
           </Link>
 
           <div className="mb-2 flex items-center justify-between px-2.5">
-            <span className="text-[13px] font-medium text-muted-foreground">폴더</span>
+            <span className="text-caption font-medium text-muted-foreground">폴더</span>
             <button
               type="button"
               className="flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-foreground"

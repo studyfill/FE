@@ -52,7 +52,7 @@ const SectionHeader = ({
     <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-medium text-muted-foreground">
       {index}
     </span>
-    <h3 className="flex items-center gap-1.5 text-[15px] font-semibold text-foreground">
+    <h3 className="flex items-center gap-1.5 text-body font-semibold text-foreground">
       {icon}
       {title}
     </h3>
@@ -202,7 +202,7 @@ const ExplanationDocument = ({
               {data.examHighlights.map((item, index) => (
                 <li
                   key={item.id}
-                  className="border-l-[3px] border-primary/50 pl-3.5"
+                  className="border-l-[0.1875rem] border-primary/50 pl-3.5"
                 >
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <div className="font-semibold text-foreground">
