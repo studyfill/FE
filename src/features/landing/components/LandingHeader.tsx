@@ -7,14 +7,28 @@ import { Layers, Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { APP_NAME } from "@/constants"
 import { ROUTES } from "@/constants/routes"
+import { useEnterGuestMode } from "@/features/auth/hooks/useEnterGuestMode"
+import { useLandingAuthDialog } from "@/features/landing/components/LandingAuthDialogProvider"
 import { LANDING_NAV_LINKS } from "@/features/landing/constants/landing-content"
 import { cn } from "@/lib/utils"
 
 export const LandingHeader = () => {
   const [mobileOpen, setMobileOpen] = useState(false)
+  const { openLogin } = useLandingAuthDialog()
+  const { enterGuestMode, isPending: isGuestPending } = useEnterGuestMode()
 
   const handleNavClick = () => {
     setMobileOpen(false)
+  }
+
+  const handleLoginOpen = () => {
+    setMobileOpen(false)
+    openLogin()
+  }
+
+  const handleGetStarted = () => {
+    setMobileOpen(false)
+    enterGuestMode()
   }
 
   return (
@@ -50,16 +64,24 @@ export const LandingHeader = () => {
         </nav>
 
         <div className="flex items-center gap-2">
-          <Link href={ROUTES.login} className="hidden sm:inline-flex">
-            <Button variant="ghost" size="sm" type="button">
-              로그인
-            </Button>
-          </Link>
-          <Link href={ROUTES.signup}>
-            <Button size="sm" type="button" className="rounded-button">
-              무료로 시작하기
-            </Button>
-          </Link>
+          <Button
+            variant="ghost"
+            size="sm"
+            type="button"
+            className="hidden sm:inline-flex"
+            onClick={handleLoginOpen}
+          >
+            로그인
+          </Button>
+          <Button
+            size="sm"
+            type="button"
+            className="rounded-button"
+            onClick={handleGetStarted}
+            disabled={isGuestPending}
+          >
+            {isGuestPending ? "이동 중…" : "무료로 시작하기"}
+          </Button>
           <Button
             type="button"
             variant="ghost"
@@ -91,13 +113,13 @@ export const LandingHeader = () => {
               {link.label}
             </a>
           ))}
-          <Link
-            href={ROUTES.login}
-            className="rounded-lg px-3 py-2.5 text-body font-medium text-muted-foreground hover:bg-muted sm:hidden"
-            onClick={handleNavClick}
+          <button
+            type="button"
+            className="rounded-lg px-3 py-2.5 text-left text-body font-medium text-muted-foreground hover:bg-muted sm:hidden"
+            onClick={handleLoginOpen}
           >
             로그인
-          </Link>
+          </button>
         </nav>
       </div>
     </header>

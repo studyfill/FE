@@ -3,6 +3,7 @@
 import { Settings } from "lucide-react"
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { GUEST_DISPLAY_NAME } from "@/constants/auth"
 import { Button } from "@/components/ui/button"
 import { Progress, ProgressIndicator, ProgressTrack } from "@/components/ui/progress"
 import { Separator } from "@/components/ui/separator"
@@ -18,12 +19,15 @@ type LibrarySidebarFooterProps = {
 const getAvatarInitial = (name: string): string => {
   const trimmed = name.replace(/님$/, "").trim()
   if (!trimmed) return "학"
+  if (trimmed === GUEST_DISPLAY_NAME) return "G"
   return trimmed.slice(-1)
 }
 
 const getDisplayName = (name?: string): string => {
   if (!name) return "학습자"
-  return name.replace(/님$/, "")
+  const base = name.replace(/님$/, "")
+  if (base === GUEST_DISPLAY_NAME) return `${GUEST_DISPLAY_NAME}님`
+  return base
 }
 
 export const LibrarySidebarFooter = ({
