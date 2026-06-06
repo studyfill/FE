@@ -1,11 +1,16 @@
 "use client"
 
 import Link from "next/link"
+import { useDraggable } from "@dnd-kit/core"
 import { Folder } from "lucide-react"
 
 import { ROUTES } from "@/constants/routes"
 import { Card } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
+import {
+  materialDragId,
+  type LibraryDragData,
+} from "@/features/dashboard/types/dnd"
 import { getFolderName } from "@/lib/mocks/folders"
 import { formatRelativeTime } from "@/lib/utils/format-relative-time"
 import {
@@ -37,7 +42,17 @@ export const MaterialCard = ({ material }: MaterialCardProps) => {
   const canStudy = material.extractionStatus === "done"
   const title = material.name.replace(/\.pdf$/i, "")
 
-  const content = (
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+    id: materialDragId(material.id),
+    data: {
+      type: "material",
+      materialId: material.id,
+      label: title,
+    } satisfies LibraryDragData,
+    disabled: !canStudy,
+  })
+
+  const card = (
     <Card
       className={cn(
         "w-full gap-0 overflow-hidden p-0 py-0 ring-1 ring-foreground/15 transition-all duration-200",
@@ -85,15 +100,27 @@ export const MaterialCard = ({ material }: MaterialCardProps) => {
   )
 
   if (!canStudy) {
-    return <div className="opacity-75">{content}</div>
+    return <div className="opacity-75">{card}</div>
   }
 
   return (
-    <Link
-      href={ROUTES.study(material.id)}
-      className="block w-full rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+    <div
+      ref={setNodeRef}
+      {...attributes}
+      {...listeners}
+      aria-label={`${title} 이동`}
+      className={cn(
+        "relative w-full cursor-grab rounded-xl active:cursor-grabbing",
+        isDragging && "opacity-40"
+      )}
     >
-      {content}
-    </Link>
+      <Link
+        href={ROUTES.study(material.id)}
+        className="block w-full rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        draggable={false}
+      >
+        {card}
+      </Link>
+    </div>
   )
 }

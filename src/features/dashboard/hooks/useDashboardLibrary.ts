@@ -5,20 +5,22 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 
 import { ROUTES } from "@/constants/routes"
 import type { FolderColorId } from "@/constants/folder-colors"
-import { createFolder, getFolder, listFolderTree } from "@/lib/mocks/folders"
+import { createFolder, getFolder, listFolderTree, moveFolder } from "@/lib/mocks/folders"
 import {
   listRecentFolders,
   recordRecentFolder,
 } from "@/lib/mocks/recent-folders"
 import { loadMockStore } from "@/lib/mocks/mock-store"
-import { listMaterials, uploadMaterial } from "@/lib/mocks/materials"
+import { listMaterials, moveMaterial, uploadMaterial } from "@/lib/mocks/materials"
 import { getPdfPageCountFromFile } from "@/lib/utils/pdf-page-count"
-import type { MaterialSort } from "@/types/material"
+import { getFolderAncestorPath } from "@/lib/utils/folder-path"
+import type { MaterialSort, MaterialViewLayout } from "@/types/material"
 
 export const useDashboardLibrary = (folderId: string | null) => {
   const router = useRouter()
   const [searchQuery, setSearchQuery] = useState("")
   const [sort, setSort] = useState<MaterialSort>("date")
+  const [viewLayout, setViewLayout] = useState<MaterialViewLayout>("grid")
   const [materials, setMaterials] = useState<ReturnType<typeof listMaterials>>([])
   const [folderTree, setFolderTree] = useState<ReturnType<typeof listFolderTree>>(
     []
@@ -30,6 +32,7 @@ export const useDashboardLibrary = (folderId: string | null) => {
   const [uploadError, setUploadError] = useState<string | null>(null)
   const [isCreatingFolder, setIsCreatingFolder] = useState(false)
   const [createFolderError, setCreateFolderError] = useState<string | null>(null)
+  const [moveError, setMoveError] = useState<string | null>(null)
 
   const uploadFolderId = useMemo(() => {
     if (!folderId) return null
@@ -45,6 +48,12 @@ export const useDashboardLibrary = (folderId: string | null) => {
     if (!folderId) return "내 라이브러리"
     return getFolder(folderId)?.name ?? "폴더"
   }, [folderId])
+
+  const folderPath = useMemo(() => {
+    if (!folderId) return []
+    const { folders } = loadMockStore()
+    return getFolderAncestorPath(folderId, folders)
+  }, [folderId, folderTree])
 
   const refresh = useCallback(() => {
     setFolderTree(listFolderTree())
@@ -67,6 +76,12 @@ export const useDashboardLibrary = (folderId: string | null) => {
     recordRecentFolder(folderId)
     setRecentFolders(listRecentFolders())
   }, [folderId])
+
+  useEffect(() => {
+    if (!moveError) return
+    const timer = window.setTimeout(() => setMoveError(null), 4000)
+    return () => window.clearTimeout(timer)
+  }, [moveError])
 
   const handleCreateFolder = async (name: string, color: FolderColorId) => {
     setIsCreatingFolder(true)
@@ -101,23 +116,53 @@ export const useDashboardLibrary = (folderId: string | null) => {
     }
   }
 
+  const handleMoveMaterial = (materialId: string, targetFolderId: string) => {
+    try {
+      moveMaterial(materialId, targetFolderId)
+      setMoveError(null)
+      refresh()
+    } catch (err) {
+      setMoveError(
+        err instanceof Error ? err.message : "자료를 이동하지 못했습니다."
+      )
+    }
+  }
+
+  const handleMoveFolder = (folderIdToMove: string, targetFolderId: string) => {
+    try {
+      moveFolder(folderIdToMove, targetFolderId)
+      setMoveError(null)
+      refresh()
+    } catch (err) {
+      setMoveError(
+        err instanceof Error ? err.message : "폴더를 이동하지 못했습니다."
+      )
+    }
+  }
+
   return {
     searchQuery,
     setSearchQuery,
     sort,
     setSort,
+    viewLayout,
+    setViewLayout,
     materials,
     folderTree,
     recentFolders,
     totalCount: materials.length,
     isHome: folderId === null,
     folderLabel,
+    folderPath,
     isUploading,
     uploadError,
     handleUpload,
     handleCreateFolder,
     isCreatingFolder,
     createFolderError,
+    moveError,
+    handleMoveMaterial,
+    handleMoveFolder,
     refresh,
   }
 }

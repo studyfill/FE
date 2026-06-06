@@ -29,6 +29,8 @@ export type FolderTreeNode = Folder & {
 
 export type MaterialSort = "date" | "folder"
 
+export type MaterialViewLayout = "grid" | "list"
+
 export type ListMaterialsOptions = {
   folderId?: string | null
   searchQuery?: string
