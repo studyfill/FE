@@ -1,0 +1,12 @@
+"use client"
+
+import { useSyncExternalStore } from "react"
+
+const subscribe = () => () => {}
+
+const getSnapshot = () => true
+
+const getServerSnapshot = () => false
+
+export const useClientMounted = () =>
+  useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)

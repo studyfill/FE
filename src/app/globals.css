@@ -70,6 +70,12 @@
   --size-icon-md: 1.125rem;
   --size-icon-xl: 3.25rem;
   --radius-button: 0.625rem;
+
+  --color-landing-hero-from: var(--landing-hero-from);
+  --color-landing-hero-to: var(--landing-hero-to);
+  --color-landing-surface: var(--landing-surface);
+  --color-landing-panel: var(--landing-panel);
+  --color-landing-mint: var(--landing-mint);
 }
 
 :root {
@@ -97,6 +103,11 @@
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
   --radius: 0.625rem;
+  --landing-hero-from: oklch(0.97 0.03 155);
+  --landing-hero-to: oklch(0.995 0.01 90);
+  --landing-surface: oklch(0.965 0.008 90);
+  --landing-panel: oklch(0.975 0.018 155);
+  --landing-mint: oklch(0.94 0.04 155);
   --sidebar: oklch(0.972 0.008 88);
   --sidebar-foreground: oklch(0.22 0.02 155);
   --sidebar-primary: oklch(0.205 0 0);
@@ -150,6 +161,7 @@
   }
   html {
     font-size: 80%;
+    scroll-behavior: smooth;
     @apply font-sans;
   }
 }
