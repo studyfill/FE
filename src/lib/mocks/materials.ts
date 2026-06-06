@@ -140,6 +140,30 @@ export const uploadMaterial = async (
   return getMaterial(material.id) ?? material
 }
 
+export const moveMaterial = (
+  materialId: string,
+  targetFolderId: string
+): Material => {
+  const store = loadMockStore()
+  const material = store.materials.find((item) => item.id === materialId)
+  if (!material) {
+    throw new Error("자료를 찾을 수 없습니다.")
+  }
+
+  const targetFolder = store.folders.find((folder) => folder.id === targetFolderId)
+  if (!targetFolder) {
+    throw new Error("폴더를 찾을 수 없습니다.")
+  }
+
+  if (material.folderId === targetFolderId) {
+    return material
+  }
+
+  material.folderId = targetFolderId
+  saveMockStore(store)
+  return material
+}
+
 export const updateMaterial = (
   id: string,
   patch: Partial<Pick<Material, "currentPage" | "progressPercent" | "lastStudiedAt">>

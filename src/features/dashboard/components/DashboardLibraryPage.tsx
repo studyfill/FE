@@ -22,9 +22,11 @@ export const DashboardLibraryPage = ({
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <LibraryToolbar
-        folderLabel={library.folderLabel}
+        folderPath={library.folderPath}
         sort={library.sort}
+        viewLayout={library.viewLayout}
         onSortChange={library.setSort}
+        onViewLayoutChange={library.setViewLayout}
         onUpload={library.handleUpload}
         isUploading={library.isUploading}
       />
@@ -48,6 +50,12 @@ export const DashboardLibraryPage = ({
           </p>
         ) : null}
 
+        {library.moveError ? (
+          <p className="text-sm text-destructive" role="alert">
+            {library.moveError}
+          </p>
+        ) : null}
+
         {library.isHome ? (
           <RecentFoldersStrip folders={library.recentFolders} />
         ) : null}
@@ -61,7 +69,7 @@ export const DashboardLibraryPage = ({
               {library.totalCount}개 자료
             </span>
           </div>
-          <MaterialGrid materials={library.materials} />
+          <MaterialGrid materials={library.materials} layout={library.viewLayout} />
         </div>
       </div>
     </div>

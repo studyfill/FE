@@ -2,6 +2,7 @@ import type { Folder, FolderTreeNode } from "@/types/material"
 
 import { isFolderColorId, type FolderColorId } from "@/constants/folder-colors"
 import { UNASSIGNED_FOLDER_LABEL } from "@/constants/folder"
+import { isFolderDescendant } from "@/lib/utils/folder-tree"
 import { DEFAULT_UPLOAD_FOLDER_ID, FOLDER_IDS } from "./folder-ids"
 import { loadMockStore, saveMockStore } from "./mock-store"
 
@@ -148,6 +149,41 @@ export const createFolder = (
   store.folders.push(folder)
   saveMockStore(store)
 
+  return folder
+}
+
+export const moveFolder = (folderId: string, newParentId: string): Folder => {
+  const store = loadMockStore()
+  const folder = store.folders.find((item) => item.id === folderId)
+  if (!folder) {
+    throw new Error("폴더를 찾을 수 없습니다.")
+  }
+
+  const newParent = store.folders.find((item) => item.id === newParentId)
+  if (!newParent) {
+    throw new Error("대상 폴더를 찾을 수 없습니다.")
+  }
+
+  if (folder.parentId === newParentId) {
+    return folder
+  }
+
+  if (isFolderDescendant(store.folders, folderId, newParentId)) {
+    throw new Error("폴더를 자기 자신 또는 하위 폴더로 이동할 수 없습니다.")
+  }
+
+  const duplicate = store.folders.some(
+    (item) =>
+      item.id !== folderId &&
+      item.parentId === newParentId &&
+      item.name.trim().toLowerCase() === folder.name.trim().toLowerCase()
+  )
+  if (duplicate) {
+    throw new Error("같은 위치에 동일한 이름의 폴더가 있습니다.")
+  }
+
+  folder.parentId = newParentId
+  saveMockStore(store)
   return folder
 }
 
