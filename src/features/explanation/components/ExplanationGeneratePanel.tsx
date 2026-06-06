@@ -43,17 +43,17 @@ export const ExplanationGeneratePanel = ({
     <div className="flex min-h-0 flex-1 flex-col">
       {!data ? (
         <div className="flex flex-1 items-center justify-center overflow-y-auto px-6 pt-4 pb-28">
-          <div className="flex w-full max-w-[440px] -translate-y-4 flex-col gap-8">
+          <div className="flex w-full max-w-generate-panel -translate-y-4 flex-col gap-8">
             <div className="space-y-3 text-center">
               <ExplanationGenerateIcon
                 size={52}
-                className="mx-auto size-[52px] text-primary"
+                className="mx-auto size-icon-xl text-primary"
                 strokeWidth={1.75}
               />
               <h2 className="text-lg font-semibold tracking-tight text-foreground">
                 강의식 설명 생성
               </h2>
-              <p className="text-[15px] leading-[1.65] text-muted-foreground">
+              <p className="text-body leading-[1.65] text-muted-foreground">
                 &apos;요약&apos;이 아니라 강의 노트처럼 풀어서 설명해 드려요.
                 <br />
                 시험 핵심·헷갈리는 부분·치트시트까지 함께 만듭니다.
@@ -102,15 +102,15 @@ export const ExplanationGeneratePanel = ({
             <div className="space-y-3">
             <Button
               type="button"
-              className="h-12 w-full rounded-[10px] text-[15px] font-semibold"
+              className="h-12 w-full rounded-button text-body font-semibold"
               onClick={handleGenerateClick}
               disabled={isGenerating || material.extractionStatus !== "done"}
               aria-label="설명 생성하기"
             >
               {isGenerating ? (
-                <Loader2 className="size-[18px] animate-spin" />
+                <Loader2 className="size-icon-md animate-spin" />
               ) : (
-                <Sparkles className="size-[18px]" strokeWidth={2} />
+                <Sparkles className="size-icon-md" strokeWidth={2} />
               )}
               {isGenerating ? "생성 중…" : "설명 생성하기"}
             </Button>
@@ -145,14 +145,14 @@ export const ExplanationGeneratePanel = ({
               <Button
                 type="button"
                 variant="outline"
-                className="h-11 w-full rounded-[10px]"
+                className="h-11 w-full rounded-button"
                 onClick={handleGenerateClick}
                 disabled={isGenerating || material.extractionStatus !== "done"}
               >
                 {isGenerating ? (
-                  <Loader2 className="size-[18px] animate-spin" />
+                  <Loader2 className="size-icon-md animate-spin" />
                 ) : (
-                  <Sparkles className="size-[18px]" strokeWidth={2} />
+                  <Sparkles className="size-icon-md" strokeWidth={2} />
                 )}
                 {isGenerating ? "재생성 중…" : "다시 생성하기"}
               </Button>

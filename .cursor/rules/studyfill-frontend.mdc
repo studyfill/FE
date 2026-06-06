@@ -74,6 +74,17 @@ Avoid: dark mode style, colorful educational UI, cluttered dashboards, enterpris
 - Use shadcn/ui components
 - Subtle borders, soft shadows, compact spacing, minimal green primary accent (library brand)
 
+### UI density baseline
+
+- Root scale: `html { font-size: 80%; }` in [`globals.css`](src/app/globals.css) — design at 100% browser zoom matches prior 80% zoom look
+- Do **not** add new `text-[Npx]`, `size-[Npx]`, or layout px literals in feature code
+- Use `@theme` tokens instead:
+  - Typography: `text-body` (15px design), `text-body-sm` (14px), `text-caption` (13px), `text-micro` (11px), `text-title-xl` (28px)
+  - Layout: `w-sidebar`, `w-folder-strip`, `max-w-generate-panel`, `max-w-dialog-sm`, `max-w-dialog-md`, `h-material-thumb`
+  - Icons: `size-icon-md` (18px design), `size-icon-xl` (52px design)
+  - Radius: `rounded-button` (10px design)
+- shadcn `text-sm` / `text-xs` inherit root scale automatically; no separate adjustment needed
+
 ## Accessibility
 
 - Add `aria-label` for icon buttons

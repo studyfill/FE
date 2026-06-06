@@ -106,7 +106,7 @@ export const PdfUploadDialog = ({
         role="dialog"
         aria-modal="true"
         aria-labelledby="pdf-upload-title"
-        className="relative z-10 w-full max-w-[480px] overflow-hidden rounded-xl bg-card shadow-xl ring-1 ring-border/80"
+        className="relative z-10 w-full max-w-dialog-md overflow-hidden rounded-xl bg-card shadow-xl ring-1 ring-border/80"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-border px-5 py-4">

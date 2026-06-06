@@ -53,7 +53,7 @@ export const BlankInlineBlank = ({
         {item.status !== "pending" ? (
           <span
             className={cn(
-              "inline-block rounded px-1.5 py-0.5 text-[15px] leading-normal font-medium",
+              "inline-block rounded px-1.5 py-0.5 text-body leading-normal font-medium",
               item.status === "correct"
                 ? "bg-primary/15 text-primary ring-1 ring-primary/25"
                 : "bg-destructive/10 text-destructive ring-1 ring-destructive/20"
@@ -154,7 +154,7 @@ export const BlankProseSection = ({
       </h3>
     ) : null}
 
-    <div className="text-[15px] leading-[1.9] text-foreground/90">
+    <div className="text-body leading-[1.9] text-foreground/90">
       {items.map((item, index) => (
         <Fragment key={item.id}>
           <BlankInlineBlank

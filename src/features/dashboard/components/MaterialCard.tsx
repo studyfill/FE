@@ -62,7 +62,7 @@ export const MaterialCard = ({ material }: MaterialCardProps) => {
     >
       <div
         className={cn(
-          "relative h-[154px] overflow-hidden",
+          "relative h-material-thumb overflow-hidden",
           previewBackground
         )}
       >
@@ -86,7 +86,7 @@ export const MaterialCard = ({ material }: MaterialCardProps) => {
           <Folder className="size-3.5 shrink-0" aria-hidden />
           <span className="truncate">{folderName}</span>
         </div>
-        <h3 className="line-clamp-2 text-[15px] leading-snug font-semibold text-foreground">
+        <h3 className="line-clamp-2 text-body leading-snug font-semibold text-foreground">
           {title}
         </h3>
         <p className="text-xs text-muted-foreground">

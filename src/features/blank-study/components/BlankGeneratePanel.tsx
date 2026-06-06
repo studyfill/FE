@@ -42,16 +42,16 @@ export const BlankGeneratePanel = ({
     <div className="flex min-h-0 flex-1 flex-col">
       {!session ? (
         <div className="flex flex-1 items-center justify-center overflow-y-auto px-6 pt-4 pb-28">
-          <div className="flex w-full max-w-[440px] -translate-y-4 flex-col gap-8">
+          <div className="flex w-full max-w-generate-panel -translate-y-4 flex-col gap-8">
             <div className="space-y-3 text-center">
               <Layers
-                className="mx-auto size-[52px] text-primary"
+                className="mx-auto size-icon-xl text-primary"
                 strokeWidth={1.75}
               />
               <h2 className="text-lg font-semibold tracking-tight text-foreground">
                 빈칸 암기 생성
               </h2>
-              <p className="text-[15px] leading-[1.65] text-muted-foreground">
+              <p className="text-body leading-[1.65] text-muted-foreground">
                 PDF 원문 또는 강의 노트에서 핵심어를 빈칸으로 만들어
                 <br />
                 워크북처럼 바로 암기할 수 있어요.
@@ -104,7 +104,7 @@ export const BlankGeneratePanel = ({
             <div className="space-y-3">
               <Button
                 type="button"
-                className="h-12 w-full rounded-[10px] text-[15px] font-semibold"
+                className="h-12 w-full rounded-button text-body font-semibold"
                 onClick={handleGenerateClick}
                 disabled={
                   isGenerating || !extractionReady || needsExplanation
@@ -112,9 +112,9 @@ export const BlankGeneratePanel = ({
                 aria-label="빈칸 생성하기"
               >
                 {isGenerating ? (
-                  <Loader2 className="size-[18px] animate-spin" />
+                  <Loader2 className="size-icon-md animate-spin" />
                 ) : (
-                  <Sparkles className="size-[18px]" strokeWidth={2} />
+                  <Sparkles className="size-icon-md" strokeWidth={2} />
                 )}
                 {isGenerating ? "생성 중…" : "빈칸 생성하기"}
               </Button>

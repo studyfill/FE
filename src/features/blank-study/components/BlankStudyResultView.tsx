@@ -84,7 +84,7 @@ export const BlankStudyResultView = ({
             variant={customBlankMode ? "default" : "outline"}
             size="sm"
             className={cn(
-              "ml-auto h-9 shrink-0 rounded-[10px] text-sm",
+              "ml-auto h-9 shrink-0 rounded-button text-sm",
               customBlankMode && "shadow-sm"
             )}
             onClick={() => setCustomBlankMode((prev) => !prev)}
@@ -122,11 +122,11 @@ export const BlankStudyResultView = ({
         <Button
           type="button"
           variant="outline"
-          className="h-11 w-full rounded-[10px]"
+          className="h-11 w-full rounded-button"
           onClick={handleRetryIncorrect}
           aria-label="오답 다시 풀기"
         >
-          <RotateCcw className="size-[18px]" />
+          <RotateCcw className="size-icon-md" />
           오답 다시 풀기
         </Button>
       ) : null}
@@ -138,14 +138,14 @@ export const BlankStudyResultView = ({
       <Button
         type="button"
         variant="outline"
-        className="h-11 w-full rounded-[10px]"
+        className="h-11 w-full rounded-button"
         onClick={onRegenerate}
         disabled={isGenerating || !extractionReady}
       >
         {isGenerating ? (
-          <Loader2 className="size-[18px] animate-spin" />
+          <Loader2 className="size-icon-md animate-spin" />
         ) : (
-          <Sparkles className="size-[18px]" strokeWidth={2} />
+          <Sparkles className="size-icon-md" strokeWidth={2} />
         )}
         {isGenerating ? "재생성 중…" : "다시 생성하기"}
       </Button>
