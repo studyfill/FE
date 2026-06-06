@@ -4,6 +4,8 @@ import type { NextRequest } from "next/server"
 import { SESSION_COOKIE } from "@/constants/auth"
 import { PROTECTED_PREFIXES, ROUTES } from "@/constants/routes"
 
+const LEGACY_AUTH_PATHS = ["/login", "/signup"]
+
 const isProtectedPath = (pathname: string) =>
   PROTECTED_PREFIXES.some(
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
@@ -13,14 +15,12 @@ export const middleware = (request: NextRequest) => {
   const { pathname } = request.nextUrl
   const session = request.cookies.get(SESSION_COOKIE)?.value
 
-  if (isProtectedPath(pathname) && !session) {
-    const loginUrl = new URL(ROUTES.login, request.url)
-    loginUrl.searchParams.set("from", pathname)
-    return NextResponse.redirect(loginUrl)
+  if (LEGACY_AUTH_PATHS.includes(pathname)) {
+    return NextResponse.redirect(new URL(ROUTES.home, request.url))
   }
 
-  if ((pathname === ROUTES.login || pathname === ROUTES.signup) && session) {
-    return NextResponse.redirect(new URL(ROUTES.dashboard, request.url))
+  if (isProtectedPath(pathname) && !session) {
+    return NextResponse.redirect(new URL(ROUTES.home, request.url))
   }
 
   if (pathname === ROUTES.home && session) {
@@ -31,5 +31,12 @@ export const middleware = (request: NextRequest) => {
 }
 
 export const config = {
-  matcher: ["/", "/login", "/signup", "/dashboard/:path*", "/materials/:path*", "/study/:path*"],
+  matcher: [
+    "/",
+    "/login",
+    "/signup",
+    "/dashboard/:path*",
+    "/materials/:path*",
+    "/study/:path*",
+  ],
 }

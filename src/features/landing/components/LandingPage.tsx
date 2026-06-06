@@ -1,3 +1,4 @@
+import { LandingAuthDialogProvider } from "@/features/landing/components/LandingAuthDialogProvider"
 import { LandingFeatureSection } from "@/features/landing/components/LandingFeatureSection"
 import { LandingFeaturesIntro } from "@/features/landing/components/LandingFeaturesIntro"
 import { LandingFinalCta } from "@/features/landing/components/LandingFinalCta"
@@ -70,6 +71,7 @@ export const LandingPage = () => {
   } as const
 
   return (
+    <LandingAuthDialogProvider>
     <div className="flex min-h-full flex-col bg-background">
       <LandingHeader />
       <main className="flex-1 pt-14">
@@ -96,5 +98,6 @@ export const LandingPage = () => {
         <LandingFooter />
       </main>
     </div>
+    </LandingAuthDialogProvider>
   )
 }

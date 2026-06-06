@@ -1,6 +1,5 @@
 "use client"
 
-import Link from "next/link"
 import { useState } from "react"
 import { Check, X } from "lucide-react"
 
@@ -12,12 +11,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { ROUTES } from "@/constants/routes"
+import { useEnterGuestMode } from "@/features/auth/hooks/useEnterGuestMode"
 import { LANDING_PRICING_PLANS } from "@/features/landing/constants/landing-content"
 import { cn } from "@/lib/utils"
 
 export const LandingPricing = () => {
   const [billing, setBilling] = useState<"monthly" | "yearly">("monthly")
+  const { enterGuestMode, isPending: isGuestPending } = useEnterGuestMode()
 
   return (
     <section
@@ -124,25 +124,25 @@ export const LandingPricing = () => {
                     ))}
                   </ul>
 
-                  <Link href={ROUTES.signup} className="mt-8 block">
-                    <Button
-                      type="button"
-                      variant={
-                        plan.variant === "outline"
-                          ? "outline"
-                          : plan.variant === "dark"
-                            ? "secondary"
-                            : "default"
-                      }
-                      className={cn(
-                        "w-full rounded-button",
-                        plan.variant === "dark" &&
-                          "bg-foreground text-background hover:bg-foreground/90"
-                      )}
-                    >
-                      {plan.cta}
-                    </Button>
-                  </Link>
+                  <Button
+                    type="button"
+                    variant={
+                      plan.variant === "outline"
+                        ? "outline"
+                        : plan.variant === "dark"
+                          ? "secondary"
+                          : "default"
+                    }
+                    className={cn(
+                      "mt-8 w-full rounded-button",
+                      plan.variant === "dark" &&
+                        "bg-foreground text-background hover:bg-foreground/90"
+                    )}
+                    onClick={enterGuestMode}
+                    disabled={isGuestPending}
+                  >
+                    {isGuestPending ? "이동 중…" : plan.cta}
+                  </Button>
                 </CardContent>
               </Card>
             )

@@ -1,9 +1,11 @@
-import Link from "next/link"
+"use client"
 
 import { Button } from "@/components/ui/button"
-import { ROUTES } from "@/constants/routes"
+import { useEnterGuestMode } from "@/features/auth/hooks/useEnterGuestMode"
 
 export const LandingHero = () => {
+  const { enterGuestMode, isPending } = useEnterGuestMode()
+
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-landing-hero-from via-landing-hero-to to-background px-4 pb-24 pt-16">
       <div
@@ -30,11 +32,15 @@ export const LandingHero = () => {
         </p>
 
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-          <Link href={ROUTES.signup}>
-            <Button type="button" size="lg" className="rounded-button px-6">
-              무료로 시작하기
-            </Button>
-          </Link>
+          <Button
+            type="button"
+            size="lg"
+            className="rounded-button px-6"
+            onClick={enterGuestMode}
+            disabled={isPending}
+          >
+            {isPending ? "이동 중…" : "무료로 시작하기"}
+          </Button>
           <a href="#features">
             <Button
               type="button"
