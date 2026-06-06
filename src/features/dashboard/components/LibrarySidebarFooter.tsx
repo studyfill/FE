@@ -35,7 +35,7 @@ export const LibrarySidebarFooter = ({
   return (
     <div className="mt-auto space-y-3 border-t border-sidebar-border pt-3">
       <div className="space-y-2 px-1">
-        <div className="flex items-center justify-between text-[13px]">
+        <div className="flex items-center justify-between text-caption">
           <span className="font-medium text-sidebar-foreground">저장공간</span>
           <span className="tabular-nums text-muted-foreground">
             {STORAGE_USED_GB} / {STORAGE_TOTAL_GB} GB
@@ -57,10 +57,10 @@ export const LibrarySidebarFooter = ({
           </AvatarFallback>
         </Avatar>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-[15px] font-medium text-sidebar-foreground">
+          <p className="truncate text-body font-medium text-sidebar-foreground">
             {displayName}
           </p>
-          <p className="truncate text-[13px] text-muted-foreground">
+          <p className="truncate text-caption text-muted-foreground">
             <span>무료 플랜</span>
             <span className="mx-1 text-muted-foreground/60">·</span>
             <button
@@ -79,7 +79,7 @@ export const LibrarySidebarFooter = ({
           className="size-8 shrink-0 text-muted-foreground hover:text-foreground"
           aria-label="설정"
         >
-          <Settings className="size-[18px]" />
+          <Settings className="size-icon-md" />
         </Button>
       </div>
     </div>

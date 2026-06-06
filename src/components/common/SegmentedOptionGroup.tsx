@@ -25,7 +25,7 @@ export const SegmentedOptionGroup = <T extends string>({
 }: SegmentedOptionGroupProps<T>) => {
   return (
     <div className="w-full space-y-2.5">
-      <p className="text-[15px] font-medium text-muted-foreground">{label}</p>
+      <p className="text-body font-medium text-muted-foreground">{label}</p>
       <div
         className={cn(
           "grid w-full gap-2.5",
@@ -45,9 +45,9 @@ export const SegmentedOptionGroup = <T extends string>({
               aria-pressed={isSelected}
               onClick={() => onChange(option.value)}
               className={cn(
-                "flex w-full flex-col items-center justify-center rounded-[10px] border px-2 text-center transition-colors",
-                hasSublabel ? "h-[52px] py-2" : "h-12",
-                hasSublabel ? "text-sm leading-none" : "text-[14px] leading-tight",
+                "flex w-full flex-col items-center justify-center rounded-button border px-2 text-center transition-colors",
+                hasSublabel ? "h-icon-xl py-2" : "h-12",
+                hasSublabel ? "text-sm leading-none" : "text-body-sm leading-tight",
                 isSelected
                   ? "border-primary/45 bg-primary/[0.08] text-primary"
                   : "border-border bg-background text-muted-foreground hover:border-border hover:bg-muted/15"

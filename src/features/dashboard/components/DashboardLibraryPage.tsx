@@ -33,7 +33,7 @@ export const DashboardLibraryPage = ({
 
       <div className="flex flex-1 flex-col gap-5">
         <div className="space-y-1.5">
-          <h1 className="text-[28px] leading-tight font-semibold tracking-tight text-foreground">
+          <h1 className="text-title-xl leading-tight font-semibold tracking-tight text-foreground">
             안녕하세요, {displayName}님{" "}
             <span aria-hidden className="inline-block">
               👋

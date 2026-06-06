@@ -80,7 +80,7 @@ export const LibraryDndProvider = ({ children }: LibraryDndProviderProps) => {
             ) : (
               <Folder className="size-4 shrink-0 text-primary" />
             )}
-            <span className="max-w-[200px] truncate font-medium">
+            <span className="max-w-folder-strip truncate font-medium">
               {activeDrag.label}
             </span>
           </div>

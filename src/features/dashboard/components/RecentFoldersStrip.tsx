@@ -17,13 +17,13 @@ export const RecentFoldersStrip = ({ folders }: RecentFoldersStripProps) => {
 
   return (
     <section aria-label="최근 사용한 폴더">
-      <h2 className="mb-3 text-[13px] font-medium text-muted-foreground">
+      <h2 className="mb-3 text-caption font-medium text-muted-foreground">
         최근 사용한 폴더
       </h2>
       <div className="-mx-1 overflow-x-auto overscroll-x-contain pb-1 [scrollbar-width:thin]">
         <ul className="flex w-max gap-3 px-1">
           {folders.map((folder) => (
-            <li key={folder.id} className="w-[200px] shrink-0 snap-start">
+            <li key={folder.id} className="w-folder-strip shrink-0 snap-start">
               <Link
                 href={ROUTES.dashboardFolder(folder.id)}
                 className="flex items-center gap-3 rounded-xl border border-border/80 bg-card px-4 py-3.5 shadow-sm transition-shadow hover:shadow-md"
@@ -37,7 +37,7 @@ export const RecentFoldersStrip = ({ folders }: RecentFoldersStripProps) => {
                   aria-hidden
                 />
                 <span className="min-w-0">
-                  <span className="block truncate text-[15px] font-semibold text-foreground">
+                  <span className="block truncate text-body font-semibold text-foreground">
                     {folder.name}
                   </span>
                   <span className="block text-xs text-muted-foreground">

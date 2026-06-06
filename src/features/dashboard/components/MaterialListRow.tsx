@@ -59,7 +59,7 @@ export const MaterialListRow = ({ material }: MaterialListRowProps) => {
       </div>
 
       <div className="min-w-0 flex-1">
-        <h3 className="truncate text-[15px] font-semibold text-foreground">
+        <h3 className="truncate text-body font-semibold text-foreground">
           {title}
         </h3>
         <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-muted-foreground">
