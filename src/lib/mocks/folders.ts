@@ -187,6 +187,34 @@ export const moveFolder = (folderId: string, newParentId: string): Folder => {
   return folder
 }
 
+export type FolderGridItem = Folder & { materialCount: number }
+
+const compareSiblingFolders = (a: Folder, b: Folder) => {
+  if (a.pinned && !b.pinned) return -1
+  if (!a.pinned && b.pinned) return 1
+  return a.name.localeCompare(b.name, "ko")
+}
+
+export const listChildFolders = (
+  parentId: string | null
+): FolderGridItem[] => {
+  const store = loadMockStore()
+  const { folders, materials } = store
+
+  return folders
+    .filter((folder) => folder.parentId === parentId)
+    .sort(compareSiblingFolders)
+    .map((folder) => {
+      const hasChildren = folders.some((entry) => entry.parentId === folder.id)
+      const directCount = materials.filter((m) => m.folderId === folder.id).length
+      const materialCount = hasChildren
+        ? countMaterialsInScope(folder.id, folders, materials)
+        : directCount
+
+      return { ...folder, materialCount }
+    })
+}
+
 export const listFolderTree = (): FolderTreeNode[] => {
   const store = loadMockStore()
   const { folders, materials } = store

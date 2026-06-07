@@ -28,6 +28,30 @@ export const getFolderPreviewBackgroundClassNameForColor = (
   color: FolderColorId
 ): string => getTheme(color).cardGradient
 
+const FOLDER_ACCENT_BORDER: Record<FolderColorId, string> = {
+  red: "border-l-red-400/75",
+  orange: "border-l-orange-400/75",
+  yellow: "border-l-yellow-500/75",
+  green: "border-l-emerald-500/75",
+  blue: "border-l-blue-400/75",
+  indigo: "border-l-indigo-400/75",
+  violet: "border-l-violet-400/75",
+  pink: "border-l-pink-400/75",
+}
+
+export const getFolderAccentBorderClassNameForColor = (
+  color: FolderColorId
+): string =>
+  FOLDER_ACCENT_BORDER[color] ?? FOLDER_ACCENT_BORDER[DEFAULT_FOLDER_COLOR]
+
+export const getFolderAccentBorderClassNameForFolderId = (
+  folderId: string | null
+): string => {
+  const color = getFolderColorById(folderId)
+  if (!color) return "border-l-slate-300/80"
+  return getFolderAccentBorderClassNameForColor(color)
+}
+
 export const getFolderIconClassNameForFolderId = (
   folderId: string | null
 ): string => {

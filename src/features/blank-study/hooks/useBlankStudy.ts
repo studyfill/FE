@@ -7,6 +7,7 @@ import {
   addCustomBlankItem,
   generateBlankSession,
   getBlankSession,
+  removeBlankItem,
   resetIncorrectBlankItems,
   updateBlankItem,
 } from "@/lib/mocks/blank-study"
@@ -71,10 +72,10 @@ export const useBlankStudy = (materialId: string) => {
     })
     if (updated) setSession(updated)
 
-    const done = (updated?.items ?? []).filter((i) => i.status === "correct")
-      .length
-    const progress = updated?.items.length
-      ? Math.round((done / updated.items.length) * 100)
+    const blankOnly = (updated?.items ?? []).filter((item) => !item.isTextOnly)
+    const done = blankOnly.filter((i) => i.status === "correct").length
+    const progress = blankOnly.length
+      ? Math.round((done / blankOnly.length) * 100)
       : 0
     updateMaterial(materialId, { progressPercent: progress })
   }
@@ -102,15 +103,41 @@ export const useBlankStudy = (materialId: string) => {
     setSession(updated)
   }
 
-  const items = session?.items ?? []
-  const completedCount = items.filter((i) => i.status === "correct").length
-  const progressPercent = items.length
-    ? Math.round((completedCount / items.length) * 100)
+  const handleRemoveBlank = (itemId: string) => {
+    const updated = removeBlankItem(materialId, itemId)
+    if (updated === null) {
+      setSession(null)
+      setAnswers({})
+      updateMaterial(materialId, { progressPercent: 0 })
+      return
+    }
+
+    setSession(updated)
+    setAnswers((prev) => {
+      const next = { ...prev }
+      delete next[itemId]
+      return next
+    })
+
+    const blankItems = updated.items.filter((item) => !item.isTextOnly)
+    const done = blankItems.filter((item) => item.status === "correct").length
+    const progress = blankItems.length
+      ? Math.round((done / blankItems.length) * 100)
+      : 0
+    updateMaterial(materialId, { progressPercent: progress })
+  }
+
+  const allItems = session?.items ?? []
+  const blankItems = allItems.filter((item) => !item.isTextOnly)
+  const completedCount = blankItems.filter((i) => i.status === "correct").length
+  const progressPercent = blankItems.length
+    ? Math.round((completedCount / blankItems.length) * 100)
     : 0
 
   return {
     session,
-    items,
+    items: blankItems,
+    allItems,
     options,
     setOptions,
     hasExplanation,
@@ -126,6 +153,7 @@ export const useBlankStudy = (materialId: string) => {
     customBlankMode,
     setCustomBlankMode,
     handleAddCustomBlank,
+    handleRemoveBlank,
     refresh,
   }
 }

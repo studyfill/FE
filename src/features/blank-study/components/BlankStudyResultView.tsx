@@ -1,9 +1,11 @@
 "use client"
 
 import { Loader2, MousePointerClick, RotateCcw, Sparkles } from "lucide-react"
+import { useMemo } from "react"
 
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { BlankPdfProseView } from "@/features/blank-study/components/BlankPdfProseView"
 import {
   BlankProseSection,
   groupBlankItemsBySection,
@@ -31,6 +33,7 @@ export const BlankStudyResultView = ({
 }: BlankStudyResultViewProps) => {
   const {
     items,
+    allItems,
     answers,
     completedCount,
     progressPercent,
@@ -40,10 +43,19 @@ export const BlankStudyResultView = ({
     customBlankMode,
     setCustomBlankMode,
     handleAddCustomBlank,
+    handleRemoveBlank,
   } = blankStudy
 
   const hasIncorrect = items.some((i) => i.status === "incorrect")
-  const sections = groupBlankItemsBySection(items)
+  const sections = groupBlankItemsBySection(allItems)
+  const itemsById = useMemo(
+    () => new Map(session.items.map((item) => [item.id, item])),
+    [session.items]
+  )
+  const usePdfProse =
+    session.options.source === "pdf" &&
+    session.pdfPages &&
+    session.pdfPages.length > 0
 
   let blankOffset = 0
 
@@ -96,27 +108,43 @@ export const BlankStudyResultView = ({
         </div>
       </header>
 
-      <article className="flex flex-col gap-6">
-        {sections.map((section) => {
-          const startIndex = blankOffset
-          blankOffset += section.items.length
+      {usePdfProse ? (
+        <BlankPdfProseView
+          pdfPages={session.pdfPages!}
+          itemsById={itemsById}
+          answers={answers}
+          customBlankMode={customBlankMode}
+          onAnswerChange={setAnswer}
+          onSubmit={handleSubmit}
+          onCustomBlank={handleAddCustomBlank}
+          onRemoveBlank={handleRemoveBlank}
+        />
+      ) : (
+        <article className="flex flex-col gap-6">
+          {sections.map((section) => {
+            const startIndex = blankOffset
+            section.items.forEach((item) => {
+              if (!item.isTextOnly) blankOffset += 1
+            })
 
-          return (
-            <BlankProseSection
-              key={`${section.sectionLabel ?? "default"}-${startIndex}`}
-              sectionLabel={section.sectionLabel}
-              sourcePage={section.sourcePage}
-              items={section.items}
-              answers={answers}
-              startIndex={startIndex}
-              customBlankMode={customBlankMode}
-              onAnswerChange={setAnswer}
-              onSubmit={handleSubmit}
-              onCustomBlank={handleAddCustomBlank}
-            />
-          )
-        })}
-      </article>
+            return (
+              <BlankProseSection
+                key={`${section.sectionLabel ?? "default"}-${startIndex}`}
+                sectionLabel={section.sectionLabel}
+                sourcePage={section.sourcePage}
+                items={section.items}
+                answers={answers}
+                startIndex={startIndex}
+                customBlankMode={customBlankMode}
+                onAnswerChange={setAnswer}
+                onSubmit={handleSubmit}
+                onCustomBlank={handleAddCustomBlank}
+                onRemoveBlank={handleRemoveBlank}
+              />
+            )
+          })}
+        </article>
+      )}
 
       {hasIncorrect ? (
         <Button

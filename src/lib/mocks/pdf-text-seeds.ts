@@ -1,3 +1,4 @@
+import { normalizePdfPages } from "@/lib/pdf/normalize-pdf-pages"
 import type { Material } from "@/types/material"
 import type { MaterialPdfPage, MaterialPdfText } from "@/types/pdf-text"
 
@@ -60,33 +61,18 @@ const genericPages = (material: Material): MaterialPdfPage[] => [
     text:
       "원인과 결과 관계는 화살표(→)로 정리하면 기억하기 쉽다. 공식은 적용 조건과 함께 외워야 실수를 줄일 수 있다. 헷갈리는 표현은 한 줄 정의로 구분해 두는 것이 좋다.",
   },
-  {
-    pageNumber: 3,
-    text:
-      "빈칸 암기는 간격 회독(spaced repetition)이 효과적이다. 오답은 틀린 항목만 다시 풀며 약점을 보완한다. PDF 원문과 대조하며 출처 페이지를 확인하는 습관이 중요하다.",
-  },
 ]
 
 export const getSeedPdfText = (material: Material): MaterialPdfText | null => {
-  if (isTreeMaterial(material.name)) {
-    return {
-      materialId: material.id,
-      extractedAt: material.uploadedAt,
-      pages: treePages,
-    }
-  }
-
-  if (isOsMaterial(material.name)) {
-    return {
-      materialId: material.id,
-      extractedAt: material.uploadedAt,
-      pages: osPages,
-    }
-  }
+  const rawPages = isTreeMaterial(material.name)
+    ? treePages
+    : isOsMaterial(material.name)
+      ? osPages
+      : genericPages(material)
 
   return {
     materialId: material.id,
     extractedAt: material.uploadedAt,
-    pages: genericPages(material),
+    pages: normalizePdfPages(rawPages, material.pageCount),
   }
 }

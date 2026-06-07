@@ -1,5 +1,6 @@
 export type HighlightColor = "yellow" | "green" | "blue" | "pink"
 export type PenColor = "red" | "blue" | "green" | "purple"
+export type UnderlineStyle = "solid" | "wavy" | "double" | "dotted"
 
 const HIGHLIGHT_STYLE: Record<HighlightColor, string> = {
   yellow: "background-color: rgba(253, 224, 71, 0.55); border-radius: 2px;",
@@ -20,6 +21,53 @@ const PEN_STYLE_DARK: Record<PenColor, string> = {
   blue: "#93c5fd",
   green: "#86efac",
   purple: "#d8b4fe",
+}
+
+const UNDERLINE_DECORATION: Record<UnderlineStyle, string> = {
+  solid: "solid",
+  wavy: "wavy",
+  double: "double",
+  dotted: "dotted",
+}
+
+const getPenColor = (editable: HTMLElement, color: PenColor) =>
+  editable.classList.contains("ex-editable-dark")
+    ? PEN_STYLE_DARK[color]
+    : PEN_STYLE[color]
+
+const isCustomFormatSpan = (node: Node): node is HTMLSpanElement =>
+  node instanceof HTMLSpanElement &&
+  (node.hasAttribute("data-ex-highlight") ||
+    node.hasAttribute("data-ex-pen") ||
+    node.hasAttribute("data-ex-underline"))
+
+const unwrapCustomSpansInRange = (range: Range) => {
+  const spans: HTMLSpanElement[] = []
+  const walker = document.createTreeWalker(
+    range.commonAncestorContainer,
+    NodeFilter.SHOW_ELEMENT,
+    {
+      acceptNode: (node) =>
+        isCustomFormatSpan(node) && range.intersectsNode(node)
+          ? NodeFilter.FILTER_ACCEPT
+          : NodeFilter.FILTER_SKIP,
+    }
+  )
+
+  let current = walker.nextNode()
+  while (current) {
+    if (isCustomFormatSpan(current)) spans.push(current)
+    current = walker.nextNode()
+  }
+
+  spans.forEach((span) => {
+    const parent = span.parentNode
+    if (!parent) return
+    while (span.firstChild) {
+      parent.insertBefore(span.firstChild, span)
+    }
+    parent.removeChild(span)
+  })
 }
 
 type SavedSelection = {
@@ -144,12 +192,26 @@ export const applyPenColor = (color: PenColor) => {
   const ctx = getFormatContext()
   if (!ctx) return
 
-  const isDark = ctx.editable.classList.contains("ex-editable-dark")
-  const penColor = isDark ? PEN_STYLE_DARK[color] : PEN_STYLE[color]
+  const penColor = getPenColor(ctx.editable, color)
 
   const wrapper = document.createElement("span")
   wrapper.setAttribute("data-ex-pen", color)
   wrapper.style.color = penColor
+
+  applyWrapper(ctx, wrapper)
+}
+
+export const applyPenUnderline = (color: PenColor, style: UnderlineStyle) => {
+  const ctx = getFormatContext()
+  if (!ctx) return
+
+  const penColor = getPenColor(ctx.editable, color)
+  const decorationStyle = UNDERLINE_DECORATION[style]
+
+  const wrapper = document.createElement("span")
+  wrapper.setAttribute("data-ex-pen", color)
+  wrapper.setAttribute("data-ex-underline", style)
+  wrapper.style.cssText = `text-decoration-line: underline; text-decoration-color: ${penColor}; text-decoration-style: ${decorationStyle}; text-underline-offset: 2px;`
 
   applyWrapper(ctx, wrapper)
 }
@@ -159,6 +221,7 @@ export const removeFormatting = () => {
   if (!ctx) return
   restoreSelectionToWindow(ctx)
   document.execCommand("removeFormat")
+  unwrapCustomSpansInRange(ctx.range)
   notifyEditableChange(ctx.editable)
 }
 

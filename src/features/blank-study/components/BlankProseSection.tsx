@@ -1,12 +1,12 @@
 "use client"
 
-import { Lightbulb } from "lucide-react"
+import { Lightbulb, X } from "lucide-react"
 import { Fragment, useState } from "react"
 
 import { BlankSelectableText } from "@/features/blank-study/components/BlankSelectableText"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
-import type { CustomBlankTarget } from "@/lib/blank-study/add-custom-blank"
+import type { CustomFieldBlankTarget } from "@/lib/blank-study/add-custom-blank"
 import type { BlankItem } from "@/types/blank-study"
 
 type BlankInlineBlankProps = {
@@ -16,7 +16,8 @@ type BlankInlineBlankProps = {
   customBlankMode: boolean
   onAnswerChange: (value: string) => void
   onSubmit: () => void
-  onCustomBlank: (target: Omit<CustomBlankTarget, "itemId">) => void
+  onCustomBlank: (target: Omit<CustomFieldBlankTarget, "itemId">) => void
+  onRemoveBlank?: (itemId: string) => void
 }
 
 export const BlankInlineBlank = ({
@@ -27,8 +28,15 @@ export const BlankInlineBlank = ({
   onAnswerChange,
   onSubmit,
   onCustomBlank,
+  onRemoveBlank,
 }: BlankInlineBlankProps) => {
   const [hintVisible, setHintVisible] = useState(false)
+
+  if (item.isTextOnly) {
+    return (
+      <span>{item.sentenceBefore}</span>
+    )
+  }
 
   const handleToggleHint = () => {
     setHintVisible((prev) => !prev)
@@ -49,11 +57,11 @@ export const BlankInlineBlank = ({
         enabled={customBlankMode}
         onWordClick={handleBeforeWordClick}
       />
-      <span className="mx-0.5 inline-flex items-center gap-1 align-baseline">
+      <span className="relative mx-0.5 inline-flex items-baseline align-baseline">
         {item.status !== "pending" ? (
           <span
             className={cn(
-              "inline-block rounded px-1.5 py-0.5 text-body leading-normal font-medium",
+              "inline-block rounded px-1 py-0.5 text-body-sm leading-normal font-medium",
               item.status === "correct"
                 ? "bg-primary/15 text-primary ring-1 ring-primary/25"
                 : "bg-destructive/10 text-destructive ring-1 ring-destructive/20"
@@ -63,11 +71,11 @@ export const BlankInlineBlank = ({
             {item.status === "incorrect" ? item.answer : answer || item.answer}
           </span>
         ) : (
-          <>
+          <span className="inline-flex items-center gap-0.5 align-baseline">
             <Input
-              className="inline-flex h-7 w-auto min-w-[5rem] max-w-[9rem] px-1.5 py-0 text-sm leading-normal"
+              className="inline-flex h-6 w-auto min-w-[4rem] max-w-[8rem] px-1.5 py-0 text-body-sm leading-normal"
               style={{
-                width: `${Math.max(5, Math.min(9, item.answer.length + 2))}rem`,
+                width: `${Math.max(4, Math.min(8, item.answer.length + 1.5))}rem`,
               }}
               value={answer}
               onChange={(e) => onAnswerChange(e.target.value)}
@@ -78,33 +86,45 @@ export const BlankInlineBlank = ({
               }}
               aria-label={`빈칸 ${blankIndex + 1} 답 입력`}
             />
-            <button
-              type="button"
-              className={cn(
-                "inline-flex size-7 shrink-0 items-center justify-center rounded-full border transition-colors",
-                hintVisible
-                  ? "border-amber-300 bg-amber-100 text-amber-700 shadow-sm"
-                  : "border-amber-200/90 bg-amber-50 text-amber-600 hover:border-amber-300 hover:bg-amber-100 hover:text-amber-700"
-              )}
-              aria-label={`빈칸 ${blankIndex + 1} 힌트`}
-              aria-pressed={hintVisible}
-              onClick={handleToggleHint}
-            >
-              <Lightbulb className="size-4 fill-current" strokeWidth={2} />
-            </button>
-          </>
+            <span className="inline-flex shrink-0 items-center gap-px align-middle">
+              <button
+                type="button"
+                className={cn(
+                  "inline-flex size-5 items-center justify-center rounded transition-colors",
+                  hintVisible
+                    ? "bg-amber-100 text-amber-700"
+                    : "text-amber-600/80 hover:bg-amber-50 hover:text-amber-700"
+                )}
+                aria-label={`빈칸 ${blankIndex + 1} 힌트`}
+                aria-pressed={hintVisible}
+                title="힌트"
+                onClick={handleToggleHint}
+              >
+                <Lightbulb className="size-3 fill-current" strokeWidth={2} />
+              </button>
+              {onRemoveBlank ? (
+                <button
+                  type="button"
+                  className="inline-flex size-5 items-center justify-center rounded text-muted-foreground/70 transition-colors hover:bg-destructive/10 hover:text-destructive"
+                  aria-label={`빈칸 ${blankIndex + 1} 삭제`}
+                  title="빈칸 삭제"
+                  onClick={() => onRemoveBlank(item.id)}
+                >
+                  <X className="size-3" strokeWidth={2.5} />
+                </button>
+              ) : null}
+            </span>
+            {hintVisible ? (
+              <span
+                className="absolute top-full left-0 z-20 mt-1 max-w-[14rem] rounded-md border border-amber-200/90 bg-amber-50 px-2 py-1 text-micro leading-snug text-amber-950 shadow-sm"
+                role="tooltip"
+              >
+                {item.hint}
+              </span>
+            ) : null}
+          </span>
         )}
       </span>
-
-      {hintVisible && item.status === "pending" ? (
-        <span
-          className="my-1 flex w-full items-center gap-1.5 rounded border border-amber-200/90 bg-amber-50 px-2 py-1 text-xs leading-tight text-amber-950"
-          role="note"
-        >
-          <Lightbulb className="size-3 shrink-0 text-amber-600" strokeWidth={2} />
-          <span>{item.hint}</span>
-        </span>
-      ) : null}
 
       <BlankSelectableText
         text={item.sentenceAfter}
@@ -124,7 +144,8 @@ type BlankProseSectionProps = {
   customBlankMode: boolean
   onAnswerChange: (itemId: string, value: string) => void
   onSubmit: (itemId: string) => void
-  onCustomBlank: (target: CustomBlankTarget) => void
+  onCustomBlank: (target: CustomFieldBlankTarget) => void
+  onRemoveBlank?: (itemId: string) => void
 }
 
 export const BlankProseSection = ({
@@ -137,6 +158,7 @@ export const BlankProseSection = ({
   onAnswerChange,
   onSubmit,
   onCustomBlank,
+  onRemoveBlank,
 }: BlankProseSectionProps) => (
   <section className="space-y-2">
     {sectionLabel ? (
@@ -155,11 +177,16 @@ export const BlankProseSection = ({
     ) : null}
 
     <div className="text-body leading-[1.9] text-foreground/90">
-      {items.map((item, index) => (
+      {items.map((item, index) => {
+        const blankIndex =
+          startIndex +
+          items.slice(0, index).filter((entry) => !entry.isTextOnly).length
+
+        return (
         <Fragment key={item.id}>
           <BlankInlineBlank
             item={item}
-            blankIndex={startIndex + index}
+            blankIndex={blankIndex}
             answer={answers[item.id] ?? ""}
             customBlankMode={customBlankMode}
             onAnswerChange={(value) => onAnswerChange(item.id, value)}
@@ -167,10 +194,12 @@ export const BlankProseSection = ({
             onCustomBlank={(target) =>
               onCustomBlank({ ...target, itemId: item.id })
             }
+            onRemoveBlank={onRemoveBlank}
           />
           {index < items.length - 1 ? " " : null}
         </Fragment>
-      ))}
+        )
+      })}
     </div>
   </section>
 )

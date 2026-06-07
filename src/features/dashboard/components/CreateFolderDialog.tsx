@@ -18,6 +18,7 @@ type CreateFolderDialogProps = {
   onOpenChange: (open: boolean) => void
   onCreate: (name: string, color: FolderColorId) => Promise<void>
   isSubmitting?: boolean
+  parentFolderName?: string
 }
 
 export const CreateFolderDialog = ({
@@ -25,6 +26,7 @@ export const CreateFolderDialog = ({
   onOpenChange,
   onCreate,
   isSubmitting = false,
+  parentFolderName,
 }: CreateFolderDialogProps) => {
   const [mounted, setMounted] = useState(false)
   const [name, setName] = useState("")
@@ -106,7 +108,9 @@ export const CreateFolderDialog = ({
             id="create-folder-title"
             className="text-lg font-semibold text-foreground"
           >
-            새 폴더
+            {parentFolderName
+              ? `${parentFolderName} 안에 새 폴더`
+              : "새 폴더"}
           </h2>
           <button
             type="button"
