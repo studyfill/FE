@@ -1,7 +1,5 @@
 export const ROUTES = {
   home: "/",
-  login: "/login",
-  signup: "/signup",
   dashboard: "/dashboard",
   dashboardFolder: (folderId: string) => `/dashboard/${folderId}`,
   /** @deprecated Use ROUTES.dashboard — redirects for compatibility */

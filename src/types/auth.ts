@@ -7,4 +7,5 @@ export type User = {
 export type Session = {
   userId: string
   email: string
+  isGuest?: boolean
 }
