@@ -5,14 +5,14 @@ export type ProseToken = {
   end: number
 }
 
-const WORD_PATTERN =
-  /[A-Za-z0-9][A-Za-z0-9()\-+]*|[가-힣]{2,}/g
+export const PROSE_WORD_PATTERN =
+  /[A-Za-z0-9][A-Za-z0-9()\-+⌊⌋₂]*|[가-힣]+/g
 
 export const tokenizeProse = (text: string): ProseToken[] => {
   const tokens: ProseToken[] = []
   let lastIndex = 0
 
-  for (const match of text.matchAll(WORD_PATTERN)) {
+  for (const match of text.matchAll(PROSE_WORD_PATTERN)) {
     const start = match.index ?? 0
     const end = start + match[0].length
 

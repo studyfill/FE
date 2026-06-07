@@ -34,7 +34,10 @@ export const BlankSelectableText = ({
               "decoration-primary/40 decoration-2 underline-offset-[3px]",
               "hover:bg-primary/10 hover:underline hover:decoration-primary"
             )}
-            onClick={() => onWordClick(token.start, token.end)}
+            onClick={(event) => {
+              event.stopPropagation()
+              onWordClick(token.start, token.end)
+            }}
             aria-label={`"${token.text}" 빈칸으로 만들기`}
           >
             {token.text}

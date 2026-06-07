@@ -9,10 +9,36 @@ type BlankTarget = {
   after: string
 }
 
-type SentenceCandidate = {
+type SentenceSpan = {
+  start: number
+  end: number
   text: string
+}
+
+export type PdfBlankSeed = {
+  sourcePage: number
+  sentenceBefore: string
+  sentenceAfter: string
+  answer: string
+  hint: string
+}
+
+export type PdfProseDraftNode =
+  | { type: "text"; content: string }
+  | { type: "blank"; seed: PdfBlankSeed }
+
+export type PdfProseDraftPage = {
   pageNumber: number
-  blank: BlankTarget
+  nodes: PdfProseDraftNode[]
+}
+
+type BlankCandidate = {
+  key: string
+  pageNumber: number
+  answerStart: number
+  answerEnd: number
+  answer: string
+  hint: string
 }
 
 const STOPWORDS = new Set([
@@ -35,11 +61,7 @@ const STOPWORDS = new Set([
   "an",
 ])
 
-const splitSentences = (text: string): string[] =>
-  text
-    .split(/(?<=[.!?。])\s+/)
-    .map((sentence) => sentence.trim())
-    .filter((sentence) => sentence.length >= 12)
+const MIN_SENTENCE_LENGTH = 12
 
 const scoreToken = (token: string): number => {
   let score = token.length
@@ -81,6 +103,31 @@ const pickBlankTarget = (sentence: string): BlankTarget | null => {
   }
 }
 
+const findSentenceSpans = (fullText: string): SentenceSpan[] => {
+  const trimmed = fullText.trim()
+  if (!trimmed) return []
+
+  const spans: SentenceSpan[] = []
+  const regex = /[^.!?。]+(?:[.!?。])?/g
+  let match: RegExpExecArray | null
+
+  while ((match = regex.exec(fullText)) !== null) {
+    const raw = match[0]
+    const text = raw.trim()
+    if (!text) continue
+
+    const start = match.index + raw.indexOf(text)
+    spans.push({ start, end: start + text.length, text })
+  }
+
+  if (spans.length === 0) {
+    const start = fullText.indexOf(trimmed)
+    spans.push({ start, end: start + trimmed.length, text: trimmed })
+  }
+
+  return spans
+}
+
 const filterPagesByRange = (
   pages: MaterialPdfPage[],
   range: ExplanationRange,
@@ -95,42 +142,79 @@ const filterPagesByRange = (
   return pages.slice(0, Math.max(1, Math.ceil(pages.length * 0.6)))
 }
 
-const pickSpread = (
-  candidates: SentenceCandidate[],
-  count: number
-): SentenceCandidate[] => {
-  if (candidates.length <= count) return candidates
+const selectBlankKeys = (
+  candidatesByPage: Map<number, BlankCandidate[]>,
+  targetCount: number
+): Set<string> => {
+  const selected = new Set<string>()
+  const pageNumbers = [...candidatesByPage.keys()].sort((a, b) => a - b)
 
-  const byPage = new Map<number, SentenceCandidate[]>()
-  candidates.forEach((candidate) => {
-    const list = byPage.get(candidate.pageNumber) ?? []
-    list.push(candidate)
-    byPage.set(candidate.pageNumber, list)
-  })
+  let remaining = targetCount
 
-  const pages = [...byPage.keys()].sort((a, b) => a - b)
-  const selected: SentenceCandidate[] = []
-  let pageIndex = 0
+  for (let pageIdx = 0; pageIdx < pageNumbers.length; pageIdx += 1) {
+    if (remaining <= 0) break
 
-  while (selected.length < count) {
-    const page = pages[pageIndex % pages.length]
-    const pool = byPage.get(page)
-    if (pool?.length) {
-      selected.push(pool.shift()!)
+    const pageNumber = pageNumbers[pageIdx]
+    const candidates = candidatesByPage.get(pageNumber) ?? []
+    if (candidates.length === 0) continue
+
+    const pagesLeft = pageNumbers.length - pageIdx
+    const take = Math.min(
+      remaining,
+      Math.max(1, Math.ceil(remaining / pagesLeft)),
+      candidates.length
+    )
+
+    for (let i = 0; i < take; i += 1) {
+      selected.add(candidates[i].key)
+      remaining -= 1
     }
-    pageIndex += 1
-    if (pageIndex > pages.length * count * 2) break
   }
 
-  return selected.slice(0, count)
+  return selected
 }
 
-export type PdfBlankSeed = {
-  sourcePage: number
-  sentenceBefore: string
-  sentenceAfter: string
-  answer: string
-  hint: string
+const buildPageNodes = (
+  fullText: string,
+  blanks: BlankCandidate[]
+): PdfProseDraftNode[] => {
+  if (blanks.length === 0) {
+    return fullText ? [{ type: "text", content: fullText }] : []
+  }
+
+  const sorted = [...blanks].sort((a, b) => a.answerStart - b.answerStart)
+  const nodes: PdfProseDraftNode[] = []
+  let cursor = 0
+
+  for (const blank of sorted) {
+    if (blank.answerStart < cursor) continue
+
+    if (blank.answerStart > cursor) {
+      nodes.push({
+        type: "text",
+        content: fullText.slice(cursor, blank.answerStart),
+      })
+    }
+
+    nodes.push({
+      type: "blank",
+      seed: {
+        sourcePage: blank.pageNumber,
+        sentenceBefore: "",
+        sentenceAfter: "",
+        answer: blank.answer,
+        hint: blank.hint,
+      },
+    })
+
+    cursor = blank.answerEnd
+  }
+
+  if (cursor < fullText.length) {
+    nodes.push({ type: "text", content: fullText.slice(cursor) })
+  }
+
+  return nodes
 }
 
 export const buildBlanksFromPdfText = (
@@ -138,26 +222,49 @@ export const buildBlanksFromPdfText = (
   range: ExplanationRange,
   currentPage: number,
   density: BlankDensity
-): PdfBlankSeed[] => {
-  const filteredPages = filterPagesByRange(pages, range, currentPage)
-  const candidates: SentenceCandidate[] = []
+): PdfProseDraftPage[] => {
+  const filteredPages = filterPagesByRange(pages, range, currentPage).sort(
+    (a, b) => a.pageNumber - b.pageNumber
+  )
+
+  const candidatesByPage = new Map<number, BlankCandidate[]>()
 
   filteredPages.forEach((page) => {
-    splitSentences(page.text).forEach((text) => {
-      const blank = pickBlankTarget(text)
+    const pageCandidates: BlankCandidate[] = []
+
+    findSentenceSpans(page.text).forEach((span, index) => {
+      if (span.text.length < MIN_SENTENCE_LENGTH) return
+
+      const blank = pickBlankTarget(span.text)
       if (!blank) return
-      candidates.push({ text, pageNumber: page.pageNumber, blank })
+
+      pageCandidates.push({
+        key: `${page.pageNumber}:${index}`,
+        pageNumber: page.pageNumber,
+        answerStart: span.start + blank.before.length,
+        answerEnd: span.start + blank.before.length + blank.answer.length,
+        answer: blank.answer,
+        hint: `PDF p.${page.pageNumber} 원문: "${span.text}"`,
+      })
     })
+
+    if (pageCandidates.length > 0) {
+      candidatesByPage.set(page.pageNumber, pageCandidates)
+    }
   })
 
   const targetCount = BLANK_DENSITY_COUNTS[density]
-  const selected = pickSpread(candidates, targetCount)
+  const selectedKeys = selectBlankKeys(candidatesByPage, targetCount)
 
-  return selected.map(({ pageNumber, blank }) => ({
-    sourcePage: pageNumber,
-    sentenceBefore: blank.before,
-    sentenceAfter: blank.after,
-    answer: blank.answer,
-    hint: `PDF p.${pageNumber} 원문: "${blank.before}${blank.answer}${blank.after}"`,
-  }))
+  return filteredPages.map((page) => {
+    const pageBlanks =
+      candidatesByPage
+        .get(page.pageNumber)
+        ?.filter((candidate) => selectedKeys.has(candidate.key)) ?? []
+
+    return {
+      pageNumber: page.pageNumber,
+      nodes: buildPageNodes(page.text, pageBlanks),
+    }
+  })
 }

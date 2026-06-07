@@ -5,6 +5,7 @@ import type { MaterialPdfPage } from "@/types/pdf-text"
 import type {
   BlankGenerateOptions,
   BlankItem,
+  BlankPageProse,
   BlankStudySession,
 } from "@/types/blank-study"
 import { BLANK_DENSITY_COUNTS } from "@/types/blank-study"
@@ -122,30 +123,51 @@ export const buildMockBlankSession = (
   explanation: LectureExplanation | null,
   pdfPages?: MaterialPdfPage[]
 ): Omit<BlankStudySession, "materialId" | "generatedAt"> => {
-  let seeds: BlankSeed[]
-
   if (options.source === "explanation") {
     if (!explanation) {
       throw new Error(
         "강의 노트가 없습니다. 쉽게 설명 탭에서 먼저 생성해 주세요."
       )
     }
-    seeds = explanationToSeeds(explanation)
-    seeds = sliceByDensity(seeds, options.density)
-  } else {
-    if (!pdfPages?.length) {
-      throw new Error("PDF 원문 텍스트를 불러오지 못했습니다.")
-    }
-
-    seeds = buildBlanksFromPdfText(
-      pdfPages,
-      options.range,
-      material.currentPage,
-      options.density
-    )
+    const seeds = sliceByDensity(explanationToSeeds(explanation), options.density)
+    const items = seeds.map((seed, index) => toItem(material.id, seed, index))
+    return { options, items }
   }
 
-  const items = seeds.map((seed, index) => toItem(material.id, seed, index))
+  if (!pdfPages?.length) {
+    throw new Error("PDF 원문 텍스트를 불러오지 못했습니다.")
+  }
 
-  return { options, items }
+  const proseDrafts = buildBlanksFromPdfText(
+    pdfPages,
+    options.range,
+    material.currentPage,
+    options.density
+  )
+
+  const items: BlankItem[] = []
+  const pdfProsePages: BlankPageProse[] = []
+  let blankIndex = 0
+
+  proseDrafts.forEach((page) => {
+    const nodes: BlankPageProse["nodes"] = []
+
+    page.nodes.forEach((node) => {
+      if (node.type === "text") {
+        nodes.push(node)
+        return
+      }
+
+      const item = toItem(material.id, node.seed, blankIndex)
+      blankIndex += 1
+      items.push(item)
+      nodes.push({ type: "blank", itemId: item.id })
+    })
+
+    if (nodes.length > 0) {
+      pdfProsePages.push({ pageNumber: page.pageNumber, nodes })
+    }
+  })
+
+  return { options, items, pdfPages: pdfProsePages }
 }

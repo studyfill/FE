@@ -22,9 +22,7 @@ export const extractPdfTextFromBytes = async (
       .replace(/\s+/g, " ")
       .trim()
 
-    if (text) {
-      pages.push({ pageNumber, text })
-    }
+    pages.push({ pageNumber, text })
   }
 
   await loadingTask.destroy()

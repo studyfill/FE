@@ -62,7 +62,7 @@ const SectionHeader = ({
 const EditHint = () => (
   <p className="flex items-center gap-1.5 rounded-lg border border-dashed border-border/80 bg-muted/20 px-3 py-2 text-xs text-muted-foreground">
     <PencilLine className="size-3.5 shrink-0" />
-    텍스트를 드래그해 선택하면 굵게·기울임·하이라이트·색깔펜을 적용할 수 있어요.
+    텍스트를 드래그해 선택하면 굵게·기울임·하이라이트·색깔펜·밑줄을 적용할 수 있어요.
   </p>
 )
 

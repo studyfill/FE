@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useDraggable } from "@dnd-kit/core"
-import { FileText, Folder } from "lucide-react"
+import { FileText } from "lucide-react"
 
 import { ROUTES } from "@/constants/routes"
 import {
@@ -12,7 +12,9 @@ import {
 import { getFolderName } from "@/lib/mocks/folders"
 import { formatRelativeTime } from "@/lib/utils/format-relative-time"
 import {
-  getFolderPreviewBackgroundClassNameForFolderId,
+  getFolderAccentBorderClassNameForFolderId,
+  getFolderSummaryThemeForColor,
+  getFolderColorById,
   getFolderTagClassNameForFolderId,
 } from "@/lib/utils/folder-theme"
 import { cn } from "@/lib/utils"
@@ -20,14 +22,20 @@ import type { Material } from "@/types/material"
 
 type MaterialListRowProps = {
   material: Material
+  hideFolderTag?: boolean
 }
 
-export const MaterialListRow = ({ material }: MaterialListRowProps) => {
+const LIBRARY_CHIP_CLASS =
+  "inline-flex h-5 max-w-full shrink-0 items-center gap-1 rounded-md px-1.5 text-micro font-medium leading-none"
+
+export const MaterialListRow = ({
+  material,
+  hideFolderTag = false,
+}: MaterialListRowProps) => {
   const folderName = getFolderName(material.folderId)
-  const previewBackground = getFolderPreviewBackgroundClassNameForFolderId(
-    material.folderId
-  )
   const folderTagClassName = getFolderTagClassNameForFolderId(material.folderId)
+  const folderColor = getFolderColorById(material.folderId)
+  const folderTheme = folderColor ? getFolderSummaryThemeForColor(folderColor) : null
   const canStudy = material.extractionStatus === "done"
   const title = material.name.replace(/\.pdf$/i, "")
 
@@ -44,39 +52,54 @@ export const MaterialListRow = ({ material }: MaterialListRowProps) => {
   const row = (
     <div
       className={cn(
-        "flex items-center gap-3 rounded-lg border border-border/80 bg-card px-3 py-2.5 transition-colors",
+        "flex items-center gap-3 rounded-lg border border-border/80 border-l-[3px] bg-card px-3 py-2 transition-colors",
+        getFolderAccentBorderClassNameForFolderId(material.folderId),
         canStudy && "hover:bg-muted/30 hover:shadow-sm"
       )}
     >
       <div
-        className={cn(
-          "flex size-11 shrink-0 items-center justify-center rounded-md border border-border/60",
-          previewBackground
-        )}
+        className="relative flex size-10 shrink-0 flex-col justify-center overflow-hidden rounded-md border border-border/55 bg-gradient-to-b from-slate-100 to-slate-200/60 px-1.5 pt-1.5 pb-1"
         aria-hidden
       >
-        <FileText className="size-4 text-foreground/45" />
+        <div className="relative flex flex-1 flex-col justify-center rounded-sm border border-border/40 bg-white px-1 py-1 shadow-sm">
+          <div className="space-y-0.5">
+            <div className="h-0.5 w-[70%] rounded-full bg-foreground/15" />
+            <div className="h-0.5 w-full rounded-full bg-foreground/10" />
+            <div className="h-0.5 w-[55%] rounded-full bg-foreground/8" />
+          </div>
+          <div className="pointer-events-none absolute top-0 right-0 size-1.5 bg-gradient-to-br from-slate-100 to-slate-300" />
+        </div>
       </div>
 
       <div className="min-w-0 flex-1">
-        <h3 className="truncate text-body font-semibold text-foreground">
+        <h3 className="truncate text-body-sm font-semibold text-foreground">
           {title}
         </h3>
-        <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-muted-foreground">
+        <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1">
           <span
-            className={cn(
-              "inline-flex items-center gap-1 font-medium",
-              folderTagClassName
-            )}
+            className={cn(LIBRARY_CHIP_CLASS, "bg-slate-100 text-slate-600")}
           >
-            <Folder className="size-3 shrink-0" aria-hidden />
-            {folderName}
+            <FileText className="size-3 shrink-0" strokeWidth={2.25} />
+            PDF
           </span>
-          <span>
+          {!hideFolderTag && folderTheme ? (
+            <span
+              className={cn(
+                LIBRARY_CHIP_CLASS,
+                folderTheme.iconBg,
+                folderTagClassName
+              )}
+            >
+              <span className="truncate">{folderName}</span>
+            </span>
+          ) : null}
+          <span className="text-muted-foreground">
             {material.pageCount > 0 ? `${material.pageCount}p` : "추출 중"}
           </span>
           {material.pageCount > 0 ? (
-            <span>{formatRelativeTime(material.uploadedAt)}</span>
+            <span className="text-muted-foreground">
+              {formatRelativeTime(material.uploadedAt)}
+            </span>
           ) : null}
         </div>
       </div>

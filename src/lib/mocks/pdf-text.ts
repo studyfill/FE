@@ -1,3 +1,4 @@
+import { normalizePdfPages } from "@/lib/pdf/normalize-pdf-pages"
 import { extractPdfTextFromBytes } from "@/lib/pdf/extract-pdf-text"
 import { getPdfBlob } from "@/lib/storage/pdf-blob-store"
 import type { Material } from "@/types/material"
@@ -15,9 +16,13 @@ export const saveMaterialPdfText = (data: MaterialPdfText) => {
 export const getMaterialPdfText = (material: Material): MaterialPdfText | null => {
   const store = loadMockStore()
   const stored = store.pdfTexts[material.id]
-  if (stored?.pages.length) return stored
+  const raw = stored?.pages.length ? stored : getSeedPdfText(material)
+  if (!raw?.pages.length) return null
 
-  return getSeedPdfText(material)
+  return {
+    ...raw,
+    pages: normalizePdfPages(raw.pages, material.pageCount),
+  }
 }
 
 export const ensureMaterialPdfText = async (
@@ -36,7 +41,10 @@ export const ensureMaterialPdfText = async (
     throw new Error("PDF 원문 텍스트를 찾을 수 없습니다.")
   }
 
-  const pages = await extractPdfTextFromBytes(blob)
+  const pages = normalizePdfPages(
+    await extractPdfTextFromBytes(blob),
+    material.pageCount
+  )
   if (!pages.length) {
     const seed = getSeedPdfText(material)
     if (seed) {

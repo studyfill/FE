@@ -34,6 +34,16 @@ export type BlankItem = {
   answer: string
   hint: string
   status: BlankItemStatus
+  isTextOnly?: boolean
+}
+
+export type BlankProseNode =
+  | { type: "text"; content: string }
+  | { type: "blank"; itemId: string }
+
+export type BlankPageProse = {
+  pageNumber: number
+  nodes: BlankProseNode[]
 }
 
 export type BlankStudySession = {
@@ -41,4 +51,5 @@ export type BlankStudySession = {
   generatedAt: string
   options: BlankGenerateOptions
   items: BlankItem[]
+  pdfPages?: BlankPageProse[]
 }

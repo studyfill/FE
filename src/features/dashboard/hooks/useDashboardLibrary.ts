@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 
 import { ROUTES } from "@/constants/routes"
 import type { FolderColorId } from "@/constants/folder-colors"
-import { createFolder, getFolder, listFolderTree, moveFolder } from "@/lib/mocks/folders"
+import { createFolder, getFolder, listChildFolders, listFolderTree, moveFolder } from "@/lib/mocks/folders"
 import {
   listRecentFolders,
   recordRecentFolder,
@@ -21,6 +21,9 @@ export const useDashboardLibrary = (folderId: string | null) => {
   const [searchQuery, setSearchQuery] = useState("")
   const [sort, setSort] = useState<MaterialSort>("date")
   const [viewLayout, setViewLayout] = useState<MaterialViewLayout>("grid")
+  const [childFolders, setChildFolders] = useState<
+    ReturnType<typeof listChildFolders>
+  >([])
   const [materials, setMaterials] = useState<ReturnType<typeof listMaterials>>([])
   const [folderTree, setFolderTree] = useState<ReturnType<typeof listFolderTree>>(
     []
@@ -58,6 +61,7 @@ export const useDashboardLibrary = (folderId: string | null) => {
   const refresh = useCallback(() => {
     setFolderTree(listFolderTree())
     setRecentFolders(listRecentFolders())
+    setChildFolders(searchQuery.trim() ? [] : listChildFolders(folderId))
     setMaterials(
       listMaterials({
         folderId: searchQuery.trim() ? null : folderId,
@@ -83,14 +87,22 @@ export const useDashboardLibrary = (folderId: string | null) => {
     return () => window.clearTimeout(timer)
   }, [moveError])
 
-  const handleCreateFolder = async (name: string, color: FolderColorId) => {
+  const handleCreateFolder = async (
+    name: string,
+    color: FolderColorId,
+    parentId: string | null = null
+  ) => {
     setIsCreatingFolder(true)
     setCreateFolderError(null)
     try {
-      const folder = createFolder(name, color, null)
+      const folder = createFolder(name, color, parentId)
       recordRecentFolder(folder.id)
       refresh()
-      router.push(ROUTES.dashboardFolder(folder.id))
+      if (parentId) {
+        recordRecentFolder(parentId)
+      } else {
+        router.push(ROUTES.dashboardFolder(folder.id))
+      }
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "폴더를 만들지 못했습니다."
@@ -148,9 +160,11 @@ export const useDashboardLibrary = (folderId: string | null) => {
     viewLayout,
     setViewLayout,
     materials,
+    childFolders,
     folderTree,
     recentFolders,
     totalCount: materials.length,
+    folderCount: childFolders.length,
     isHome: folderId === null,
     folderLabel,
     folderPath,

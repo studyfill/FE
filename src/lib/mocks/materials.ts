@@ -2,9 +2,10 @@ import type { ListMaterialsOptions, Material } from "@/types/material"
 
 import { PDF_UPLOAD_MAX_SIZE_MB } from "@/constants/upload"
 import { savePdfBlob } from "@/lib/storage/pdf-blob-store"
+import { normalizePdfPages } from "@/lib/pdf/normalize-pdf-pages"
 import { extractPdfTextFromBytes } from "@/lib/pdf/extract-pdf-text"
 import { DEFAULT_UPLOAD_FOLDER_ID } from "./folder-ids"
-import { getFolderName, getFolderScopeIds } from "./folders"
+import { getFolderName } from "./folders"
 import { loadMockStore, saveMockStore } from "./mock-store"
 import { saveMaterialPdfText } from "./pdf-text"
 import { getSeedPdfText } from "./pdf-text-seeds"
@@ -38,13 +39,8 @@ export const listMaterials = (options: ListMaterialsOptions = {}): Material[] =>
   const q = searchQuery.trim().toLowerCase()
   if (q) {
     items = items.filter((m) => m.name.toLowerCase().includes(q))
-  } else {
-    const scope = getFolderScopeIds(folderId, store.folders)
-    if (scope) {
-      items = items.filter(
-        (m) => m.folderId !== null && scope.includes(m.folderId)
-      )
-    }
+  } else if (folderId !== null && folderId !== undefined) {
+    items = items.filter((m) => m.folderId === folderId)
   }
 
   if (sort === "date") {
@@ -113,7 +109,10 @@ export const uploadMaterial = async (
   await new Promise((resolve) => setTimeout(resolve, 1500))
 
   try {
-    const pages = await extractPdfTextFromBytes(pdfBytes)
+    const pages = normalizePdfPages(
+      await extractPdfTextFromBytes(pdfBytes),
+      safePageCount
+    )
     if (pages.length) {
       saveMaterialPdfText({
         materialId: material.id,

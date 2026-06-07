@@ -4,8 +4,19 @@ import type {
   BlankStudySession,
 } from "@/types/blank-study"
 
-import { buildBlanksFromPdfText } from "@/lib/blank-study/build-blanks-from-pdf-text"
-import { applyCustomBlank, type CustomBlankTarget } from "@/lib/blank-study/add-custom-blank"
+import { normalizePdfPages } from "@/lib/pdf/normalize-pdf-pages"
+import {
+  applyCustomBlank,
+  applyCustomBlankFromTextNode,
+  insertBlankNodeIntoPdfPages,
+  isCustomTextBlankTarget,
+  type CustomBlankTarget,
+} from "@/lib/blank-study/add-custom-blank"
+import {
+  mergeBlankText,
+  removeBlankFromPdfPages,
+  replaceBlankWithTextItem,
+} from "@/lib/blank-study/remove-custom-blank"
 import type { MaterialPdfPage } from "@/types/pdf-text"
 
 import { buildMockBlankSession } from "./blank-study-content"
@@ -68,7 +79,7 @@ export const generateBlankSession = async (
   let pdfPages: MaterialPdfPage[] | undefined
   if (options.source === "pdf") {
     const pdfText = await ensureMaterialPdfText(material)
-    pdfPages = pdfText.pages
+    pdfPages = normalizePdfPages(pdfText.pages, material.pageCount)
   }
 
   const built = buildMockBlankSession(
@@ -104,7 +115,77 @@ export const addCustomBlankItem = (
   const session = store.blankSessions[materialId]
   if (!session) return null
 
-  session.items = applyCustomBlank(session.items, materialId, target)
+  if (isCustomTextBlankTarget(target)) {
+    if (!session.pdfPages) return null
+
+    const textResult = applyCustomBlankFromTextNode(
+      session.pdfPages,
+      session.items,
+      materialId,
+      target
+    )
+    if (!textResult) return null
+
+    session.pdfPages = textResult.pdfPages
+    session.items = textResult.items
+  } else {
+    const fieldResult = applyCustomBlank(session.items, materialId, target)
+    if (!fieldResult) return null
+
+    session.items = fieldResult.items
+    if (session.pdfPages) {
+      session.pdfPages = insertBlankNodeIntoPdfPages(
+        session.pdfPages,
+        target.itemId,
+        fieldResult.newBlankItemId,
+        fieldResult.field
+      )
+    }
+  }
+
+  store.blankSessions[materialId] = session
+  saveMockStore(store)
+  return session
+}
+
+export const removeBlankItem = (
+  materialId: string,
+  itemId: string
+): BlankStudySession | null => {
+  const store = loadMockStore()
+  const session = store.blankSessions[materialId]
+  if (!session) return null
+
+  const item = session.items.find((entry) => entry.id === itemId)
+  if (!item || item.isTextOnly) return session
+
+  const mergedText = mergeBlankText(item)
+  const remainingBlanks = session.items.filter(
+    (entry) => !entry.isTextOnly && entry.id !== itemId
+  )
+
+  if (remainingBlanks.length === 0) {
+    delete store.blankSessions[materialId]
+    saveMockStore(store)
+    return null
+  }
+
+  if (session.pdfPages) {
+    session.pdfPages = removeBlankFromPdfPages(
+      session.pdfPages,
+      itemId,
+      mergedText
+    )
+    session.items = session.items.filter((entry) => entry.id !== itemId)
+  } else {
+    session.items = replaceBlankWithTextItem(
+      session.items,
+      itemId,
+      mergedText,
+      materialId
+    )
+  }
+
   store.blankSessions[materialId] = session
   saveMockStore(store)
   return session

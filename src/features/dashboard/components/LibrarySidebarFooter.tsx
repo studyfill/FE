@@ -1,12 +1,15 @@
 "use client"
 
-import { Settings } from "lucide-react"
+import { LogOut, Settings } from "lucide-react"
+import { useEffect, useRef, useState } from "react"
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { GUEST_DISPLAY_NAME } from "@/constants/auth"
 import { Button } from "@/components/ui/button"
 import { Progress, ProgressIndicator, ProgressTrack } from "@/components/ui/progress"
 import { Separator } from "@/components/ui/separator"
+import { logoutAction } from "@/features/auth/actions"
+import { cn } from "@/lib/utils"
 
 const STORAGE_USED_GB = 3.2
 const STORAGE_TOTAL_GB = 5
@@ -35,6 +38,26 @@ export const LibrarySidebarFooter = ({
 }: LibrarySidebarFooterProps) => {
   const displayName = getDisplayName(userName)
   const initial = getAvatarInitial(displayName)
+  const [settingsOpen, setSettingsOpen] = useState(false)
+  const settingsRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!settingsOpen) return
+
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!settingsRef.current?.contains(event.target as Node)) {
+        setSettingsOpen(false)
+      }
+    }
+
+    document.addEventListener("pointerdown", handlePointerDown)
+    return () => document.removeEventListener("pointerdown", handlePointerDown)
+  }, [settingsOpen])
+
+  const handleLogout = () => {
+    setSettingsOpen(false)
+    void logoutAction()
+  }
 
   return (
     <div className="mt-auto space-y-3 border-t border-sidebar-border pt-3">
@@ -76,15 +99,39 @@ export const LibrarySidebarFooter = ({
             </button>
           </p>
         </div>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon-sm"
-          className="size-8 shrink-0 text-muted-foreground hover:text-foreground"
-          aria-label="설정"
-        >
-          <Settings className="size-icon-md" />
-        </Button>
+        <div ref={settingsRef} className="relative shrink-0">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            className="size-8 text-muted-foreground hover:text-foreground"
+            aria-label="설정"
+            aria-expanded={settingsOpen}
+            aria-haspopup="menu"
+            onClick={() => setSettingsOpen((open) => !open)}
+          >
+            <Settings className="size-icon-md" />
+          </Button>
+
+          {settingsOpen ? (
+            <div
+              role="menu"
+              className="absolute right-0 bottom-full z-50 mb-1 min-w-[9rem] rounded-lg border border-border bg-popover p-1 shadow-md"
+            >
+              <button
+                type="button"
+                role="menuitem"
+                className={cn(
+                  "flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-sm text-foreground transition-colors hover:bg-muted/60"
+                )}
+                onClick={handleLogout}
+              >
+                <LogOut className="size-4 shrink-0 text-muted-foreground" />
+                로그아웃
+              </button>
+            </div>
+          ) : null}
+        </div>
       </div>
     </div>
   )
