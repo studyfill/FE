@@ -1,0 +1,58 @@
+---
+description: Blank study inline active recall UX, generate options, and component map
+globs: src/features/blank-study/**, src/features/landing/components/mockups/LandingBlankStudyMock.tsx
+alwaysApply: false
+---
+
+# Blank Study
+
+> Shared study tab patterns: see `study-feature-tab.mdc`.
+
+Blank study is NOT flashcards and NOT per-item Card UI. Use workbook-style active recall with inline blank inputs in a continuous text flow:
+
+```txt
+N개 노드 트리의 간선 수는 ______ 이다. BST에서 왼쪽 자식은 현재 키보다 ______ 값을 가진다.
+```
+
+Do NOT render blanks as a numbered list (`1.` `2.` …). Group by section label if needed, then flow sentences in a single `<p>`.
+
+**On-demand**: blanks are generated only when the user clicks generate (not on upload).
+
+**Generate options** (`BlankGeneratePanel`):
+
+| Option | Values | Notes |
+|--------|--------|-------|
+| 출처 | `pdf` \| `explanation` | PDF 원문 vs already-generated 강의 노트 |
+| 범위 | `all` \| `chapter` \| `page` | **PDF 출처일 때만** show/apply |
+| 밀도 | `light` \| `normal` \| `dense` | mock item count |
+
+**Source rules**:
+
+- `pdf`: use stored PDF extracted text (`MaterialPdfText`) — punch blanks from original sentences (not handcrafted seeds)
+- `explanation`: extract from `LectureExplanation` (core concepts, exam highlights, etc.)
+- If source=`explanation` and no explanation exists → **block generate** + CTA link to 쉽게 설명 tab (no auto-fallback)
+
+**Result UI** (`BlankStudyResultView`): progress bar, continuous prose with inline blanks, hint/feedback, retry incorrect, **[저장]** to confirm hybrid edits — no Card wrapper, no numbered list.
+
+**Hint**: show on **hover/focus** (not click toggle). Sentence-style contextual hint.
+
+**Grading**: `normalizeAnswer` — trim, lowercase, strip special chars, exact match (case-insensitive).
+
+**Hybrid save**: AI generate → user click-to-blank edits → **[저장]** persists session (`saveBlankSession`).
+
+## Components
+
+- `BlankGeneratePanel` — generate options + empty/result shell
+- `BlankStudyResultView` — progress, prose, retry
+- `BlankProseSection` — inline blank flow in `<p>`
+- `BlankPdfProseView`, `BlankSelectableText` — PDF-source prose + custom blank mode
+
+## Key files
+
+- Hook: `src/features/blank-study/hooks/useBlankStudy.ts`
+- Types: `src/types/blank-study.ts`
+- Mocks: `src/lib/mocks/blank-study.ts`, `src/lib/mocks/blank-study-content.ts`
+- Logic: `src/lib/blank-study/` (build, tokenize, add/remove custom blank)
+- Route: `src/app/(app)/study/[id]/blank-study/page.tsx`
+
+For large blank-study work, use `.cursor/skills/blank-study/SKILL.md`.

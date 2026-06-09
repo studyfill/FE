@@ -2,10 +2,13 @@ import type { FolderColorId } from "@/constants/folder-colors"
 
 export type ExtractionStatus = "pending" | "processing" | "done" | "failed"
 
+export type MaterialFileType = "pdf" | "image"
+
 export type Material = {
   id: string
   name: string
   folderId: string | null
+  fileType: MaterialFileType
   uploadedAt: string
   extractionStatus: ExtractionStatus
   pageCount: number
@@ -27,7 +30,7 @@ export type FolderTreeNode = Folder & {
   materialCount: number
 }
 
-export type MaterialSort = "date" | "folder"
+export type MaterialSort = "recent" | "created" | "folder"
 
 export type MaterialViewLayout = "grid" | "list"
 

@@ -19,7 +19,7 @@ import type { MaterialSort, MaterialViewLayout } from "@/types/material"
 export const useDashboardLibrary = (folderId: string | null) => {
   const router = useRouter()
   const [searchQuery, setSearchQuery] = useState("")
-  const [sort, setSort] = useState<MaterialSort>("date")
+  const [sort, setSort] = useState<MaterialSort>("recent")
   const [viewLayout, setViewLayout] = useState<MaterialViewLayout>("grid")
   const [childFolders, setChildFolders] = useState<
     ReturnType<typeof listChildFolders>

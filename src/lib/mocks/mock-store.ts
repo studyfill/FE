@@ -9,6 +9,8 @@ import {
   type FolderColorId,
 } from "@/constants/folder-colors"
 
+import { getFileTypeFromName } from "@/lib/utils/upload-file"
+
 import { FOLDER_IDS } from "./folder-ids"
 
 export type MockStoreData = {
@@ -38,6 +40,7 @@ const seedMaterials: Material[] = [
     id: "mat-1",
     name: "자료구조 5주차 — 트리와 이진탐색트리.pdf",
     folderId: FOLDER_IDS.ds,
+    fileType: "pdf",
     uploadedAt: new Date(now - 7200000).toISOString(),
     extractionStatus: "done",
     pageCount: 48,
@@ -49,6 +52,7 @@ const seedMaterials: Material[] = [
     id: "mat-2",
     name: "해시 테이블과 충돌 해결 기법.pdf",
     folderId: FOLDER_IDS.ds,
+    fileType: "pdf",
     uploadedAt: new Date(now - 600000).toISOString(),
     extractionStatus: "done",
     pageCount: 32,
@@ -60,6 +64,7 @@ const seedMaterials: Material[] = [
     id: "mat-3",
     name: "운영체제 중간고사 범위.pdf",
     folderId: FOLDER_IDS.os,
+    fileType: "pdf",
     uploadedAt: new Date(now - 86400000 * 2).toISOString(),
     extractionStatus: "done",
     pageCount: 24,
@@ -71,6 +76,7 @@ const seedMaterials: Material[] = [
     id: "mat-4",
     name: "유기화학 — 작용기와 명명법.pdf",
     folderId: FOLDER_IDS.exam,
+    fileType: "pdf",
     uploadedAt: new Date(now - 86400000 * 5).toISOString(),
     extractionStatus: "done",
     pageCount: 67,
@@ -82,6 +88,7 @@ const seedMaterials: Material[] = [
     id: "mat-5",
     name: "헌법 — 기본권의 효력과 제한.pdf",
     folderId: FOLDER_IDS.exam,
+    fileType: "pdf",
     uploadedAt: new Date(now - 86400000).toISOString(),
     extractionStatus: "done",
     pageCount: 38,
@@ -93,6 +100,7 @@ const seedMaterials: Material[] = [
     id: "mat-6",
     name: "현대사회와 문화.pdf",
     folderId: FOLDER_IDS.liberal,
+    fileType: "pdf",
     uploadedAt: new Date(now - 86400000 * 3).toISOString(),
     extractionStatus: "done",
     pageCount: 42,
@@ -104,6 +112,7 @@ const seedMaterials: Material[] = [
     id: "mat-7",
     name: "자료구조 개념 정리.pdf",
     folderId: FOLDER_IDS.ds,
+    fileType: "pdf",
     uploadedAt: new Date(now - 86400000 * 4).toISOString(),
     extractionStatus: "done",
     pageCount: 18,
@@ -115,6 +124,7 @@ const seedMaterials: Material[] = [
     id: "mat-8",
     name: "프로세스와 스레드.pdf",
     folderId: FOLDER_IDS.os,
+    fileType: "pdf",
     uploadedAt: new Date(now - 86400000 * 6).toISOString(),
     extractionStatus: "done",
     pageCount: 30,
@@ -155,6 +165,13 @@ const LEGACY_FOLDER_COLORS: Record<string, FolderColorId> = {
   [FOLDER_IDS.exam]: "red",
 }
 
+const normalizeMaterials = (materials: Material[]): Material[] =>
+  materials.map((material) => ({
+    ...material,
+    fileType:
+      material.fileType ?? getFileTypeFromName(material.name) ?? "pdf",
+  }))
+
 const normalizeFolders = (folders: Folder[]): Folder[] =>
   folders.map((folder) => ({
     ...folder,
@@ -190,6 +207,9 @@ export const loadMockStore = (): MockStoreData => {
         ...parsed,
         folders: normalizeFolders(
           parsed.folders?.length ? parsed.folders : defaultStore.folders
+        ),
+        materials: normalizeMaterials(
+          parsed.materials?.length ? parsed.materials : defaultStore.materials
         ),
         explanationEdits: parsed.explanationEdits ?? {},
         pdfTexts: parsed.pdfTexts ?? {},

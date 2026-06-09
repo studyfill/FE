@@ -25,15 +25,28 @@ const GoogleIcon = () => (
   </svg>
 )
 
-export const GoogleSignInButton = () => {
+type GoogleSignInButtonProps = {
+  onClick?: () => void
+  disabled?: boolean
+  label?: string
+}
+
+export const GoogleSignInButton = ({
+  onClick,
+  disabled = false,
+  label = "Google로 계속하기",
+}: GoogleSignInButtonProps) => {
   return (
     <Button
       type="button"
       variant="outline"
       className="h-10 w-full gap-3 rounded-button border-border/60 bg-background shadow-sm transition-all hover:border-primary/20 hover:bg-landing-panel/40 hover:shadow-md"
+      onClick={onClick}
+      disabled={disabled}
+      aria-label={label}
     >
       <GoogleIcon />
-      <span className="text-body-sm font-medium">Google로 계속하기</span>
+      <span className="text-body-sm font-medium">{label}</span>
     </Button>
   )
 }

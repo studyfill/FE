@@ -27,6 +27,7 @@ src/~
     layout/
     ui/
   features/
+    landing/        # 랜딩 페이지 (Phase A)
     auth/
     dashboard/      # 내 라이브러리: 폴더, 검색, 업로드, PDF 그리드
     pdf/
@@ -53,7 +54,7 @@ src/~
 
 StudyFill is an AI-powered PDF study platform — not a generic AI chat or flashcard product.
 
-Core flow: Upload PDF → AI lecture explanation → exam-important concepts → fill-in-the-blank memorization → repeated review
+Core flow (Phase A): Upload → AI lecture explanation → fill-in-the-blank memorization. Repeated review / quiz / tutor are Phase B.
 
 UI should feel: white background, compact, beginner-friendly, modern productivity SaaS, calm and focused.
 
@@ -85,41 +86,25 @@ Avoid: dark mode style, colorful educational UI, cluttered dashboards, enterpris
   - Radius: `rounded-button` (10px design)
 - shadcn `text-sm` / `text-xs` inherit root scale automatically; no separate adjustment needed
 
+## Language
+
+- Korean UI only for MVP; do not add i18n unless explicitly requested
+
+## Responsive (Phase A)
+
+- Study workspace: `lg` (1024px) breakpoint
+- `>= lg` or landscape tablet: split-pane (PDF left, panel right)
+- `< lg` portrait: tab switch between PDF and feature panel (`StudyMobilePaneTabs`)
+
 ## Accessibility
 
 - Add `aria-label` for icon buttons
 - Prefer `<button>` over div click handlers
 - Keep forms accessible; use keyboard-friendly interactions
 
-## Blank Study
+## Feature-specific guidance
 
-Blank study is NOT flashcards and NOT per-item Card UI. Use workbook-style active recall with inline blank inputs in a continuous text flow:
-
-```txt
-N개 노드 트리의 간선 수는 ______ 이다. BST에서 왼쪽 자식은 현재 키보다 ______ 값을 가진다.
-```
-
-Do NOT render blanks as a numbered list (`1.` `2.` …). Group by section label if needed, then flow sentences in a single `<p>`.
-
-**On-demand**: blanks are generated only when the user clicks generate (not on upload).
-
-**Generate options** (mirror explanation tab UX — `BlankGeneratePanel`):
-
-| Option | Values | Notes |
-|--------|--------|-------|
-| 출처 | `pdf` \| `explanation` | PDF 원문 vs already-generated 강의 노트 |
-| 범위 | `all` \| `chapter` \| `page` | **PDF 출처일 때만** show/apply |
-| 밀도 | `light` \| `normal` \| `dense` | mock item count |
-
-**Source rules**:
-
-- `pdf`: use stored PDF extracted text (`MaterialPdfText`) — punch blanks from original sentences (not handcrafted seeds)
-- `explanation`: extract from `LectureExplanation` (core concepts, exam highlights, etc.)
-- If source=`explanation` and no explanation exists → **block generate** + CTA link to 쉽게 설명 tab (no auto-fallback)
-
-**Result UI** (`BlankStudyResultView`): progress bar, continuous prose with inline blanks, hint/feedback, retry incorrect — no Card wrapper, no numbered list.
-
-**Components**: `BlankGeneratePanel` + `BlankStudyResultView` + `BlankProseSection` (symmetric to explanation feature)
+Feature-specific UX and components: see `.cursor/rules/features/*.mdc` or `.cursor/skills/*/SKILL.md`.
 
 ## Development Workflow
 

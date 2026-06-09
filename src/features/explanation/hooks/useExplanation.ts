@@ -32,6 +32,8 @@ export const useExplanation = (materialId: string) => {
     refresh()
   }, [refresh])
 
+  const clearError = () => setError(null)
+
   const handleGenerate = async () => {
     setIsGenerating(true)
     setError(null)
@@ -39,7 +41,8 @@ export const useExplanation = (materialId: string) => {
       const result = await generateExplanation(materialId, options)
       setExplanation(result)
     } catch (err) {
-      setError(err instanceof Error ? err.message : "설명 생성에 실패했습니다.")
+      console.error("[explanation] generate failed:", err)
+      setError("generate_failed")
     } finally {
       setIsGenerating(false)
     }
@@ -52,6 +55,7 @@ export const useExplanation = (materialId: string) => {
     isGenerating,
     error,
     handleGenerate,
+    clearError,
     refresh,
   }
 }

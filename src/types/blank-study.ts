@@ -49,6 +49,7 @@ export type BlankPageProse = {
 export type BlankStudySession = {
   materialId: string
   generatedAt: string
+  savedAt?: string | null
   options: BlankGenerateOptions
   items: BlankItem[]
   pdfPages?: BlankPageProse[]

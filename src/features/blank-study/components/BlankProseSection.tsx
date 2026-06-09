@@ -32,14 +32,13 @@ export const BlankInlineBlank = ({
 }: BlankInlineBlankProps) => {
   const [hintVisible, setHintVisible] = useState(false)
 
+  const handleShowHint = () => setHintVisible(true)
+  const handleHideHint = () => setHintVisible(false)
+
   if (item.isTextOnly) {
     return (
       <span>{item.sentenceBefore}</span>
     )
-  }
-
-  const handleToggleHint = () => {
-    setHintVisible((prev) => !prev)
   }
 
   const handleBeforeWordClick = (tokenStart: number, tokenEnd: number) => {
@@ -71,7 +70,13 @@ export const BlankInlineBlank = ({
             {item.status === "incorrect" ? item.answer : answer || item.answer}
           </span>
         ) : (
-          <span className="inline-flex items-center gap-0.5 align-baseline">
+          <span
+            className="inline-flex items-center gap-0.5 align-baseline"
+            onMouseEnter={handleShowHint}
+            onMouseLeave={handleHideHint}
+            onFocus={handleShowHint}
+            onBlur={handleHideHint}
+          >
             <Input
               className="inline-flex h-6 w-auto min-w-[4rem] max-w-[8rem] px-1.5 py-0 text-body-sm leading-normal"
               style={{
@@ -87,21 +92,16 @@ export const BlankInlineBlank = ({
               aria-label={`빈칸 ${blankIndex + 1} 답 입력`}
             />
             <span className="inline-flex shrink-0 items-center gap-px align-middle">
-              <button
-                type="button"
+              <span
                 className={cn(
-                  "inline-flex size-5 items-center justify-center rounded transition-colors",
-                  hintVisible
-                    ? "bg-amber-100 text-amber-700"
-                    : "text-amber-600/80 hover:bg-amber-50 hover:text-amber-700"
+                  "inline-flex size-5 items-center justify-center rounded text-amber-600/80",
+                  hintVisible && "bg-amber-100 text-amber-700"
                 )}
                 aria-label={`빈칸 ${blankIndex + 1} 힌트`}
-                aria-pressed={hintVisible}
                 title="힌트"
-                onClick={handleToggleHint}
               >
                 <Lightbulb className="size-3 fill-current" strokeWidth={2} />
-              </button>
+              </span>
               {onRemoveBlank ? (
                 <button
                   type="button"

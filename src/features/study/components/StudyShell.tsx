@@ -1,14 +1,21 @@
 "use client"
 
 import Link from "next/link"
+import { useEffect, useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import { ROUTES } from "@/constants/routes"
 import { PdfViewer } from "@/features/pdf/components/PdfViewer"
+import { updateMaterialLastStudied } from "@/lib/mocks/materials"
 import { useMaterial } from "@/features/pdf/hooks/useMaterial"
 import { StudyBreadcrumbs } from "@/features/study/components/StudyBreadcrumbs"
 import { StudyFeatureTabs } from "@/features/study/components/StudyFeatureTabs"
+import {
+  StudyMobilePaneTabs,
+  type StudyMobilePane,
+} from "@/features/study/components/StudyMobilePaneTabs"
 import { StudySplitLayout } from "@/features/study/components/StudySplitLayout"
+import { useStudyLayoutMode } from "@/features/study/hooks/useStudyLayoutMode"
 import {
   StudyWorkspaceProvider,
   useStudyWorkspace,
@@ -33,6 +40,14 @@ const StudyPdfPane = () => {
 
 export const StudyShell = ({ materialId, children }: StudyShellProps) => {
   const { material, isLoading, setPage } = useMaterial(materialId)
+  const layoutMode = useStudyLayoutMode()
+  const [activePane, setActivePane] = useState<StudyMobilePane>("panel")
+
+  useEffect(() => {
+    if (material) {
+      updateMaterialLastStudied(materialId)
+    }
+  }, [materialId, material])
 
   if (isLoading) {
     return (
@@ -66,7 +81,16 @@ export const StudyShell = ({ materialId, children }: StudyShellProps) => {
           <StudyBreadcrumbs material={material} />
         </header>
 
+        {layoutMode === "stacked" ? (
+          <StudyMobilePaneTabs
+            activePane={activePane}
+            onPaneChange={setActivePane}
+          />
+        ) : null}
+
         <StudySplitLayout
+          layoutMode={layoutMode}
+          activePane={activePane}
           left={<StudyPdfPane />}
           right={
             <>
