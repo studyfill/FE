@@ -3,12 +3,14 @@
 import { useCallback, useEffect, useState } from "react"
 
 import { getExplanation } from "@/lib/mocks/explanation"
+import { isBlankAnswerCorrect } from "@/lib/blank-study/normalize-answer"
 import {
   addCustomBlankItem,
   generateBlankSession,
   getBlankSession,
   removeBlankItem,
   resetIncorrectBlankItems,
+  saveBlankSession,
   updateBlankItem,
 } from "@/lib/mocks/blank-study"
 import { updateMaterial } from "@/lib/mocks/materials"
@@ -28,6 +30,8 @@ export const useBlankStudy = (materialId: string) => {
   const [error, setError] = useState<string | null>(null)
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [customBlankMode, setCustomBlankMode] = useState(false)
+  const [isDirty, setIsDirty] = useState(false)
+  const [saveMessage, setSaveMessage] = useState<string | null>(null)
 
   const hasExplanation = Boolean(getExplanation(materialId))
 
@@ -43,6 +47,8 @@ export const useBlankStudy = (materialId: string) => {
     refresh()
   }, [refresh])
 
+  const clearError = () => setError(null)
+
   const handleGenerate = async () => {
     setIsGenerating(true)
     setError(null)
@@ -51,8 +57,11 @@ export const useBlankStudy = (materialId: string) => {
       setSession(result)
       setAnswers({})
       setCustomBlankMode(false)
+      setIsDirty(false)
+      setSaveMessage(null)
     } catch (err) {
-      setError(err instanceof Error ? err.message : "빈칸 생성에 실패했습니다.")
+      console.error("[blank-study] generate failed:", err)
+      setError("generate_failed")
     } finally {
       setIsGenerating(false)
     }
@@ -63,9 +72,7 @@ export const useBlankStudy = (materialId: string) => {
     if (!item) return
 
     const raw = answers[itemId]?.trim() ?? ""
-    const isCorrect =
-      raw.toLowerCase() === item.answer.toLowerCase() ||
-      raw.replace(/\s/g, "") === item.answer.replace(/\s/g, "")
+    const isCorrect = isBlankAnswerCorrect(raw, item.answer)
 
     const updated = updateBlankItem(materialId, itemId, {
       status: isCorrect ? "correct" : "incorrect",
@@ -101,6 +108,16 @@ export const useBlankStudy = (materialId: string) => {
     const updated = addCustomBlankItem(materialId, target)
     if (!updated) return
     setSession(updated)
+    setIsDirty(true)
+    setSaveMessage(null)
+  }
+
+  const handleSaveSession = () => {
+    const saved = saveBlankSession(materialId)
+    if (!saved) return
+    setSession(saved)
+    setIsDirty(false)
+    setSaveMessage("빈칸 세션이 저장되었습니다.")
   }
 
   const handleRemoveBlank = (itemId: string) => {
@@ -125,6 +142,8 @@ export const useBlankStudy = (materialId: string) => {
       ? Math.round((done / blankItems.length) * 100)
       : 0
     updateMaterial(materialId, { progressPercent: progress })
+    setIsDirty(true)
+    setSaveMessage(null)
   }
 
   const allItems = session?.items ?? []
@@ -147,6 +166,7 @@ export const useBlankStudy = (materialId: string) => {
     completedCount,
     progressPercent,
     handleGenerate,
+    clearError,
     handleSubmit,
     handleRetryIncorrect,
     setAnswer,
@@ -154,6 +174,9 @@ export const useBlankStudy = (materialId: string) => {
     setCustomBlankMode,
     handleAddCustomBlank,
     handleRemoveBlank,
+    handleSaveSession,
+    isDirty,
+    saveMessage,
     refresh,
   }
 }

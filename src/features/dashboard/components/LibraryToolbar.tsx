@@ -26,7 +26,8 @@ import { cn } from "@/lib/utils"
 import type { Folder, MaterialSort, MaterialViewLayout } from "@/types/material"
 
 const SORT_OPTIONS: { value: MaterialSort; label: string }[] = [
-  { value: "date", label: "최신순" },
+  { value: "recent", label: "최근 열람순" },
+  { value: "created", label: "생성일순" },
   { value: "folder", label: "폴더순" },
 ]
 
@@ -53,7 +54,7 @@ export const LibraryToolbar = ({
   const sortRef = useRef<HTMLDivElement>(null)
 
   const sortLabel =
-    SORT_OPTIONS.find((option) => option.value === sort)?.label ?? "최신순"
+    SORT_OPTIONS.find((option) => option.value === sort)?.label ?? "최근 열람순"
 
   useEffect(() => {
     if (!sortOpen) return

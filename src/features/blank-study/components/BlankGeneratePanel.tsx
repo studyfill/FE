@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { Layers, Loader2, Sparkles } from "lucide-react"
 
+import { GenerateErrorAlert } from "@/components/common/GenerateErrorAlert"
 import { SegmentedOptionGroup } from "@/components/common/SegmentedOptionGroup"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -139,9 +140,10 @@ export const BlankGeneratePanel = ({
               ) : null}
 
               {error ? (
-                <p className="text-center text-sm text-destructive" role="alert">
-                  {error}
-                </p>
+                <GenerateErrorAlert
+                  onRetry={handleGenerateClick}
+                  isRetrying={isGenerating}
+                />
               ) : null}
             </div>
           </div>
@@ -159,9 +161,10 @@ export const BlankGeneratePanel = ({
               />
 
               {error ? (
-                <p className="text-sm text-destructive" role="alert">
-                  {error}
-                </p>
+                <GenerateErrorAlert
+                  onRetry={handleGenerateClick}
+                  isRetrying={isGenerating}
+                />
               ) : null}
             </div>
           </div>

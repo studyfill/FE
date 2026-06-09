@@ -1,0 +1,37 @@
+---
+description: Landing page MVP marketing scope and honesty rules
+globs: src/features/landing/**
+alwaysApply: false
+---
+
+# Landing (Phase A)
+
+Landing is Phase A MVP entry: non-logged-in users see features, how-to, pricing.
+
+## Allowed claims (implemented)
+
+- 폴더별 PDF/이미지 보관·정리
+- 파일명 검색
+- 최근 열람순 / 생성일순 / 폴더순 정렬
+- AI 강의식 설명 (온디맨드 생성)
+- 빈칸 암기 (클릭 모드, 즉시 채점, 세션 내 오답 재풀이)
+- 하이라이트·밑줄 노트 편집 (설명 탭)
+- Google 로그인 + 게스트 체험
+
+## Do NOT claim (Phase B/C or unbuilt)
+
+- 본문 통합 검색, 간격 반복(SRS), 3단계 자신감 평가
+- 오답 다음 세션 자동 재출제, 오답노트 폴더
+- 퀴즈, AI 튜터 (unless marked "준비 중")
+- 팀 공유, 학습 패턴 분석
+- 월별 사용 한도 강제 (unless enforced in code)
+
+## CTAs
+
+- **로그인** → `AuthDialog` (Google OAuth)
+- **무료로 시작하기** → 게스트 모드 (`useEnterGuestMode`)
+
+## Key files
+
+- `src/features/landing/constants/landing-content.ts` — copy source of truth
+- `src/features/landing/components/LandingPage.tsx`

@@ -1,6 +1,6 @@
 "use client"
 
-import { Loader2, MousePointerClick, RotateCcw, Sparkles } from "lucide-react"
+import { Loader2, MousePointerClick, RotateCcw, Save, Sparkles } from "lucide-react"
 import { useMemo } from "react"
 
 import { Button } from "@/components/ui/button"
@@ -44,6 +44,9 @@ export const BlankStudyResultView = ({
     setCustomBlankMode,
     handleAddCustomBlank,
     handleRemoveBlank,
+    handleSaveSession,
+    isDirty,
+    saveMessage,
   } = blankStudy
 
   const hasIncorrect = items.some((i) => i.status === "incorrect")
@@ -145,6 +148,25 @@ export const BlankStudyResultView = ({
           })}
         </article>
       )}
+
+      <div className="space-y-2">
+        <Button
+          type="button"
+          variant={isDirty ? "default" : "outline"}
+          className="h-11 w-full rounded-button"
+          onClick={handleSaveSession}
+          disabled={!isDirty}
+          aria-label="빈칸 세션 저장"
+        >
+          <Save className="size-icon-md" />
+          {isDirty ? "변경사항 저장" : "저장됨"}
+        </Button>
+        {saveMessage ? (
+          <p className="text-center text-xs text-primary" role="status">
+            {saveMessage}
+          </p>
+        ) : null}
+      </div>
 
       {hasIncorrect ? (
         <Button

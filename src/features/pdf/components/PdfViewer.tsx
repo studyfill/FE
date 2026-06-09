@@ -11,6 +11,7 @@ import {
 import type { PDFDocumentProxy } from "pdfjs-dist"
 
 import { Button } from "@/components/ui/button"
+import { ImageViewer } from "@/features/pdf/components/ImageViewer"
 import { usePdfDocument } from "@/features/pdf/hooks/usePdfDocument"
 import type { Material } from "@/types/material"
 
@@ -195,6 +196,10 @@ export const PdfViewer = ({
     const timer = window.setTimeout(scrollToPage, 100)
     return () => window.clearTimeout(timer)
   }, [pdfDoc, material.id, highlightPage, material.currentPage])
+
+  if (material.fileType === "image") {
+    return <ImageViewer material={material} />
+  }
 
   return (
     <div className="flex h-full min-h-0 flex-col">

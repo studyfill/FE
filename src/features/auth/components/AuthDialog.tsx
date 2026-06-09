@@ -4,7 +4,9 @@ import { Layers, X } from "lucide-react"
 import { useEffect } from "react"
 import { createPortal } from "react-dom"
 
-import { LoginForm } from "@/features/auth/components/LoginForm"
+import { GoogleSignInButton } from "@/features/auth/components/GoogleSignInButton"
+import { useGoogleSignIn } from "@/features/auth/hooks/useGoogleSignIn"
+import { useEnterGuestMode } from "@/features/auth/hooks/useEnterGuestMode"
 import { useClientMounted } from "@/features/landing/hooks/useClientMounted"
 
 type AuthDialogProps = {
@@ -14,6 +16,8 @@ type AuthDialogProps = {
 
 export const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
   const mounted = useClientMounted()
+  const { signInWithGoogle, isPending: isGooglePending } = useGoogleSignIn()
+  const { enterGuestMode, isPending: isGuestPending } = useEnterGuestMode()
 
   useEffect(() => {
     if (!open) return
@@ -33,6 +37,15 @@ export const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
 
   const handleClose = () => {
     onOpenChange(false)
+  }
+
+  const handleGoogleSignIn = () => {
+    signInWithGoogle()
+  }
+
+  const handleGuestSignIn = () => {
+    onOpenChange(false)
+    enterGuestMode()
   }
 
   if (!mounted || !open) return null
@@ -75,8 +88,19 @@ export const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
           </button>
         </div>
 
-        <div className="px-4 py-4">
-          <LoginForm showMockHint />
+        <div className="space-y-4 px-4 py-4">
+          <GoogleSignInButton
+            onClick={handleGoogleSignIn}
+            disabled={isGooglePending || isGuestPending}
+          />
+          <button
+            type="button"
+            className="w-full text-center text-body-sm text-muted-foreground transition-colors hover:text-primary"
+            onClick={handleGuestSignIn}
+            disabled={isGooglePending || isGuestPending}
+          >
+            {isGuestPending ? "이동 중…" : "게스트로 체험하기"}
+          </button>
         </div>
       </div>
     </div>,

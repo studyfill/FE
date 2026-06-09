@@ -4,7 +4,7 @@ import { Plus } from "lucide-react"
 import { useState } from "react"
 
 import { Button } from "@/components/ui/button"
-import { PdfUploadDialog } from "@/features/dashboard/components/PdfUploadDialog"
+import { FileUploadDialog } from "@/features/dashboard/components/FileUploadDialog"
 
 type PdfUploadButtonProps = {
   onUpload: (file: File) => Promise<void>
@@ -35,7 +35,7 @@ export const PdfUploadButton = ({
         <span>{isUploading ? "업로드 중…" : "업로드"}</span>
       </Button>
 
-      <PdfUploadDialog
+      <FileUploadDialog
         open={open}
         onOpenChange={setOpen}
         onUpload={onUpload}

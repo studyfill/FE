@@ -1,0 +1,41 @@
+---
+description: Dashboard library UX — folders, sort, upload, search
+globs: src/features/dashboard/**
+alwaysApply: false
+---
+
+# Dashboard (Phase A)
+
+## Folders
+
+- Unlimited depth tree (Adjacency List model when BE connected)
+- DnD move folder/material
+- Recent folders strip (last 10 visited)
+- Upload only to leaf folders (folders with children block upload)
+
+## Sort (3 options)
+
+| Value | Label | Logic |
+|-------|-------|-------|
+| `recent` | 최근 열람순 | `lastStudiedAt` desc, nulls last |
+| `created` | 생성일순 | `uploadedAt` desc |
+| `folder` | 폴더순 | folder name, then date |
+
+`lastStudiedAt` updated when study workspace opens (`StudyShell` mount).
+
+## Upload (Phase A)
+
+- Formats: PDF, JPG, PNG
+- Max size: 50MB
+- PDF max pages: 100 (TRD)
+- Images: single-page viewer (OCR Phase C)
+
+## Search
+
+- Filename only (Phase A); full-text search is Phase B
+
+## Key files
+
+- `LibraryToolbar.tsx`, `useDashboardLibrary.ts`
+- `FileUploadDialog.tsx` (was PdfUploadDialog)
+- `src/lib/mocks/materials.ts`, `src/constants/upload.ts`

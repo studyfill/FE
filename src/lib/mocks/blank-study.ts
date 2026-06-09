@@ -93,9 +93,11 @@ export const generateBlankSession = async (
     throw new Error("빈칸으로 만들 문장을 찾지 못했습니다. 범위나 밀도를 조정해 보세요.")
   }
 
+  const now = new Date().toISOString()
   const session: BlankStudySession = {
     materialId,
-    generatedAt: new Date().toISOString(),
+    generatedAt: now,
+    savedAt: now,
     ...built,
   }
 
@@ -218,6 +220,19 @@ export const resetIncorrectBlankItems = (
   session.items = session.items.map((item) =>
     item.status === "incorrect" ? { ...item, status: "pending" } : item
   )
+  store.blankSessions[materialId] = session
+  saveMockStore(store)
+  return session
+}
+
+export const saveBlankSession = (
+  materialId: string
+): BlankStudySession | null => {
+  const store = loadMockStore()
+  const session = store.blankSessions[materialId]
+  if (!session) return null
+
+  session.savedAt = new Date().toISOString()
   store.blankSessions[materialId] = session
   saveMockStore(store)
   return session

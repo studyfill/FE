@@ -38,5 +38,6 @@ export const config = {
     "/dashboard/:path*",
     "/materials/:path*",
     "/study/:path*",
+    "/api/auth/:path*",
   ],
 }

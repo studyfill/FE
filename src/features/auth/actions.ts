@@ -6,11 +6,13 @@ import { redirect } from "next/navigation"
 import {
   GUEST_DISPLAY_NAME,
   GUEST_USER_ID,
-  MOCK_PASSWORD,
   SESSION_COOKIE,
 } from "@/constants/auth"
 import { ROUTES } from "@/constants/routes"
-import { findUserByEmail, registerMockUser } from "@/lib/mocks/auth"
+import {
+  createMockGoogleProfile,
+  mapGoogleProfileToSession,
+} from "@/lib/auth/google"
 import type { Session } from "@/types/auth"
 
 const setSessionCookie = async (session: Session & { name: string }) => {
@@ -28,34 +30,24 @@ export const enterGuestModeAction = async () => {
     userId: GUEST_USER_ID,
     email: "",
     name: GUEST_DISPLAY_NAME,
+    provider: "guest",
     isGuest: true,
   })
   redirect(ROUTES.dashboard)
 }
 
-export const loginAction = async (formData: FormData) => {
-  const email = String(formData.get("email") ?? "").trim()
-  const password = String(formData.get("password") ?? "")
+export const googleSignInAction = async () => {
+  const hasGoogleOAuth =
+    Boolean(process.env.GOOGLE_CLIENT_ID) &&
+    Boolean(process.env.GOOGLE_CLIENT_SECRET)
 
-  if (!email || !password) {
-    return { error: "이메일과 비밀번호를 입력해 주세요." }
+  if (!hasGoogleOAuth) {
+    const profile = createMockGoogleProfile()
+    await setSessionCookie(mapGoogleProfileToSession(profile))
+    redirect(ROUTES.dashboard)
   }
 
-  if (password !== MOCK_PASSWORD) {
-    return { error: "비밀번호가 올바르지 않습니다. (mock: studyfill123)" }
-  }
-
-  let user = findUserByEmail(email)
-  if (!user) {
-    user = registerMockUser(email, email.split("@")[0])
-  }
-
-  await setSessionCookie({
-    userId: user.id,
-    email: user.email,
-    name: user.name,
-  })
-  redirect(ROUTES.dashboard)
+  redirect("/api/auth/google")
 }
 
 export const logoutAction = async () => {
