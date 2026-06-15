@@ -1,0 +1,25 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell",
+            "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", ".claude/hooks/check-direct-fetch.ps1"],
+            "timeout": 10,
+            "statusMessage": "직접 fetch 사용 검사 중..."
+          },
+          {
+            "type": "command",
+            "command": "powershell",
+            "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", ".claude/hooks/check-schema-fresh.ps1"],
+            "timeout": 10,
+            "statusMessage": "API 타입 동기화 상태 확인 중..."
+          }
+        ]
+      }
+    ]
+  }
+}
