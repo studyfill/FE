@@ -54,7 +54,7 @@ export const LandingDashboardMock = ({
           <main className="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto px-5 py-4">
             <LibraryToolbar
               folderPath={[]}
-              sort="date"
+              sort="recent"
               viewLayout="grid"
               onSortChange={() => {}}
               onViewLayoutChange={() => {}}

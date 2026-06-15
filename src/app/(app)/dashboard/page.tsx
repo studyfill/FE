@@ -1,6 +1,6 @@
 import { DashboardShell } from "@/components/layout/DashboardShell"
 import { DashboardLibraryPage } from "@/features/dashboard/components/DashboardLibraryPage"
-import { getServerSession } from "@/features/auth/actions"
+import { getServerSession } from "@/features/auth/session"
 
 export default async function DashboardPage() {
   const session = await getServerSession()

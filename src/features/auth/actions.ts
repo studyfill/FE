@@ -1,79 +1,57 @@
 "use server"
 
-import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 
-import {
-  GUEST_DISPLAY_NAME,
-  GUEST_USER_ID,
-  MOCK_PASSWORD,
-  SESSION_COOKIE,
-} from "@/constants/auth"
+import { GUEST_DISPLAY_NAME, GUEST_USER_ID } from "@/constants/auth"
 import { ROUTES } from "@/constants/routes"
-import { findUserByEmail, registerMockUser } from "@/lib/mocks/auth"
-import type { Session } from "@/types/auth"
+import {
+  clearSessionCookie,
+  setSessionCookie,
+} from "@/features/auth/session"
+import {
+  createMockGoogleProfile,
+  mapGoogleProfileToSession,
+} from "@/lib/auth/google"
 
-const setSessionCookie = async (session: Session & { name: string }) => {
-  const cookieStore = await cookies()
-  cookieStore.set(SESSION_COOKIE, JSON.stringify(session), {
-    httpOnly: true,
-    sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 60 * 24 * 7,
-  })
-}
+/** 구글 동의 화면 redirect_uri. 백엔드 GOOGLE_REDIRECT_URI · Google Console 승인 URI 와 동일해야 함. */
+const getGoogleRedirectUri = () =>
+  process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI ??
+  `${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/auth/callback`
 
 export const enterGuestModeAction = async () => {
   await setSessionCookie({
     userId: GUEST_USER_ID,
     email: "",
     name: GUEST_DISPLAY_NAME,
+    provider: "guest",
     isGuest: true,
   })
   redirect(ROUTES.dashboard)
 }
 
-export const loginAction = async (formData: FormData) => {
-  const email = String(formData.get("email") ?? "").trim()
-  const password = String(formData.get("password") ?? "")
+export const googleSignInAction = async () => {
+  const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
 
-  if (!email || !password) {
-    return { error: "이메일과 비밀번호를 입력해 주세요." }
+  // client_id 미설정(로컬 등) → mock 로그인 폴백
+  if (!clientId) {
+    const profile = createMockGoogleProfile()
+    await setSessionCookie(mapGoogleProfileToSession(profile))
+    redirect(ROUTES.dashboard)
   }
 
-  if (password !== MOCK_PASSWORD) {
-    return { error: "비밀번호가 올바르지 않습니다. (mock: studyfill123)" }
-  }
-
-  let user = findUserByEmail(email)
-  if (!user) {
-    user = registerMockUser(email, email.split("@")[0])
-  }
-
-  await setSessionCookie({
-    userId: user.id,
-    email: user.email,
-    name: user.name,
+  // Authorization Code 발급 → /auth/callback 에서 백엔드와 code 교환
+  const params = new URLSearchParams({
+    client_id: clientId,
+    redirect_uri: getGoogleRedirectUri(),
+    response_type: "code",
+    scope: "openid email profile",
+    access_type: "offline",
+    prompt: "consent",
   })
-  redirect(ROUTES.dashboard)
+  redirect(`https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`)
 }
 
 export const logoutAction = async () => {
-  const cookieStore = await cookies()
-  cookieStore.delete(SESSION_COOKIE)
+  await clearSessionCookie()
   redirect(ROUTES.home)
-}
-
-export const getServerSession = async (): Promise<
-  (Session & { name: string }) | null
-> => {
-  const cookieStore = await cookies()
-  const raw = cookieStore.get(SESSION_COOKIE)?.value
-  if (!raw) return null
-
-  try {
-    return JSON.parse(raw) as Session & { name: string }
-  } catch {
-    return null
-  }
 }

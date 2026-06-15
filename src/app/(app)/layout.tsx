@@ -1,7 +1,7 @@
 import type { ReactNode } from "react"
 
 import { AppLayoutShell } from "@/components/layout/AppLayoutShell"
-import { getServerSession } from "@/features/auth/actions"
+import { getServerSession } from "@/features/auth/session"
 
 type AppLayoutProps = {
   children: ReactNode

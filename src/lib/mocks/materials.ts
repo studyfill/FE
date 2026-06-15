@@ -1,6 +1,6 @@
 import type { ListMaterialsOptions, Material } from "@/types/material"
 
-import { PDF_UPLOAD_MAX_SIZE_MB } from "@/constants/upload"
+import { validateUploadFile, getFileTypeFromName } from "@/lib/utils/upload-file"
 import { savePdfBlob } from "@/lib/storage/pdf-blob-store"
 import { normalizePdfPages } from "@/lib/pdf/normalize-pdf-pages"
 import { extractPdfTextFromBytes } from "@/lib/pdf/extract-pdf-text"
@@ -10,18 +10,10 @@ import { loadMockStore, saveMockStore } from "./mock-store"
 import { saveMaterialPdfText } from "./pdf-text"
 import { getSeedPdfText } from "./pdf-text-seeds"
 
-const MAX_FILE_SIZE_MB = PDF_UPLOAD_MAX_SIZE_MB
-const ALLOWED_EXTENSION = ".pdf"
+/** @deprecated Use validateUploadFile */
+export const validatePdfFile = validateUploadFile
 
-export const validatePdfFile = (file: File): string | null => {
-  if (!file.name.toLowerCase().endsWith(ALLOWED_EXTENSION)) {
-    return "PDF 파일만 업로드할 수 있습니다."
-  }
-  if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
-    return `파일 크기는 ${MAX_FILE_SIZE_MB}MB 이하여야 합니다.`
-  }
-  return null
-}
+export { validateUploadFile }
 
 export const searchMaterials = (query: string): Material[] => {
   const q = query.trim().toLowerCase()
@@ -32,7 +24,7 @@ export const searchMaterials = (query: string): Material[] => {
 }
 
 export const listMaterials = (options: ListMaterialsOptions = {}): Material[] => {
-  const { folderId = null, searchQuery = "", sort = "date" } = options
+  const { folderId = null, searchQuery = "", sort = "recent" } = options
   const store = loadMockStore()
   let items = [...store.materials]
 
@@ -43,7 +35,20 @@ export const listMaterials = (options: ListMaterialsOptions = {}): Material[] =>
     items = items.filter((m) => m.folderId === folderId)
   }
 
-  if (sort === "date") {
+  if (sort === "recent") {
+    items.sort((a, b) => {
+      const aTime = a.lastStudiedAt
+        ? new Date(a.lastStudiedAt).getTime()
+        : 0
+      const bTime = b.lastStudiedAt
+        ? new Date(b.lastStudiedAt).getTime()
+        : 0
+      if (aTime !== bTime) return bTime - aTime
+      return (
+        new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime()
+      )
+    })
+  } else if (sort === "created") {
     items.sort(
       (a, b) =>
         new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime()
@@ -74,9 +79,14 @@ export const uploadMaterial = async (
   folderId: string | null = null,
   pageCount = 1
 ): Promise<Material> => {
-  const error = validatePdfFile(file)
+  const error = validateUploadFile(file)
   if (error) {
     throw new Error(error)
+  }
+
+  const fileType = getFileTypeFromName(file.name)
+  if (!fileType) {
+    throw new Error("지원하지 않는 파일 형식입니다.")
   }
 
   const store = loadMockStore()
@@ -94,9 +104,10 @@ export const uploadMaterial = async (
     id: `mat-${Date.now()}`,
     name: file.name,
     folderId,
+    fileType,
     uploadedAt: new Date().toISOString(),
-    extractionStatus: "processing",
-    pageCount: 0,
+    extractionStatus: fileType === "image" ? "done" : "processing",
+    pageCount: fileType === "image" ? 1 : 0,
     currentPage: 1,
     progressPercent: 0,
     lastStudiedAt: null,
@@ -105,6 +116,10 @@ export const uploadMaterial = async (
   store.materials.unshift(material)
   saveMockStore(store)
   await savePdfBlob(material.id, pdfBytes)
+
+  if (fileType === "image") {
+    return getMaterial(material.id) ?? material
+  }
 
   await new Promise((resolve) => setTimeout(resolve, 1500))
 
@@ -137,6 +152,10 @@ export const uploadMaterial = async (
   }
 
   return getMaterial(material.id) ?? material
+}
+
+export const updateMaterialLastStudied = (id: string): Material | undefined => {
+  return updateMaterial(id, { lastStudiedAt: new Date().toISOString() })
 }
 
 export const moveMaterial = (

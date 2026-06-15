@@ -1,166 +1,66 @@
 ---
-
-description: StudyFill product context from Manyfast (PRD, requirements, features, user flows)
-
+description: StudyFill product context from PRD/TRD (Phase A active scope)
 alwaysApply: true
-
 ---
-
-
 
 # StudyFill Product Context
 
-
-
-> **Source of truth**: Manyfast project `AI 기반 PDF 학습 플랫폼` (`a9c557f4-caaa-4159-95c2-b7d82e9c316b`).
-
-> **How to build**: `studyfill-frontend.mdc` (stack, UX, blank-study interaction pattern).
-
-> **Refresh**: `read_project_meta` / `read_project` / `read_user_flow` on Manyfast MCP before large features.
-
-
+> **Source of truth**: PRD/TRD (Manyfast `AI 기반 PDF 학습 플랫폼` is supplementary).
+> **How to build**: `studyfill-frontend.mdc` + `.cursor/rules/features/*`.
+> **Active scope**: **Phase A (6/30 launch)** — do not implement Phase B/C unless user confirms.
 
 ## Product summary
 
-
-
 - **Goal**: PDF를 AI가 분석해 핵심을 빠르게 이해하고, 퀴즈·빈칸 암기·튜터 등으로 개인화 학습
-
-- **Target**: 시험 준비 대학생·고등학생·일반 학습자 (방대한 PDF에서 핵심·어려운 개념 정리)
-
-- **Differentiation**: 단순 요약이 아닌 강의 노트형 설명, 출처(페이지/문단), 시험 핵심·헷갈림 정리, 온디맨드 생성
-
-- **Device**: Desktop (MVP)
-
-- **Core journey**: 로그인 → **대시보드(내 라이브러리: 폴더·검색·업로드·PDF 그리드)** → 학습 뷰어(PDF·설명·빈칸) → (P1: 퀴즈·복습·튜터)
-
-
-
-## Manyfast requirements (7)
-
-
-
-| ID | Name | Importance | Features |
-
-|----|------|------------|----------|
-
-| R-UHNFKE | AI 기반 학습 자료 분석 및 요약 | high | F-KSALIY, F-SNORSO, F-LIYQPP |
-
-| R-IBIDUF | 개인 맞춤형 퀴즈 생성 및 학습 | high | F-XVIATX, F-FUATKW |
-
-| R-YESAGY | 빈칸 암기 도구 | high | F-GVXHSY, F-TLNABJ |
-
-| R-BHOLAR | AI 튜터 채팅 | medium | F-XUKWLY |
-
-| R-PLFYYC | 학습 대시보드 및 진도 관리 | medium | F-HCJIFZ, F-ADBTOV |
-
-| R-MJJFLK | 계정 및 자료 관리 | high | F-ANSJWS, F-HBKJBD, F-DNSICC |
-
-| R-MGLUWI | 학습 세션 및 복습 모드 | medium | (기능 미할당) |
-
-
-
-## User flow sections (Manyfast v1)
-
-
-
-1. **인증**: 로그인/회원가입, 이메일·소셜
-
-2. **내 라이브러리 (대시보드)**: 폴더 계층, 검색, 업로드, PDF 그리드
-
-3. **학습 기능**: PDF 뷰어, 강의식 설명, 개념 설명, 퀴즈, 빈칸 암기, 복습 모드
-
-4. **AI 튜터**: 질문, 답변, 원문 이동, 대화 기록
-
-
+- **Target**: 대학 전공 시험 준비생 (MVP)
+- **Differentiation**: 강의 노트형 설명, 출처(페이지/문단), 시험 핵심·헷갈림 정리, 온디맨드 생성
+- **Device**: Desktop full + Tablet (landscape split / portrait tabs) + Mobile responsive webview
+- **Language**: Korean UI only (MVP); i18n out of scope
+- **Core journey (Phase A)**: 랜딩 → Google OAuth 또는 게스트 → 대시보드 → 학습(PDF·설명·빈칸)
 
 ## Screen ↔ `src/features` mapping
 
+| User flow | Route | `src/features` | Phase |
+|-----------|-------|----------------|-------|
+| 랜딩 | `/` | `landing` | A |
+| 인증 | 랜딩 `AuthDialog` | `auth` | A — Google OAuth + 게스트 |
+| 내 라이브러리 | `/dashboard`, `/dashboard/[folderId]` | `dashboard` | A |
+| PDF·학습 워크스페이스 | `/study/[id]`, … | `pdf`, `explanation`, `blank-study` | A |
+| 퀴즈 | `/study/[id]/quiz` | `quiz` | B |
+| 오답노트 | 대시보드 폴더 | `review` | B |
+| AI 튜터 | `/study/[id]/tutor` | `tutor` | B |
 
+Legacy: `/login`, `/signup` → redirect `/`; `/materials` → `/dashboard`.
 
-| User flow / Manyfast | Route | `src/features` | Notes |
+## Phase A scope (active)
 
-|----------------------|-------|----------------|-------|
+- `landing`: 마케팅 페이지 (구현된 기능만 홍보)
+- `auth`: Google OAuth + 게스트 데모 (이메일 mock 제거)
+- `dashboard`: 무제한 depth 폴더, 3종 정렬, PDF/JPG/PNG 업로드, 파일명 검색
+- `pdf` + `explanation` + `blank-study`: split-pane 학습 워크스페이스
+- Inline error retry, 태블릿 반응형
 
-| 인증 | `/login`, `/signup` | `auth` | mock 세션 |
+## Phase B scope (deferred)
 
-| 내 라이브러리 | `/dashboard`, `/dashboard/[folderId]` | `dashboard` | F-ANSJWS, F-HBKJBD, F-DNSICC(검색 P1); `/materials` → redirect |
+- `quiz`, `review`, `tutor`, 과금/크레딧 UI
+- 대시보드: 진도 위젯, 본문 검색
 
-| PDF·학습 워크스페이스 | `/study/[id]`, … | `pdf`, `explanation`, `blank-study` | 업로드는 대시보드에서 |
+## Phase C scope (deferred)
 
-| 퀴즈 | `/study/[id]/quiz` (P1) | `quiz` | 미노출 |
-
-| 복습 모드 | `/study/[id]/review` (P1) | `review` | 미노출 |
-
-| AI 튜터 | `/study/[id]/tutor` (P1) | `tutor` | 미노출 |
-
-
-
-## MVP scope (from Manyfast high + user flow)
-
-
-
-**P0 — implemented (mock)**
-
-
-
-- `auth`: 이메일 로그인·회원가입
-
-- `dashboard`: 폴더 트리, 검색(파일명), 정렬, 업로드, PDF 카드 그리드
-
-- `pdf` + `explanation` + `blank-study`: 학습 워크스페이스 (split-pane: PDF left, feature panel right)
-
-
-
-**P1 — after P0**
-
-
-
-- `dashboard`: 진도 위젯(F-HCJIFZ), 목표·알림(F-ADBTOV), 본문 검색(F-DNSICC)
-
-- `quiz`, `tutor`, `review`
-
-
+- SSE 스트리밍, Vision OCR, 실결제, 모바일 전용 UI, HWP/DOCX
 
 ## Product constraints
 
-
-
-- **Not** a generic AI chat app: 튜터는 업로드 PDF 맥락·출처 기반만
-
-- **Not** flashcard UI for blank study: Manyfast F-GVXHSY / F-TLNABJ say "빈칸 카드" but FE uses **inline active recall** (workbook sentences, not Card-per-item)
-
-- **Blank sources (P0)**: `pdf` (원문) or `explanation` (강의 노트) — user picks before generate; explanation source requires prior explanation generation
-
-- **On-demand AI**: 업로드 시 추출만; 설명·퀴즈·빈칸은 사용자 버튼 요청 시 생성 (S-JDOXPD, S-WGLUOG)
-
+- **Not** a generic AI chat app (튜터는 문서·노트 맥락만 — Phase B)
+- **Not** flashcard UI for blank study — inline active recall (`features/blank-study.mdc`)
+- **Blank sources**: `pdf` or `explanation` — user picks before generate
+- **On-demand AI**: 업로드 시 추출만; 설명·빈칸은 사용자 버튼 요청 시 생성
+- **Inline errors**: 상세 시스템 에러 미노출; `GenerateErrorAlert` 재시도 패턴
+- **No collaboration**: 1인 학습 환경
 - UI: white, compact, productivity SaaS; library primary accent green
-
-
-
-## Repo implementation status
-
-
-
-- **Library home**: `/dashboard` with sidebar shell (search, folders, grid)
-
-- **Study workspace**: explanation = generate options → lecture note result; blank-study = generate options (source/range/density) → inline workbook result
-
-- **Legacy**: `/materials` redirects to `/dashboard`
-
-- **P1 routes hidden**: `quiz`, `tutor`, `review`
-
-
 
 ## Agent workflow
 
-
-
-1. Manyfast MCP: `read_project` or `read_project_meta` for feature/spec IDs
-
-2. Library UX changes → `features/dashboard`; study tabs → `pdf` / `explanation` / `blank-study`
-
-3. Follow `studyfill-frontend.mdc` for code structure and blank-study UX
-
-4. Do not implement P1 scope when task is P0 unless user confirms
-
+1. Phase A tasks only unless user requests Phase B/C
+2. Library → `features/dashboard.mdc`; study tabs → per-feature rules
+3. Use `blank-study` skill for large blank-study work
