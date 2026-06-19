@@ -8,15 +8,9 @@ import { NextResponse } from "next/server"
 import { SESSION_COOKIE } from "@/constants/auth"
 import { ROUTES } from "@/constants/routes"
 import { serializeSession, sessionCookieOptions } from "@/features/auth/session"
+import type { AuthResponse } from "@/lib/api/types"
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080"
-
-type BackendAuthData = {
-  accessToken: string
-  refreshToken: string
-  expiresIn: number
-  user: { id: string; email: string; name: string; profileImageUrl?: string }
-}
 
 export const GET = async (request: Request) => {
   const url = new URL(request.url)
@@ -36,23 +30,26 @@ export const GET = async (request: Request) => {
     })
     const body = (await res.json().catch(() => null)) as {
       success?: boolean
-      data?: BackendAuthData
+      data?: AuthResponse
     } | null
 
-    if (!body?.success || !body.data) {
+    // springdoc 상 AuthResponse 필드가 전부 optional → 세션에 필요한 값을 직접 검증
+    const data = body?.data
+    const userId = data?.user?.id
+    if (!body?.success || !data?.accessToken || !data.refreshToken || !userId) {
       return NextResponse.redirect(homeWithError)
     }
 
-    const { accessToken, refreshToken, expiresIn, user } = body.data
+    const { accessToken, refreshToken, expiresIn, user } = data
     const response = NextResponse.redirect(new URL(ROUTES.dashboard, url.origin))
     response.cookies.set(
       SESSION_COOKIE,
       serializeSession({
-        userId: user.id,
-        email: user.email,
-        name: user.name,
+        userId,
+        email: user?.email ?? "",
+        name: user?.name ?? "",
         provider: "google",
-        picture: user.profileImageUrl,
+        picture: user?.profileImageUrl,
         accessToken,
         refreshToken,
         expiresIn,

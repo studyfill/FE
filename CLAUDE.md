@@ -82,8 +82,11 @@ src/
 - **타입**: 손으로 작성 금지. `src/lib/api/schema.d.ts`를 import. 갱신은 `/sync-api` 또는 `pnpm gen:api`.
 - **에러 분기**: `apiFetch`가 던지는 `ApiError`의 `code`로 분기. 코드 상수는 `src/lib/api/errors.ts`
   (`ErrorCode.AUTH_002` 등), 전체 목록은 `ERROR_CODE.md`.
-- **새 API 붙일 때**: ① 백엔드 `/v3/api-docs`(또는 `API_SPEC.md`)에서 계약 확인 →
-  ② 타입 재생성 → ③ `apiFetch` 호출 작성. 임의 추측 금지.
+- **새 API 붙일 때**: ① **배포 백엔드 Swagger를 항상 먼저 확인**
+  (Swagger UI `https://be-production-5944.up.railway.app/swagger-ui/index.html`,
+  스펙 `https://be-production-5944.up.railway.app/v3/api-docs`)하여 엔드포인트·요청/응답 계약 확정 →
+  ② 타입 재생성(`pnpm gen:api:prod` 또는 `/sync-api`) → ③ `apiFetch` 호출 작성. 임의 추측 금지.
+  (로컬 백엔드를 직접 띄운 경우에만 `/v3/api-docs`(localhost) 사용)
 
 ## 인증 플로우 (Google Authorization Code)
 
