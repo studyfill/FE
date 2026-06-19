@@ -36,6 +36,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/files/{fileId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getDetail_1"];
+        put: operations["rename_1"];
+        post?: never;
+        delete: operations["delete_1"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/folders": {
         parameters: {
             query?: never;
@@ -46,6 +62,38 @@ export interface paths {
         get: operations["getRootFolders"];
         put?: never;
         post: operations["create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/files/{fileId}/view": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["recordView"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/files/upload": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["upload"];
         delete?: never;
         options?: never;
         head?: never;
@@ -132,6 +180,22 @@ export interface paths {
         patch: operations["toggleFavorite"];
         trace?: never;
     };
+    "/api/v1/files/{fileId}/move": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["move_1"];
+        trace?: never;
+    };
     "/api/v1/folders/{folderId}/delete-preview": {
         parameters: {
             query?: never;
@@ -156,6 +220,38 @@ export interface paths {
             cookie?: never;
         };
         get: operations["getFavorites"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/files": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/files/recent": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getRecent"];
         put?: never;
         post?: never;
         delete?: never;
@@ -224,10 +320,43 @@ export interface components {
             /** Format: date-time */
             createdAt?: string;
         };
+        FileUpdateRequest: {
+            name: string;
+        };
+        ApiResponseFileResponse: {
+            success?: boolean;
+            data?: components["schemas"]["FileResponse"];
+            code?: string;
+            message?: string;
+        };
+        FileResponse: {
+            /** Format: uuid */
+            id?: string;
+            /** Format: uuid */
+            folderId?: string;
+            name?: string;
+            originalName?: string;
+            fileType?: string;
+            /** Format: int64 */
+            fileSize?: number;
+            /** Format: int32 */
+            pageCount?: number;
+            analysisStatus?: string;
+            /** Format: date-time */
+            lastViewedAt?: string;
+            /** Format: date-time */
+            createdAt?: string;
+        };
         FolderCreateRequest: {
             name: string;
             /** Format: uuid */
             parentId?: string;
+        };
+        ApiResponseVoid: {
+            success?: boolean;
+            data?: unknown;
+            code?: string;
+            message?: string;
         };
         RefreshRequest: {
             refreshToken: string;
@@ -252,18 +381,16 @@ export interface components {
             name?: string;
             profileImageUrl?: string;
         };
-        ApiResponseVoid: {
-            success?: boolean;
-            data?: unknown;
-            code?: string;
-            message?: string;
-        };
         GoogleLoginRequest: {
             code: string;
         };
         FolderMoveRequest: {
             /** Format: uuid */
             targetParentId?: string;
+        };
+        FileMoveRequest: {
+            /** Format: uuid */
+            targetFolderId?: string;
         };
         ApiResponseListFolderResponse: {
             success?: boolean;
@@ -301,6 +428,36 @@ export interface components {
             subFolderCount?: number;
             /** Format: int32 */
             fileCount?: number;
+        };
+        Pageable: {
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            sort?: string[];
+        };
+        ApiResponsePageResponseFileResponse: {
+            success?: boolean;
+            data?: components["schemas"]["PageResponseFileResponse"];
+            code?: string;
+            message?: string;
+        };
+        PageResponseFileResponse: {
+            content?: components["schemas"]["FileResponse"][];
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+        };
+        ApiResponseListFileResponse: {
+            success?: boolean;
+            data?: components["schemas"]["FileResponse"][];
+            code?: string;
+            message?: string;
         };
     };
     responses: never;
@@ -425,6 +582,76 @@ export interface operations {
             };
         };
     };
+    getDetail_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                fileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseFileResponse"];
+                };
+            };
+        };
+    };
+    rename_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                fileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FileUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseFileResponse"];
+                };
+            };
+        };
+    };
+    delete_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                fileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseVoid"];
+                };
+            };
+        };
+    };
     getRootFolders: {
         parameters: {
             query?: never;
@@ -465,6 +692,58 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["ApiResponseFolderResponse"];
+                };
+            };
+        };
+    };
+    recordView: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                fileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseVoid"];
+                };
+            };
+        };
+    };
+    upload: {
+        parameters: {
+            query?: {
+                folderId?: string;
+                name?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseFileResponse"];
                 };
             };
         };
@@ -587,6 +866,32 @@ export interface operations {
             };
         };
     };
+    move_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                fileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FileMoveRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseFileResponse"];
+                };
+            };
+        };
+    };
     getDeletePreview: {
         parameters: {
             query?: never;
@@ -625,6 +930,49 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["ApiResponseListFolderResponse"];
+                };
+            };
+        };
+    };
+    list: {
+        parameters: {
+            query: {
+                folderId?: string;
+                pageable: components["schemas"]["Pageable"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponsePageResponseFileResponse"];
+                };
+            };
+        };
+    };
+    getRecent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseListFileResponse"];
                 };
             };
         };
