@@ -2,12 +2,9 @@
 // folderId·name 은 폼 필드가 아니라 쿼리 파라미터로 전달한다.
 import type { NextRequest } from "next/server"
 
-import { backendProxy, getSessionToken, unauthorized } from "@/lib/api/bff-proxy"
+import { backendProxy } from "@/lib/api/bff-proxy"
 
 export const POST = async (request: NextRequest): Promise<Response> => {
-  const token = await getSessionToken()
-  if (!token) return unauthorized()
-
   const form = await request.formData()
   const file = form.get("file")
   if (!(file instanceof File)) {
@@ -29,7 +26,6 @@ export const POST = async (request: NextRequest): Promise<Response> => {
 
   return backendProxy("/files/upload", {
     method: "POST",
-    token,
     search,
     formBody: forward,
   })

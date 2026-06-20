@@ -6,12 +6,14 @@
 import { cookies } from "next/headers"
 
 import { SESSION_COOKIE } from "@/constants/auth"
-import type { Session } from "@/types/auth"
+import {
+  parseSessionValue,
+  type StoredSession,
+} from "@/features/auth/session-core"
+
+export type { StoredSession } from "@/features/auth/session-core"
 
 export const SESSION_MAX_AGE = 60 * 60 * 24 * 7
-
-/** 쿠키에 저장되는 세션 (name 필수) */
-export type StoredSession = Session & { name: string }
 
 export const sessionCookieOptions = {
   httpOnly: true,
@@ -36,12 +38,5 @@ export const clearSessionCookie = async () => {
 
 export const getServerSession = async (): Promise<StoredSession | null> => {
   const cookieStore = await cookies()
-  const raw = cookieStore.get(SESSION_COOKIE)?.value
-  if (!raw) return null
-
-  try {
-    return JSON.parse(raw) as StoredSession
-  } catch {
-    return null
-  }
+  return parseSessionValue(cookieStore.get(SESSION_COOKIE)?.value)
 }
