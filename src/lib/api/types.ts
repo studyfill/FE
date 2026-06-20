@@ -30,6 +30,7 @@ export type FolderDeletePreviewResponse = Schemas["FolderDeletePreviewResponse"]
 export type FileResponse = Schemas["FileResponse"]
 export type FileMoveRequest = Schemas["FileMoveRequest"]
 export type FileUpdateRequest = Schemas["FileUpdateRequest"]
+export type FileDownloadResponse = Schemas["FileDownloadResponse"]
 export type PageResponseFileResponse = Schemas["PageResponseFileResponse"]
 
 // Search
