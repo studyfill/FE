@@ -1,9 +1,7 @@
----
-description: StudyFill frontend stack, architecture, UI/UX, code style, and development standards
-alwaysApply: true
----
+# StudyFill Frontend — Stack & Standards (상세)
 
-# StudyFill Frontend Cursor Rules
+> 루트 `CLAUDE.md`의 스택·구조·UI·코드 스타일 상세판. 충돌 시 `CLAUDE.md`를 우선한다.
+> git 규칙은 [docs/git.md](git.md), 제품/Phase 맥락은 [docs/product.md](product.md).
 
 ## Core Stack
 
@@ -77,7 +75,7 @@ Avoid: dark mode style, colorful educational UI, cluttered dashboards, enterpris
 
 ### UI density baseline
 
-- Root scale: `html { font-size: 80%; }` in [`globals.css`](src/app/globals.css) — design at 100% browser zoom matches prior 80% zoom look
+- Root scale: `html { font-size: 80%; }` in [`globals.css`](../src/app/globals.css) — design at 100% browser zoom matches prior 80% zoom look
 - Do **not** add new `text-[Npx]`, `size-[Npx]`, or layout px literals in feature code
 - Use `@theme` tokens instead:
   - Typography: `text-body` (15px design), `text-body-sm` (14px), `text-caption` (13px), `text-micro` (11px), `text-title-xl` (28px)
@@ -104,7 +102,7 @@ Avoid: dark mode style, colorful educational UI, cluttered dashboards, enterpris
 
 ## Feature-specific guidance
 
-Feature-specific UX and components: see `.cursor/rules/features/*.mdc` or `.cursor/skills/*/SKILL.md`.
+Feature-specific UX and components: see each `src/features/<feature>/CLAUDE.md` or `.claude/skills/*/SKILL.md`.
 
 ## Development Workflow
 
@@ -115,4 +113,4 @@ Before coding:
 
 Never leave TODOs, placeholders, or incomplete code. Always ship production-quality, reusable, maintainable code.
 
-For branch naming, commits, and PRs, follow `studyfill-git` rule.
+For branch naming, commits, and PRs, follow [docs/git.md](git.md).

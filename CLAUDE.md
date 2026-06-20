@@ -3,8 +3,8 @@
 StudyFill의 **Next.js 프론트엔드** 레포입니다. 백엔드(`studyfill/BE`)와 연동하며,
 백엔드가 자동 생성하는 OpenAPI 스펙을 계약(contract)으로 사용합니다.
 
-> 이 문서는 프로젝트 전반 규칙을 담습니다. 세부 컨벤션은 `.cursor/rules/*.mdc`와
-> `.cursor/skills/*/SKILL.md`에도 정리돼 있으며, 충돌 시 이 문서를 우선합니다.
+> 이 문서는 프로젝트 전반 규칙을 담습니다. 세부 컨벤션은 `docs/*.md`(frontend·git·product)와
+> `.claude/skills/*/SKILL.md`에 정리돼 있으며, 충돌 시 이 문서를 우선합니다.
 
 ## 프로젝트 개요
 
@@ -19,7 +19,7 @@ StudyFill의 **Next.js 프론트엔드** 레포입니다. 백엔드(`studyfill/B
   사용자 확인 없이 Phase B/C 기능을 구현하지 않는다.
 - **Phase B(보류)**: quiz, review(오답노트), tutor, 과금 UI, 본문 검색
 - **Phase C(보류)**: SSE 스트리밍, Vision OCR, 실결제, 모바일 전용 UI
-- 상세 제품 맥락·화면↔feature 매핑: `.cursor/rules/studyfill-product.mdc`
+- 상세 제품 맥락·화면↔feature 매핑: `docs/product.md`
 
 ## Build & Run
 
@@ -68,7 +68,7 @@ src/
   (Notion/Linear/Perplexity 지향, 다크모드·화려한 교육 UI 지양).
 - **밀도 베이스라인**: `globals.css`의 `html { font-size: 80% }`. feature 코드에 새 `text-[Npx]`/`size-[Npx]`/
   레이아웃 px 리터럴 추가 금지 → `@theme` 토큰 사용 (`text-body`, `text-caption`, `w-sidebar`,
-  `size-icon-md`, `rounded-button` 등). 상세는 `.cursor/rules/studyfill-frontend.mdc`.
+  `size-icon-md`, `rounded-button` 등). 상세는 `docs/frontend.md`.
 - 언어: MVP는 한국어 UI만. i18n은 명시 요청 전까지 추가하지 않는다.
 - 접근성: 아이콘 버튼에 `aria-label`, div 클릭보다 `<button>`.
 
@@ -136,7 +136,7 @@ types.ts      # schema.d.ts 의 도메인 타입 편의 별칭 (여기서 import
 
 ## Git 워크플로
 
-세부는 `.cursor/rules/studyfill-git.mdc`. 요약:
+세부는 `docs/git.md`. 요약:
 
 - 모든 작업은 `develop`에서 분기. 브랜치: `<type>/<scope>-<kebab-desc>` (예: `feat/blank-study-answer-check`)
 - 타입: `feat` `fix` `refactor` `chore` `docs` `test` / 스코프: feature 폴더명 + `ui` `lib` `deps`
@@ -157,8 +157,7 @@ types.ts      # schema.d.ts 의 도메인 타입 편의 별칭 (여기서 import
 | 빈칸 학습 | `src/features/blank-study/CLAUDE.md` |
 | 쉽게 설명 | `src/features/explanation/CLAUDE.md` |
 
-> 위 도메인 가이드는 Claude Code용 단일 소스다. Cursor용 동일 규칙(`.cursor/rules/features/*.mdc`)이
-> 있으면 함께 갱신한다.
+> 위 각 feature 폴더의 `CLAUDE.md`가 해당 도메인의 단일 소스다.
 
 ## 문서 참조
 
@@ -166,8 +165,8 @@ types.ts      # schema.d.ts 의 도메인 타입 편의 별칭 (여기서 import
 |------|------|
 | `API_INTEGRATION.md` | 연동 상세 (래퍼·인증·업로드·폴링·export·CORS) |
 | `ERROR_CODE.md` | 에러/성공 코드 분기 |
-| `.cursor/rules/studyfill-frontend.mdc` | 스택·구조·UI·코드 스타일 상세 |
-| `.cursor/rules/studyfill-git.mdc` | git 컨벤션 상세 |
-| `.cursor/rules/studyfill-product.mdc` | 제품 맥락·Phase 범위 |
-| `.cursor/skills/*/SKILL.md` | 대규모 feature 작업 스킬 |
+| `docs/frontend.md` | 스택·구조·UI·코드 스타일 상세 |
+| `docs/git.md` | git 컨벤션 상세 |
+| `docs/product.md` | 제품 맥락·Phase 범위 |
+| `.claude/skills/*/SKILL.md` | 대규모 feature 작업 스킬 |
 | 백엔드 `API_SPEC.md` / `/swagger-ui.html` | 엔드포인트 명세 / 실행 중 API 확인 |

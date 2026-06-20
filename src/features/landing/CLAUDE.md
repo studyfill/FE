@@ -1,7 +1,6 @@
 # Landing (도메인 가이드 — Phase A)
 
 비로그인 진입 페이지: 기능 소개 / 사용법 / 가격. **구현된 기능만 홍보**(정직성 규칙).
-(Cursor용 동일 규칙: `.cursor/rules/features/landing.mdc` — 함께 갱신)
 
 ## 홍보 가능 (구현됨)
 

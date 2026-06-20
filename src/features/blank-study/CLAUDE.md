@@ -1,7 +1,6 @@
 # Blank Study (도메인 가이드)
 
-공통 학습 탭 패턴은 `src/features/study/CLAUDE.md`. 대규모 작업은 `.cursor/skills/blank-study/SKILL.md`.
-(Cursor용 동일 규칙: `.cursor/rules/features/blank-study.mdc` — 함께 갱신)
+공통 학습 탭 패턴은 `src/features/study/CLAUDE.md`. 대규모 작업은 `.claude/skills/blank-study/SKILL.md`.
 
 ## 핵심 원칙
 
