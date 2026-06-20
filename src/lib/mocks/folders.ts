@@ -215,6 +215,27 @@ export const listChildFolders = (
     })
 }
 
+export const searchFolders = (query: string): FolderGridItem[] => {
+  const q = query.trim().toLowerCase()
+  if (!q) return []
+
+  const store = loadMockStore()
+  const { folders, materials } = store
+
+  return folders
+    .filter((folder) => folder.name.toLowerCase().includes(q))
+    .sort(compareSiblingFolders)
+    .map((folder) => {
+      const hasChildren = folders.some((entry) => entry.parentId === folder.id)
+      const directCount = materials.filter((m) => m.folderId === folder.id).length
+      const materialCount = hasChildren
+        ? countMaterialsInScope(folder.id, folders, materials)
+        : directCount
+
+      return { ...folder, materialCount }
+    })
+}
+
 export const listFolderTree = (): FolderTreeNode[] => {
   const store = loadMockStore()
   const { folders, materials } = store
