@@ -1,12 +1,7 @@
----
-description: StudyFill product context from PRD/TRD (Phase A active scope)
-alwaysApply: true
----
-
-# StudyFill Product Context
+# StudyFill Product Context (상세)
 
 > **Source of truth**: PRD/TRD (Manyfast `AI 기반 PDF 학습 플랫폼` is supplementary).
-> **How to build**: `studyfill-frontend.mdc` + `.cursor/rules/features/*`.
+> **How to build**: [docs/frontend.md](frontend.md) + each `src/features/<feature>/CLAUDE.md`.
 > **Active scope**: **Phase A (6/30 launch)** — do not implement Phase B/C unless user confirms.
 
 ## Product summary
@@ -52,7 +47,7 @@ Legacy: `/login`, `/signup` → redirect `/`; `/materials` → `/dashboard`.
 ## Product constraints
 
 - **Not** a generic AI chat app (튜터는 문서·노트 맥락만 — Phase B)
-- **Not** flashcard UI for blank study — inline active recall (`features/blank-study.mdc`)
+- **Not** flashcard UI for blank study — inline active recall (`src/features/blank-study/CLAUDE.md`)
 - **Blank sources**: `pdf` or `explanation` — user picks before generate
 - **On-demand AI**: 업로드 시 추출만; 설명·빈칸은 사용자 버튼 요청 시 생성
 - **Inline errors**: 상세 시스템 에러 미노출; `GenerateErrorAlert` 재시도 패턴
@@ -62,5 +57,5 @@ Legacy: `/login`, `/signup` → redirect `/`; `/materials` → `/dashboard`.
 ## Agent workflow
 
 1. Phase A tasks only unless user requests Phase B/C
-2. Library → `features/dashboard.mdc`; study tabs → per-feature rules
-3. Use `blank-study` skill for large blank-study work
+2. Library → `src/features/dashboard/CLAUDE.md`; study tabs → per-feature `CLAUDE.md`
+3. Use the `blank-study` skill (`.claude/skills/blank-study/SKILL.md`) for large blank-study work

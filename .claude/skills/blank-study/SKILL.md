@@ -7,9 +7,9 @@ description: Implements StudyFill blank-study inline active recall. Use when add
 
 ## Before coding
 
-1. Read Manyfast MCP: `read_project_meta` for F-GVXHSY, F-TLNABJ (R-YESAGY)
-2. Read `.cursor/rules/features/blank-study.mdc` and `study-feature-tab.mdc`
-3. For types, mocks, and edge cases see [reference.md](reference.md)
+1. Read `src/features/blank-study/CLAUDE.md` and `src/features/study/CLAUDE.md`
+2. For types, mocks, and edge cases see [reference.md](reference.md)
+3. (Optional) Manyfast context if available: `read_project_meta` for F-GVXHSY, F-TLNABJ (R-YESAGY)
 
 ## Implementation checklist
 
