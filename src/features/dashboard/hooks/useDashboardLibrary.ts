@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 
 import { ROUTES } from "@/constants/routes"
 import type { FolderColorId } from "@/constants/folder-colors"
-import { createFolder, getFolder, listChildFolders, listFolderTree, moveFolder } from "@/lib/mocks/folders"
+import { createFolder, getFolder, listChildFolders, listFolderTree, moveFolder, searchFolders } from "@/lib/mocks/folders"
 import {
   listRecentFolders,
   recordRecentFolder,
@@ -61,7 +61,9 @@ export const useDashboardLibrary = (folderId: string | null) => {
   const refresh = useCallback(() => {
     setFolderTree(listFolderTree())
     setRecentFolders(listRecentFolders())
-    setChildFolders(searchQuery.trim() ? [] : listChildFolders(folderId))
+    setChildFolders(
+      searchQuery.trim() ? searchFolders(searchQuery) : listChildFolders(folderId)
+    )
     setMaterials(
       listMaterials({
         folderId: searchQuery.trim() ? null : folderId,
