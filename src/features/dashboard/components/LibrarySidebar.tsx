@@ -65,12 +65,9 @@ export const LibrarySidebar = ({
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="자료 · 내용 검색"
-            className="h-10 rounded-lg border-sidebar-border bg-background/80 pr-12 pl-10 text-body shadow-none"
+            className="h-10 rounded-lg border-sidebar-border bg-background/80 pr-3 pl-10 text-body shadow-none"
             aria-label="자료 검색"
           />
-          <kbd className="pointer-events-none absolute top-1/2 right-2.5 hidden -translate-y-1/2 rounded border border-border bg-muted/60 px-1.5 py-0.5 font-mono text-micro text-muted-foreground sm:inline">
-            ⌘K
-          </kbd>
         </div>
       </div>
 

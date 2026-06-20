@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 
 import { ROUTES } from "@/constants/routes"
 import type { FolderColorId } from "@/constants/folder-colors"
-import { createFolder, getFolder, listChildFolders, listFolderTree, moveFolder, searchFolders } from "@/lib/mocks/folders"
+import { createFolder, getFolder, listChildFolders, listFolderTree, moveFolder } from "@/lib/mocks/folders"
 import {
   listRecentFolders,
   recordRecentFolder,
@@ -58,20 +58,13 @@ export const useDashboardLibrary = (folderId: string | null) => {
     return getFolderAncestorPath(folderId, folders)
   }, [folderId, folderTree])
 
+  // 검색은 배포 백엔드(useLibrarySearch)가 담당한다. 폴더/자료 목록은 현재 폴더 기준만 노출.
   const refresh = useCallback(() => {
     setFolderTree(listFolderTree())
     setRecentFolders(listRecentFolders())
-    setChildFolders(
-      searchQuery.trim() ? searchFolders(searchQuery) : listChildFolders(folderId)
-    )
-    setMaterials(
-      listMaterials({
-        folderId: searchQuery.trim() ? null : folderId,
-        searchQuery,
-        sort,
-      })
-    )
-  }, [folderId, searchQuery, sort])
+    setChildFolders(listChildFolders(folderId))
+    setMaterials(listMaterials({ folderId, sort }))
+  }, [folderId, sort])
 
   useEffect(() => {
     refresh()
