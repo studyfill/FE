@@ -84,17 +84,22 @@ export const useDashboardLibrary = (folderId: string | null) => {
     setMaterialsError(null)
     try {
       const fetched = await listFiles(folderId)
-      // 백엔드에 없는 진행상태(currentPage/progressPercent/lastStudiedAt)는 로컬 미러와 병합
-      const merged = fetched.map((m) => {
+      // study/explanation/blank 콘텐츠는 로컬에서 처리되고, 로컬 미러가 없으면 study 진입 시
+      // 백엔드에서 하이드레이트하므로 모든 백엔드 자료는 열람 가능(extractionStatus "done")하다.
+      // (백엔드 analysisStatus는 미배포 AI 분석 파이프라인 상태라 진입 가능 여부의 근거가 아님)
+      // 진행상태(currentPage/progressPercent/lastStudiedAt)는 로컬 미러와 병합한다.
+      const merged: Material[] = fetched.map((m) => {
         const local = getMaterial(m.id)
         return local
           ? {
               ...m,
+              extractionStatus: local.extractionStatus,
+              pageCount: local.pageCount || m.pageCount,
               currentPage: local.currentPage,
               progressPercent: local.progressPercent,
               lastStudiedAt: local.lastStudiedAt ?? m.lastStudiedAt,
             }
-          : m
+          : { ...m, extractionStatus: "done" }
       })
       setMaterials(sortMaterials(merged, sort))
     } catch (err) {

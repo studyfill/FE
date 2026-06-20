@@ -170,6 +170,23 @@ export const bffFetch = async <T>(
   return body.data as T
 }
 
+/** BFF 경유 바이너리(blob) 호출. 래퍼 없이 바이트를 받는다(파일 원본 스트리밍용). */
+export const bffFetchBlob = async (
+  path: string,
+  init?: Omit<RequestInit, "body">,
+): Promise<Blob> => {
+  const res = await fetch(`${BFF_PREFIX}${path}`, init)
+  if (!res.ok) {
+    const body = (await res.json().catch(() => null)) as ApiResponse<unknown> | null
+    throw new ApiError(
+      body?.code ?? ErrorCode.COMMON_INTERNAL_ERROR,
+      body?.message ?? "파일을 가져오지 못했습니다",
+      res.status,
+    )
+  }
+  return res.blob()
+}
+
 // 편의 메서드
 export const api = {
   get: <T>(path: string, init?: FetchInit) =>

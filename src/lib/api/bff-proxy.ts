@@ -30,6 +30,29 @@ type ProxyInit = {
   formBody?: FormData
 }
 
+/** 백엔드 JSON 호출 → data 만 반환(서버 전용). 래퍼 실패 시 throw. */
+export const backendJson = async <T>(
+  path: string,
+  token: string,
+  init?: { method?: string },
+): Promise<T> => {
+  const res = await fetch(`${BACKEND_BASE}${API_PREFIX}${path}`, {
+    method: init?.method ?? "GET",
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  const body = (await res.json().catch(() => null)) as
+    | { success?: boolean; data?: T }
+    | null
+  if (!res.ok || !body?.success) {
+    throw new Error(`backend ${path} 실패: ${res.status}`)
+  }
+  return body.data as T
+}
+
+/** 백엔드 base origin 여부 (download-url 이 backend 스트리밍인지 외부 presigned 인지 구분). */
+export const isBackendUrl = (url: string): boolean =>
+  url.startsWith(BACKEND_BASE)
+
 /** 백엔드로 프록시하고 응답(JSON 래퍼)을 그대로 전달한다. */
 export const backendProxy = async (
   path: string,
