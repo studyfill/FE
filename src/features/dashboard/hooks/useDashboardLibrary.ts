@@ -11,10 +11,21 @@ import {
   recordRecentFolder,
 } from "@/lib/mocks/recent-folders"
 import { loadMockStore } from "@/lib/mocks/mock-store"
-import { listMaterials, moveMaterial, uploadMaterial } from "@/lib/mocks/materials"
+import {
+  getMaterial,
+  processMaterialLocally,
+  sortMaterials,
+} from "@/lib/mocks/materials"
+import {
+  listFiles,
+  moveFile,
+  uploadFileToBackend,
+  validateUploadFile,
+} from "@/lib/api/files"
+import { getFileTypeFromName } from "@/lib/utils/upload-file"
 import { getPdfPageCountFromFile } from "@/lib/utils/pdf-page-count"
 import { getFolderAncestorPath } from "@/lib/utils/folder-path"
-import type { MaterialSort, MaterialViewLayout } from "@/types/material"
+import type { Material, MaterialSort, MaterialViewLayout } from "@/types/material"
 
 export const useDashboardLibrary = (folderId: string | null) => {
   const router = useRouter()
@@ -24,13 +35,15 @@ export const useDashboardLibrary = (folderId: string | null) => {
   const [childFolders, setChildFolders] = useState<
     ReturnType<typeof listChildFolders>
   >([])
-  const [materials, setMaterials] = useState<ReturnType<typeof listMaterials>>([])
+  const [materials, setMaterials] = useState<Material[]>([])
   const [folderTree, setFolderTree] = useState<ReturnType<typeof listFolderTree>>(
     []
   )
   const [recentFolders, setRecentFolders] = useState<
     ReturnType<typeof listRecentFolders>
   >([])
+  const [isLoadingMaterials, setIsLoadingMaterials] = useState(true)
+  const [materialsError, setMaterialsError] = useState<string | null>(null)
   const [isUploading, setIsUploading] = useState(false)
   const [uploadError, setUploadError] = useState<string | null>(null)
   const [isCreatingFolder, setIsCreatingFolder] = useState(false)
@@ -59,16 +72,53 @@ export const useDashboardLibrary = (folderId: string | null) => {
   }, [folderId, folderTree])
 
   // 검색은 배포 백엔드(useLibrarySearch)가 담당한다. 폴더/자료 목록은 현재 폴더 기준만 노출.
-  const refresh = useCallback(() => {
+  // 폴더는 mock, 자료(files)는 실 백엔드(BFF 경유). 둘은 출처가 다르므로 별도 로딩한다.
+  const loadFolders = useCallback(() => {
     setFolderTree(listFolderTree())
     setRecentFolders(listRecentFolders())
     setChildFolders(listChildFolders(folderId))
-    setMaterials(listMaterials({ folderId, sort }))
+  }, [folderId])
+
+  const loadMaterials = useCallback(async () => {
+    setIsLoadingMaterials(true)
+    setMaterialsError(null)
+    try {
+      const fetched = await listFiles(folderId)
+      // 백엔드에 없는 진행상태(currentPage/progressPercent/lastStudiedAt)는 로컬 미러와 병합
+      const merged = fetched.map((m) => {
+        const local = getMaterial(m.id)
+        return local
+          ? {
+              ...m,
+              currentPage: local.currentPage,
+              progressPercent: local.progressPercent,
+              lastStudiedAt: local.lastStudiedAt ?? m.lastStudiedAt,
+            }
+          : m
+      })
+      setMaterials(sortMaterials(merged, sort))
+    } catch (err) {
+      setMaterials([])
+      setMaterialsError(
+        err instanceof Error ? err.message : "자료를 불러오지 못했습니다."
+      )
+    } finally {
+      setIsLoadingMaterials(false)
+    }
   }, [folderId, sort])
 
+  const refresh = useCallback(() => {
+    loadFolders()
+    void loadMaterials()
+  }, [loadFolders, loadMaterials])
+
   useEffect(() => {
-    refresh()
-  }, [refresh])
+    loadFolders()
+  }, [loadFolders])
+
+  useEffect(() => {
+    void loadMaterials()
+  }, [loadMaterials])
 
   useEffect(() => {
     if (!folderId) return
@@ -112,10 +162,32 @@ export const useDashboardLibrary = (folderId: string | null) => {
     setIsUploading(true)
     setUploadError(null)
     try {
-      const pageCount = await getPdfPageCountFromFile(file)
-      await uploadMaterial(file, uploadFolderId, pageCount)
+      const validationError = validateUploadFile(file)
+      if (validationError) throw new Error(validationError)
+
+      const fileType = getFileTypeFromName(file.name)
+      if (!fileType) throw new Error("지원하지 않는 파일 형식입니다 (PDF, JPG, PNG).")
+
+      const pageCount =
+        fileType === "pdf" ? await getPdfPageCountFromFile(file) : 1
+
+      // 1) 백엔드 저장(DB 적재) → 2) 백엔드 id 로 로컬 처리(미배포 study 기능용) → 3) 목록 새로고침
+      const uploaded = await uploadFileToBackend(file, {
+        folderId: uploadFolderId,
+        name: file.name,
+      })
+      if (uploaded.id) {
+        await processMaterialLocally({
+          id: uploaded.id,
+          name: uploaded.name ?? file.name,
+          folderId: uploaded.folderId ?? uploadFolderId,
+          fileType,
+          file,
+          pageCount,
+        })
+      }
       if (uploadFolderId) recordRecentFolder(uploadFolderId)
-      refresh()
+      await loadMaterials()
     } catch (err) {
       setUploadError(err instanceof Error ? err.message : "업로드에 실패했습니다.")
     } finally {
@@ -123,11 +195,14 @@ export const useDashboardLibrary = (folderId: string | null) => {
     }
   }
 
-  const handleMoveMaterial = (materialId: string, targetFolderId: string) => {
+  const handleMoveMaterial = async (
+    materialId: string,
+    targetFolderId: string
+  ) => {
     try {
-      moveMaterial(materialId, targetFolderId)
+      await moveFile(materialId, targetFolderId)
       setMoveError(null)
-      refresh()
+      await loadMaterials()
     } catch (err) {
       setMoveError(
         err instanceof Error ? err.message : "자료를 이동하지 못했습니다."
@@ -163,6 +238,8 @@ export const useDashboardLibrary = (folderId: string | null) => {
     isHome: folderId === null,
     folderLabel,
     folderPath,
+    isLoadingMaterials,
+    materialsError,
     isUploading,
     uploadError,
     handleUpload,
