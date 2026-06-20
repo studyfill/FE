@@ -17,7 +17,7 @@ const openDb = (): Promise<IDBDatabase> =>
   })
 
 export const savePdfBlob = async (
-  materialId: string,
+  userFileId: string,
   data: ArrayBuffer
 ): Promise<void> => {
   const db = await openDb()
@@ -25,18 +25,18 @@ export const savePdfBlob = async (
     const tx = db.transaction(STORE_NAME, "readwrite")
     tx.oncomplete = () => resolve()
     tx.onerror = () => reject(tx.error ?? new Error("IndexedDB write failed"))
-    tx.objectStore(STORE_NAME).put(data, materialId)
+    tx.objectStore(STORE_NAME).put(data, userFileId)
   })
   db.close()
 }
 
 export const getPdfBlob = async (
-  materialId: string
+  userFileId: string
 ): Promise<ArrayBuffer | null> => {
   const db = await openDb()
   const result = await new Promise<ArrayBuffer | null>((resolve, reject) => {
     const tx = db.transaction(STORE_NAME, "readonly")
-    const request = tx.objectStore(STORE_NAME).get(materialId)
+    const request = tx.objectStore(STORE_NAME).get(userFileId)
     request.onsuccess = () => resolve((request.result as ArrayBuffer) ?? null)
     request.onerror = () => reject(request.error ?? new Error("IndexedDB read failed"))
   })

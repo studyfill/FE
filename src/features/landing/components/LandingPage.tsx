@@ -9,44 +9,44 @@ import { LandingHowToUse } from "@/features/landing/components/LandingHowToUse"
 import { LandingPricing } from "@/features/landing/components/LandingPricing"
 import { LandingSocialProof } from "@/features/landing/components/LandingSocialProof"
 import { LandingTestimonials } from "@/features/landing/components/LandingTestimonials"
-import { LandingBlankStudyMock } from "@/features/landing/components/mockups/LandingBlankStudyMock"
+import { LandingBlankMock } from "@/features/landing/components/mockups/LandingBlankMock"
 import { LandingDashboardMock } from "@/features/landing/components/mockups/LandingDashboardMock"
-import { LandingExplanationMock } from "@/features/landing/components/mockups/LandingExplanationMock"
+import { LandingNoteMock } from "@/features/landing/components/mockups/LandingNoteMock"
 import { LANDING_FEATURES } from "@/features/landing/constants/landing-content"
-import { buildMockBlankSession } from "@/lib/mocks/blank-study-content"
-import { buildMockExplanation } from "@/lib/mocks/explanation-content"
+import { buildMockBlankSession } from "@/lib/mocks/blank-content"
+import { buildMockNote } from "@/lib/mocks/note-content"
 import { listFolderTree } from "@/lib/mocks/folders"
-import { getMaterial, listMaterials } from "@/lib/mocks/materials"
-import { getMaterialPdfText } from "@/lib/mocks/pdf-text"
+import { getUserFile, listUserFiles } from "@/lib/mocks/user-files"
+import { getUserFilePdfText } from "@/lib/mocks/pdf-text"
 import { listRecentFolders } from "@/lib/mocks/recent-folders"
-import { DEFAULT_BLANK_OPTIONS } from "@/types/blank-study"
-import { DEFAULT_EXPLANATION_OPTIONS } from "@/types/explanation"
+import { DEFAULT_BLANK_OPTIONS } from "@/types/blank"
+import { DEFAULT_NOTE_OPTIONS } from "@/types/note"
 
-const DEMO_MATERIAL_ID = "mat-1"
+const DEMO_USER_FILE_ID = "mat-1"
 
 const FEATURE_TONES = ["default", "muted", "default"] as const
 
 export const LandingPage = () => {
-  const material = getMaterial(DEMO_MATERIAL_ID)
+  const userFile = getUserFile(DEMO_USER_FILE_ID)
 
-  if (!material) {
+  if (!userFile) {
     return null
   }
 
-  const materials = listMaterials()
+  const userFiles = listUserFiles()
   const folderTree = listFolderTree()
   const recentFolders = listRecentFolders()
 
-  const explanation = {
-    ...buildMockExplanation(material, DEFAULT_EXPLANATION_OPTIONS),
-    materialId: material.id,
+  const note = {
+    ...buildMockNote(userFile, DEFAULT_NOTE_OPTIONS),
+    userFileId: userFile.id,
     generatedAt: new Date().toISOString(),
   }
 
-  const pdfPages = getMaterialPdfText(material)?.pages ?? []
+  const pdfPages = getUserFilePdfText(userFile)?.pages ?? []
   const blankSession = {
-    ...buildMockBlankSession(material, DEFAULT_BLANK_OPTIONS, null, pdfPages),
-    materialId: material.id,
+    ...buildMockBlankSession(userFile, DEFAULT_BLANK_OPTIONS, null, pdfPages),
+    userFileId: userFile.id,
     generatedAt: new Date().toISOString(),
   }
 
@@ -54,19 +54,19 @@ export const LandingPage = () => {
     library: (
       <LandingDashboardMock
         folderTree={folderTree}
-        materials={materials}
+        userFiles={userFiles}
         recentFolders={recentFolders}
-        totalCount={materials.length}
+        totalCount={userFiles.length}
       />
     ),
-    explanation: (
-      <LandingExplanationMock
-        explanation={explanation}
+    note: (
+      <LandingNoteMock
+        note={note}
         pdfPages={pdfPages}
       />
     ),
-    "blank-study": (
-      <LandingBlankStudyMock session={blankSession} pdfPages={pdfPages} />
+    "blank": (
+      <LandingBlankMock session={blankSession} pdfPages={pdfPages} />
     ),
   } as const
 

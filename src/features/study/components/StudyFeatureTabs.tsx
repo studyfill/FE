@@ -4,30 +4,30 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Layers } from "lucide-react"
 
-import { ExplanationGenerateIcon } from "@/features/explanation/components/ExplanationGenerateIcon"
+import { NoteGenerateIcon } from "@/features/note/components/NoteGenerateIcon"
 import { ROUTES } from "@/constants/routes"
 import { cn } from "@/lib/utils"
 
 type StudyFeatureTabsProps = {
-  materialId: string
+  userFileId: string
 }
 
-export const StudyFeatureTabs = ({ materialId }: StudyFeatureTabsProps) => {
+export const StudyFeatureTabs = ({ userFileId }: StudyFeatureTabsProps) => {
   const pathname = usePathname()
 
   const tabs = [
     {
-      href: ROUTES.study(materialId),
+      href: ROUTES.study(userFileId),
       label: "쉽게 설명",
       generateIcon: true,
       match: (path: string) =>
-        path === ROUTES.study(materialId) || path.includes("/explanation"),
+        path === ROUTES.study(userFileId) || path.includes("/note"),
     },
     {
-      href: ROUTES.studyBlankStudy(materialId),
+      href: ROUTES.studyBlank(userFileId),
       label: "빈칸 암기",
       icon: Layers,
-      match: (path: string) => path.includes("/blank-study"),
+      match: (path: string) => path.includes("/blank"),
     },
   ] as const
 
@@ -51,7 +51,7 @@ export const StudyFeatureTabs = ({ materialId }: StudyFeatureTabsProps) => {
             )}
           >
             {"generateIcon" in tab && tab.generateIcon ? (
-              <ExplanationGenerateIcon
+              <NoteGenerateIcon
                 size={18}
                 className="size-icon-md text-inherit"
                 strokeWidth={isActive ? 2.25 : 1.75}

@@ -1,4 +1,4 @@
-import type { Folder, FolderTreeNode } from "@/types/material"
+import type { Folder, FolderTreeNode } from "@/types/user-file"
 
 import { isFolderColorId, type FolderColorId } from "@/constants/folder-colors"
 import { UNASSIGNED_FOLDER_LABEL } from "@/constants/folder"
@@ -41,18 +41,18 @@ export const getFolderScopeIds = (
   return [folderId, ...getChildFolderIds(folderId, folders)]
 }
 
-const countMaterialsInScope = (
+const countUserFilesInScope = (
   folderId: string,
   folders: Folder[],
-  materials: { folderId: string | null }[]
+  userFiles: { folderId: string | null }[]
 ): number => {
   const scope = getFolderScopeIds(folderId, folders) ?? [folderId]
-  return materials.filter(
+  return userFiles.filter(
     (m) => m.folderId !== null && scope.includes(m.folderId)
   ).length
 }
 
-export type SidebarFolderItem = Folder & { materialCount: number }
+export type SidebarFolderItem = Folder & { fileCount: number }
 
 const SIDEBAR_FOLDER_ORDER = [
   FOLDER_IDS.major,
@@ -64,31 +64,31 @@ const SIDEBAR_FOLDER_ORDER = [
 
 export const listSidebarFolders = (): SidebarFolderItem[] => {
   const store = loadMockStore()
-  const { folders, materials } = store
+  const { folders, userFiles } = store
 
   return SIDEBAR_FOLDER_ORDER.flatMap((id) => {
     const folder = folders.find((f) => f.id === id)
     if (!folder) return []
 
     const hasChildren = folders.some((f) => f.parentId === id)
-    const materialCount = hasChildren
-      ? countMaterialsInScope(id, folders, materials)
-      : materials.filter((m) => m.folderId === id).length
+    const fileCount = hasChildren
+      ? countUserFilesInScope(id, folders, userFiles)
+      : userFiles.filter((m) => m.folderId === id).length
 
-    return [{ ...folder, materialCount }]
+    return [{ ...folder, fileCount }]
   })
 }
 
 export type RootFolderSummary = {
   id: string
   name: string
-  materialCount: number
+  fileCount: number
   pinned?: boolean
 }
 
 export const listRootFolderSummaries = (): RootFolderSummary[] => {
   const store = loadMockStore()
-  const { folders, materials } = store
+  const { folders, userFiles } = store
 
   const rootOrder = ["전공", "교양", "시험대비"]
 
@@ -100,7 +100,7 @@ export const listRootFolderSummaries = (): RootFolderSummary[] => {
     .map((folder) => ({
       id: folder.id,
       name: folder.name,
-      materialCount: countMaterialsInScope(folder.id, folders, materials),
+      fileCount: countUserFilesInScope(folder.id, folders, userFiles),
       pinned: folder.pinned,
     }))
 }
@@ -187,7 +187,7 @@ export const moveFolder = (folderId: string, newParentId: string): Folder => {
   return folder
 }
 
-export type FolderGridItem = Folder & { materialCount: number }
+export type FolderGridItem = Folder & { fileCount: number }
 
 const compareSiblingFolders = (a: Folder, b: Folder) => {
   if (a.pinned && !b.pinned) return -1
@@ -199,19 +199,19 @@ export const listChildFolders = (
   parentId: string | null
 ): FolderGridItem[] => {
   const store = loadMockStore()
-  const { folders, materials } = store
+  const { folders, userFiles } = store
 
   return folders
     .filter((folder) => folder.parentId === parentId)
     .sort(compareSiblingFolders)
     .map((folder) => {
       const hasChildren = folders.some((entry) => entry.parentId === folder.id)
-      const directCount = materials.filter((m) => m.folderId === folder.id).length
-      const materialCount = hasChildren
-        ? countMaterialsInScope(folder.id, folders, materials)
+      const directCount = userFiles.filter((m) => m.folderId === folder.id).length
+      const fileCount = hasChildren
+        ? countUserFilesInScope(folder.id, folders, userFiles)
         : directCount
 
-      return { ...folder, materialCount }
+      return { ...folder, fileCount }
     })
 }
 
@@ -220,25 +220,25 @@ export const searchFolders = (query: string): FolderGridItem[] => {
   if (!q) return []
 
   const store = loadMockStore()
-  const { folders, materials } = store
+  const { folders, userFiles } = store
 
   return folders
     .filter((folder) => folder.name.toLowerCase().includes(q))
     .sort(compareSiblingFolders)
     .map((folder) => {
       const hasChildren = folders.some((entry) => entry.parentId === folder.id)
-      const directCount = materials.filter((m) => m.folderId === folder.id).length
-      const materialCount = hasChildren
-        ? countMaterialsInScope(folder.id, folders, materials)
+      const directCount = userFiles.filter((m) => m.folderId === folder.id).length
+      const fileCount = hasChildren
+        ? countUserFilesInScope(folder.id, folders, userFiles)
         : directCount
 
-      return { ...folder, materialCount }
+      return { ...folder, fileCount }
     })
 }
 
 export const listFolderTree = (): FolderTreeNode[] => {
   const store = loadMockStore()
-  const { folders, materials } = store
+  const { folders, userFiles } = store
 
   const buildNode = (folder: Folder): FolderTreeNode => {
     const children = folders
@@ -246,13 +246,13 @@ export const listFolderTree = (): FolderTreeNode[] => {
       .sort((a, b) => a.name.localeCompare(b.name, "ko"))
       .map(buildNode)
 
-    const directCount = materials.filter((m) => m.folderId === folder.id).length
-    const subtreeCount = countMaterialsInScope(folder.id, folders, materials)
+    const directCount = userFiles.filter((m) => m.folderId === folder.id).length
+    const subtreeCount = countUserFilesInScope(folder.id, folders, userFiles)
 
     return {
       ...folder,
       children,
-      materialCount: children.length > 0 ? subtreeCount : directCount,
+      fileCount: children.length > 0 ? subtreeCount : directCount,
     }
   }
 

@@ -13,7 +13,7 @@ type AppNavProps = {
   userName?: string
 }
 
-const navItems = [{ href: ROUTES.dashboard, label: "내 라이브러리" }]
+const navItems = [{ href: ROUTES.library, label: "내 라이브러리" }]
 
 export const AppNav = ({ userName }: AppNavProps) => {
   const pathname = usePathname()
@@ -27,7 +27,7 @@ export const AppNav = ({ userName }: AppNavProps) => {
       <div className="mx-auto flex h-12 max-w-5xl items-center justify-between gap-4 px-4">
         <div className="flex items-center gap-6">
           <Link
-            href={ROUTES.dashboard}
+            href={ROUTES.library}
             className="text-sm font-semibold tracking-tight"
           >
             {APP_NAME}

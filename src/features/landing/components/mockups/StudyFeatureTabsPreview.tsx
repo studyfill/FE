@@ -1,10 +1,10 @@
 import { Layers } from "lucide-react"
 
-import { ExplanationGenerateIcon } from "@/features/explanation/components/ExplanationGenerateIcon"
+import { NoteGenerateIcon } from "@/features/note/components/NoteGenerateIcon"
 import { cn } from "@/lib/utils"
 
 type StudyFeatureTabsPreviewProps = {
-  activeTab: "explanation" | "blank-study"
+  activeTab: "note" | "blank"
 }
 
 const tabClassName = (isActive: boolean) =>
@@ -18,19 +18,19 @@ const tabClassName = (isActive: boolean) =>
 export const StudyFeatureTabsPreview = ({
   activeTab,
 }: StudyFeatureTabsPreviewProps) => {
-  const explanationActive = activeTab === "explanation"
-  const blankActive = activeTab === "blank-study"
+  const noteActive = activeTab === "note"
+  const blankActive = activeTab === "blank"
 
   return (
     <nav
       className="flex shrink-0 gap-10 border-b border-border/80 bg-background px-8"
       aria-label="학습 기능 탭 미리보기"
     >
-      <div className={tabClassName(explanationActive)}>
-        <ExplanationGenerateIcon
+      <div className={tabClassName(noteActive)}>
+        <NoteGenerateIcon
           size={18}
           className="size-icon-md text-inherit"
-          strokeWidth={explanationActive ? 2.25 : 1.75}
+          strokeWidth={noteActive ? 2.25 : 1.75}
         />
         쉽게 설명
       </div>

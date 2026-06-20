@@ -14,26 +14,26 @@ import {
 import { ROUTES } from "@/constants/routes"
 import { loadMockStore } from "@/lib/mocks/mock-store"
 import { getFolderAncestorPath } from "@/lib/utils/folder-path"
-import type { Material } from "@/types/material"
+import type { UserFile } from "@/types/user-file"
 
 type StudyBreadcrumbsProps = {
-  material: Material
+  userFile: UserFile
 }
 
-export const StudyBreadcrumbs = ({ material }: StudyBreadcrumbsProps) => {
+export const StudyBreadcrumbs = ({ userFile }: StudyBreadcrumbsProps) => {
   const folderPath = useMemo(() => {
     const { folders } = loadMockStore()
-    return getFolderAncestorPath(material.folderId, folders)
-  }, [material.folderId])
+    return getFolderAncestorPath(userFile.folderId, folders)
+  }, [userFile.folderId])
 
-  const displayName = material.name.replace(/\.pdf$/i, "")
+  const displayName = userFile.name.replace(/\.pdf$/i, "")
 
   return (
     <Breadcrumb>
       <BreadcrumbList className="text-sm">
         <BreadcrumbItem>
           <BreadcrumbLink
-            render={<Link href={ROUTES.dashboard} />}
+            render={<Link href={ROUTES.library} />}
             className="text-muted-foreground hover:text-foreground"
           >
             라이브러리
@@ -44,7 +44,7 @@ export const StudyBreadcrumbs = ({ material }: StudyBreadcrumbsProps) => {
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <BreadcrumbLink
-                render={<Link href={ROUTES.dashboardFolder(folder.id)} />}
+                render={<Link href={ROUTES.libraryFolder(folder.id)} />}
                 className="text-muted-foreground hover:text-foreground"
               >
                 {folder.name}

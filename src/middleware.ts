@@ -32,7 +32,7 @@ export const middleware = (request: NextRequest) => {
   }
 
   if (pathname === ROUTES.home && authed) {
-    return NextResponse.redirect(new URL(ROUTES.dashboard, request.url))
+    return NextResponse.redirect(new URL(ROUTES.library, request.url))
   }
 
   return NextResponse.next()
@@ -43,6 +43,7 @@ export const config = {
     "/",
     "/login",
     "/signup",
+    "/library/:path*",
     "/dashboard/:path*",
     "/materials/:path*",
     "/study/:path*",

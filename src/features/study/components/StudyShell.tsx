@@ -6,8 +6,8 @@ import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { ROUTES } from "@/constants/routes"
 import { PdfViewer } from "@/features/pdf/components/PdfViewer"
-import { updateMaterialLastStudied } from "@/lib/mocks/materials"
-import { useMaterial } from "@/features/pdf/hooks/useMaterial"
+import { updateUserFileLastStudied } from "@/lib/mocks/user-files"
+import { useUserFile } from "@/features/pdf/hooks/useUserFile"
 import { StudyBreadcrumbs } from "@/features/study/components/StudyBreadcrumbs"
 import { StudyFeatureTabs } from "@/features/study/components/StudyFeatureTabs"
 import {
@@ -22,32 +22,32 @@ import {
 } from "@/features/study/context/StudyWorkspaceContext"
 
 type StudyShellProps = {
-  materialId: string
+  userFileId: string
   children: React.ReactNode
 }
 
 const StudyPdfPane = () => {
-  const { material, setPage, highlightPage } = useStudyWorkspace()
+  const { userFile, setPage, highlightPage } = useStudyWorkspace()
 
   return (
     <PdfViewer
-      material={material}
+      userFile={userFile}
       onPageChange={setPage}
       highlightPage={highlightPage}
     />
   )
 }
 
-export const StudyShell = ({ materialId, children }: StudyShellProps) => {
-  const { material, isLoading, setPage } = useMaterial(materialId)
+export const StudyShell = ({ userFileId, children }: StudyShellProps) => {
+  const { userFile, isLoading, setPage } = useUserFile(userFileId)
   const layoutMode = useStudyLayoutMode()
   const [activePane, setActivePane] = useState<StudyMobilePane>("panel")
 
   useEffect(() => {
-    if (material) {
-      updateMaterialLastStudied(materialId)
+    if (userFile) {
+      updateUserFileLastStudied(userFileId)
     }
-  }, [materialId, material])
+  }, [userFileId, userFile])
 
   if (isLoading) {
     return (
@@ -57,11 +57,11 @@ export const StudyShell = ({ materialId, children }: StudyShellProps) => {
     )
   }
 
-  if (!material) {
+  if (!userFile) {
     return (
       <div className="space-y-4 px-4 py-6">
         <p className="text-sm text-destructive">자료를 찾을 수 없습니다.</p>
-        <Link href={ROUTES.dashboard}>
+        <Link href={ROUTES.library}>
           <Button type="button" variant="outline" size="sm">
             내 라이브러리로 돌아가기
           </Button>
@@ -72,13 +72,13 @@ export const StudyShell = ({ materialId, children }: StudyShellProps) => {
 
   return (
     <StudyWorkspaceProvider
-      materialId={materialId}
-      material={material}
+      userFileId={userFileId}
+      userFile={userFile}
       setPage={setPage}
     >
       <div className="flex h-full min-h-0 flex-col">
         <header className="flex shrink-0 items-center border-b border-border px-4 py-3">
-          <StudyBreadcrumbs material={material} />
+          <StudyBreadcrumbs userFile={userFile} />
         </header>
 
         {layoutMode === "stacked" ? (
@@ -94,7 +94,7 @@ export const StudyShell = ({ materialId, children }: StudyShellProps) => {
           left={<StudyPdfPane />}
           right={
             <>
-              <StudyFeatureTabs materialId={materialId} />
+              <StudyFeatureTabs userFileId={userFileId} />
               <div className="flex min-h-0 flex-1 flex-col">{children}</div>
             </>
           }

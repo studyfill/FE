@@ -10,5 +10,5 @@ export default async function MaterialsFolderRedirectPage({
   params,
 }: MaterialsFolderRedirectProps) {
   const { folderId } = await params
-  redirect(ROUTES.dashboardFolder(folderId))
+  redirect(ROUTES.libraryFolder(folderId))
 }

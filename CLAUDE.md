@@ -15,7 +15,7 @@ StudyFill의 **Next.js 프론트엔드** 레포입니다. 백엔드(`studyfill/B
 
 ## 제품 범위 (Phase)
 
-- **활성: Phase A** — landing / auth(Google OAuth + 게스트) / dashboard / pdf · explanation · blank-study.
+- **활성: Phase A** — landing / auth(Google OAuth + 게스트) / library / pdf · note · blank.
   사용자 확인 없이 Phase B/C 기능을 구현하지 않는다.
 - **Phase B(보류)**: quiz, review(오답노트), tutor, 과금 UI, 본문 검색
 - **Phase C(보류)**: SSE 스트리밍, Vision OCR, 실결제, 모바일 전용 UI
@@ -43,7 +43,7 @@ src/
     common/             # 공용 컴포넌트
     layout/             # 레이아웃 셸/네비게이션
     ui/                 # shadcn/ui 프리미티브
-  features/             # 도메인별 기능 (landing, auth, dashboard, pdf, explanation, blank-study, study, ...)
+  features/             # 도메인별 기능 (landing, auth, library, pdf, note, blank, study, ...)
     <feature>/
       components/ hooks/ context/ types/ utils/
   lib/
@@ -151,11 +151,11 @@ types.ts      # schema.d.ts 의 도메인 타입 편의 별칭 (여기서 import
 | 도메인 | 가이드 |
 |--------|--------|
 | 인증 (OAuth·게스트·세션) | `src/features/auth/CLAUDE.md` |
-| 대시보드 (라이브러리·폴더·업로드) | `src/features/dashboard/CLAUDE.md` |
+| 라이브러리 (파일·폴더·업로드) | `src/features/library/CLAUDE.md` |
 | 랜딩 (마케팅·정직성) | `src/features/landing/CLAUDE.md` |
 | 학습 탭 공통 (split-pane·생성패널) | `src/features/study/CLAUDE.md` |
-| 빈칸 학습 | `src/features/blank-study/CLAUDE.md` |
-| 쉽게 설명 | `src/features/explanation/CLAUDE.md` |
+| 빈칸 학습 | `src/features/blank/CLAUDE.md` |
+| 쉽게 설명 | `src/features/note/CLAUDE.md` |
 
 > 위 각 feature 폴더의 `CLAUDE.md`가 해당 도메인의 단일 소스다.
 

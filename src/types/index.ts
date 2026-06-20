@@ -5,13 +5,13 @@ export type {
   BlankItemStatus,
   BlankSource,
   BlankDensity,
-  BlankStudySession,
-} from "./blank-study"
+  BlankSession,
+} from "./blank"
 export type {
-  ExplanationConceptBlock,
-  ExplanationEdits,
-  ExplanationExample,
-  ExplanationFieldEdits,
-  LectureExplanation,
-} from "./explanation"
-export type { ExtractionStatus, Folder, Material } from "./material"
+  NoteConceptBlock,
+  NoteEdits,
+  NoteExample,
+  NoteFieldEdits,
+  LectureNote,
+} from "./note"
+export type { ExtractionStatus, Folder, UserFile } from "./user-file"

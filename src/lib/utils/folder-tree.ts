@@ -1,4 +1,4 @@
-import type { Folder } from "@/types/material"
+import type { Folder } from "@/types/user-file"
 
 export const getDescendantFolderIds = (
   parentId: string,

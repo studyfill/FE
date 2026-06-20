@@ -26,7 +26,7 @@ export const enterGuestModeAction = async () => {
     provider: "guest",
     isGuest: true,
   })
-  redirect(ROUTES.dashboard)
+  redirect(ROUTES.library)
 }
 
 export const googleSignInAction = async () => {
@@ -36,7 +36,7 @@ export const googleSignInAction = async () => {
   if (!clientId) {
     const profile = createMockGoogleProfile()
     await setSessionCookie(mapGoogleProfileToSession(profile))
-    redirect(ROUTES.dashboard)
+    redirect(ROUTES.library)
   }
 
   // Authorization Code 발급 → /auth/callback 에서 백엔드와 code 교환

@@ -1,11 +1,11 @@
 import { normalizePdfPages } from "@/lib/pdf/normalize-pdf-pages"
-import type { Material } from "@/types/material"
-import type { MaterialPdfPage, MaterialPdfText } from "@/types/pdf-text"
+import type { UserFile } from "@/types/user-file"
+import type { UserFilePdfPage, UserFilePdfText } from "@/types/pdf-text"
 
-const isTreeMaterial = (name: string) => /트리|tree|bst|이진/i.test(name)
-const isOsMaterial = (name: string) => /운영체제|os|프로세스|스케줄/i.test(name)
+const isTreeUserFile = (name: string) => /트리|tree|bst|이진/i.test(name)
+const isOsUserFile = (name: string) => /운영체제|os|프로세스|스케줄/i.test(name)
 
-const treePages: MaterialPdfPage[] = [
+const treePages: UserFilePdfPage[] = [
   {
     pageNumber: 12,
     text:
@@ -28,7 +28,7 @@ const treePages: MaterialPdfPage[] = [
   },
 ]
 
-const osPages: MaterialPdfPage[] = [
+const osPages: UserFilePdfPage[] = [
   {
     pageNumber: 3,
     text:
@@ -51,10 +51,10 @@ const osPages: MaterialPdfPage[] = [
   },
 ]
 
-const genericPages = (material: Material): MaterialPdfPage[] => [
+const genericPages = (userFile: UserFile): UserFilePdfPage[] => [
   {
     pageNumber: 1,
-    text: `${material.name.replace(/\.pdf$/i, "")} 자료의 서론이다. 학습 범위의 핵심 개념과 정의를 먼저 파악해야 한다. 시험에 자주 나오는 용어와 개념쌍을 표로 정리하면 복습에 도움이 된다.`,
+    text: `${userFile.name.replace(/\.pdf$/i, "")} 자료의 서론이다. 학습 범위의 핵심 개념과 정의를 먼저 파악해야 한다. 시험에 자주 나오는 용어와 개념쌍을 표로 정리하면 복습에 도움이 된다.`,
   },
   {
     pageNumber: 2,
@@ -63,16 +63,16 @@ const genericPages = (material: Material): MaterialPdfPage[] => [
   },
 ]
 
-export const getSeedPdfText = (material: Material): MaterialPdfText | null => {
-  const rawPages = isTreeMaterial(material.name)
+export const getSeedPdfText = (userFile: UserFile): UserFilePdfText | null => {
+  const rawPages = isTreeUserFile(userFile.name)
     ? treePages
-    : isOsMaterial(material.name)
+    : isOsUserFile(userFile.name)
       ? osPages
-      : genericPages(material)
+      : genericPages(userFile)
 
   return {
-    materialId: material.id,
-    extractedAt: material.uploadedAt,
-    pages: normalizePdfPages(rawPages, material.pageCount),
+    userFileId: userFile.id,
+    extractedAt: userFile.uploadedAt,
+    pages: normalizePdfPages(rawPages, userFile.pageCount),
   }
 }

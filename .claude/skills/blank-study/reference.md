@@ -1,38 +1,38 @@
 # Blank Study Reference
 
-## Types (`src/types/blank-study.ts`)
+## Types (`src/types/blank.ts`)
 
 ```typescript
-BlankSource = "pdf" | "explanation"
+BlankSource = "pdf" | "note"
 BlankDensity = "light" | "normal" | "dense"  // counts: 5 / 10 / 15
 BlankGenerateOptions = { source, range, density }
 BlankItem = { id, sentenceBefore, sentenceAfter, answer, hint, status, ... }
-BlankStudySession = { materialId, generatedAt, options, items, pdfPages? }
+BlankSession = { userFileId, generatedAt, options, items, pdfPages? }
 ```
 
-`range` reuses `ExplanationRange` from `src/types/explanation.ts`. Range applies only when `source === "pdf"`.
+`range` reuses `NoteRange` from `src/types/note.ts`. Range applies only when `source === "pdf"`.
 
-## Mock API (`src/lib/mocks/blank-study.ts`)
+## Mock API (`src/lib/mocks/blank.ts`)
 
 | Function | Purpose |
 |----------|---------|
-| `getBlankSession(materialId)` | Load stored session (or legacy items) |
-| `generateBlankSession(materialId, options)` | Build + persist session; throws if no material, extraction incomplete, no explanation when source=explanation, or zero items |
-| `updateBlankItem(materialId, itemId, patch)` | Update item status after submit |
-| `resetIncorrectBlankItems(materialId)` | Retry flow |
-| `addCustomBlankItem(materialId, target)` | User-selected text → blank |
-| `removeBlankItem(materialId, itemId)` | Remove blank; returns null if session empty |
+| `getBlankSession(userFileId)` | Load stored session (or legacy items) |
+| `generateBlankSession(userFileId, options)` | Build + persist session; throws if no userFile, extraction incomplete, no note when source=note, or zero items |
+| `updateBlankItem(userFileId, itemId, patch)` | Update item status after submit |
+| `resetIncorrectBlankItems(userFileId)` | Retry flow |
+| `addCustomBlankItem(userFileId, target)` | User-selected text → blank |
+| `removeBlankItem(userFileId, itemId)` | Remove blank; returns null if session empty |
 
 Session stored in `mock-store.blankSessions`.
 
 ## Source build paths
 
-- **pdf**: `ensureMaterialPdfText` → `buildBlanksFromPdfText` in `src/lib/blank-study/build-blanks-from-pdf-text.ts`
-- **explanation**: `getExplanation(materialId)` → extract from core concepts, exam highlights in `blank-study-content.ts`
+- **pdf**: `ensureUserFilePdfText` → `buildBlanksFromPdfText` in `src/lib/blank/build-blanks-from-pdf-text.ts`
+- **note**: `getNote(userFileId)` → extract from core concepts, exam highlights in `blank-content.ts`
 
-## Explanation dependency
+## Note dependency
 
-`useBlankStudy` exposes `hasExplanation` from `getExplanation(materialId)`.
+`useBlank` exposes `hasNote` from `getNote(userFileId)`.
 
 `generateBlankSession` throws:
 
@@ -47,7 +47,7 @@ UI must block generate button and show CTA link — no auto-fallback to PDF.
 - Flashcard / Card-per-item layout
 - Numbered list (`1.` `2.`)
 - Auto-generate on upload
-- Fallback to PDF when explanation source selected but missing
+- Fallback to PDF when note source selected but missing
 
 ## Manyfast IDs
 

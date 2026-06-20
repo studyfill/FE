@@ -7,24 +7,24 @@ import { ROUTES } from "@/constants/routes"
 import { cn } from "@/lib/utils"
 
 type StudyTabsProps = {
-  materialId: string
+  userFileId: string
 }
 
-export const StudyTabs = ({ materialId }: StudyTabsProps) => {
+export const StudyTabs = ({ userFileId }: StudyTabsProps) => {
   const pathname = usePathname()
-  const base = ROUTES.study(materialId)
+  const base = ROUTES.study(userFileId)
 
   const tabs = [
     { href: base, label: "PDF 뷰어", match: (p: string) => p === base },
     {
-      href: ROUTES.studyExplanation(materialId),
+      href: ROUTES.studyNote(userFileId),
       label: "강의식 설명",
-      match: (p: string) => p.includes("/explanation"),
+      match: (p: string) => p.includes("/note"),
     },
     {
-      href: ROUTES.studyBlankStudy(materialId),
+      href: ROUTES.studyBlank(userFileId),
       label: "빈칸 암기",
-      match: (p: string) => p.includes("/blank-study"),
+      match: (p: string) => p.includes("/blank"),
     },
   ]
 

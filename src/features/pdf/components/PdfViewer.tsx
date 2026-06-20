@@ -13,10 +13,10 @@ import type { PDFDocumentProxy } from "pdfjs-dist"
 import { Button } from "@/components/ui/button"
 import { ImageViewer } from "@/features/pdf/components/ImageViewer"
 import { usePdfDocument } from "@/features/pdf/hooks/usePdfDocument"
-import type { Material } from "@/types/material"
+import type { UserFile } from "@/types/user-file"
 
 type PdfViewerProps = {
-  material: Material
+  userFile: UserFile
   onPageChange: (page: number) => void
   highlightPage?: number | null
 }
@@ -133,22 +133,22 @@ const PdfPageCanvas = ({
 }
 
 export const PdfViewer = ({
-  material,
+  userFile,
   onPageChange,
   highlightPage,
 }: PdfViewerProps) => {
   const scrollRef = useRef<HTMLDivElement>(null)
   const pageRefs = useRef<Record<number, HTMLDivElement | null>>({})
   const isProgrammaticScroll = useRef(false)
-  const lastVisiblePage = useRef(material.currentPage)
+  const lastVisiblePage = useRef(userFile.currentPage)
 
-  const { pdfDoc, isLoading, error, hasBlob } = usePdfDocument(material.id)
+  const { pdfDoc, isLoading, error, hasBlob } = usePdfDocument(userFile.id)
   const [visiblePage, setVisiblePage] = useState(
-    highlightPage ?? material.currentPage
+    highlightPage ?? userFile.currentPage
   )
 
-  const total = (pdfDoc?.numPages ?? material.pageCount) || 1
-  const displayName = material.name.replace(/\.pdf$/i, "")
+  const total = (pdfDoc?.numPages ?? userFile.pageCount) || 1
+  const displayName = userFile.name.replace(/\.pdf$/i, "")
 
   const registerPageRef = useCallback(
     (page: number, node: HTMLDivElement | null) => {
@@ -164,17 +164,17 @@ export const PdfViewer = ({
       lastVisiblePage.current = page
       setVisiblePage(page)
 
-      if (page !== material.currentPage) {
+      if (page !== userFile.currentPage) {
         onPageChange(page)
       }
     },
-    [material.currentPage, onPageChange]
+    [userFile.currentPage, onPageChange]
   )
 
   useEffect(() => {
     if (!pdfDoc) return
 
-    const targetPage = highlightPage ?? material.currentPage
+    const targetPage = highlightPage ?? userFile.currentPage
     const scrollToPage = () => {
       const node = pageRefs.current[targetPage]
       if (!node) return false
@@ -195,10 +195,10 @@ export const PdfViewer = ({
 
     const timer = window.setTimeout(scrollToPage, 100)
     return () => window.clearTimeout(timer)
-  }, [pdfDoc, material.id, highlightPage, material.currentPage])
+  }, [pdfDoc, userFile.id, highlightPage, userFile.currentPage])
 
-  if (material.fileType === "image") {
-    return <ImageViewer material={material} />
+  if (userFile.fileType === "image") {
+    return <ImageViewer userFile={userFile} />
   }
 
   return (
@@ -227,7 +227,7 @@ export const PdfViewer = ({
         ref={scrollRef}
         className="min-h-0 flex-1 overflow-y-auto bg-muted/20"
       >
-        {material.extractionStatus !== "done" ? (
+        {userFile.extractionStatus !== "done" ? (
           <div className="flex min-h-full items-center justify-center p-4">
             <p className="text-sm text-muted-foreground">
               텍스트 추출이 완료되면 뷰어를 사용할 수 있습니다.
@@ -257,7 +257,7 @@ export const PdfViewer = ({
           <div className="flex flex-col pb-6 pt-3">
             {Array.from({ length: total }, (_, index) => (
               <PdfPageCanvas
-                key={`${material.id}-page-${index + 1}`}
+                key={`${userFile.id}-page-${index + 1}`}
                 pdfDoc={pdfDoc}
                 pageNumber={index + 1}
                 scrollRootRef={scrollRef}

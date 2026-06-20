@@ -7,25 +7,25 @@ export type RecentFolderItem = {
   id: string
   name: string
   color: FolderColorId
-  materialCount: number
+  fileCount: number
 }
 
 const STORAGE_KEY = "studyfill-recent-folders"
 const MAX_RECENT = 10
 
-const getFolderMaterialCount = (folderId: string): number => {
+const getFolderUserFileCount = (folderId: string): number => {
   const store = loadMockStore()
-  const { folders, materials } = store
+  const { folders, userFiles } = store
   const hasChildren = folders.some((f) => f.parentId === folderId)
   const scope = getFolderScopeIds(folderId, folders) ?? [folderId]
 
   if (hasChildren) {
-    return materials.filter(
+    return userFiles.filter(
       (m) => m.folderId !== null && scope.includes(m.folderId)
     ).length
   }
 
-  return materials.filter((m) => m.folderId === folderId).length
+  return userFiles.filter((m) => m.folderId === folderId).length
 }
 
 const getStoredIds = (): string[] => {
@@ -43,14 +43,14 @@ const getStoredIds = (): string[] => {
 }
 
 const getDefaultRecentIds = (): string[] => {
-  const { materials } = loadMockStore()
+  const { userFiles } = loadMockStore()
   const lastUsedByFolder = new Map<string, number>()
 
-  for (const material of materials) {
-    if (!material.folderId) continue
-    const time = new Date(material.uploadedAt).getTime()
-    const prev = lastUsedByFolder.get(material.folderId) ?? 0
-    if (time > prev) lastUsedByFolder.set(material.folderId, time)
+  for (const userFile of userFiles) {
+    if (!userFile.folderId) continue
+    const time = new Date(userFile.uploadedAt).getTime()
+    const prev = lastUsedByFolder.get(userFile.folderId) ?? 0
+    if (time > prev) lastUsedByFolder.set(userFile.folderId, time)
   }
 
   return [...lastUsedByFolder.entries()]
@@ -86,7 +86,7 @@ export const listRecentFolders = (): RecentFolderItem[] => {
         id: folder.id,
         name: folder.name,
         color: folder.color,
-        materialCount: getFolderMaterialCount(folder.id),
+        fileCount: getFolderUserFileCount(folder.id),
       },
     ]
   })

@@ -2,9 +2,9 @@
 
 import { use } from "react"
 
-import { ExplanationGeneratePanel } from "@/features/explanation/components/ExplanationGeneratePanel"
-import { useExplanation } from "@/features/explanation/hooks/useExplanation"
-import { useMaterial } from "@/features/pdf/hooks/useMaterial"
+import { NoteGeneratePanel } from "@/features/note/components/NoteGeneratePanel"
+import { useNote } from "@/features/note/hooks/useNote"
+import { useUserFile } from "@/features/pdf/hooks/useUserFile"
 
 type StudyPageProps = {
   params: Promise<{ id: string }>
@@ -12,12 +12,12 @@ type StudyPageProps = {
 
 export default function StudyPage({ params }: StudyPageProps) {
   const { id } = use(params)
-  const { material } = useMaterial(id)
-  const explanation = useExplanation(id)
+  const { userFile } = useUserFile(id)
+  const note = useNote(id)
 
-  if (!material) return null
+  if (!userFile) return null
 
   return (
-    <ExplanationGeneratePanel material={material} explanation={explanation} />
+    <NoteGeneratePanel userFile={userFile} note={note} />
   )
 }

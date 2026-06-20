@@ -1,10 +1,10 @@
-export type MaterialPdfPage = {
+export type UserFilePdfPage = {
   pageNumber: number
   text: string
 }
 
-export type MaterialPdfText = {
-  materialId: string
+export type UserFilePdfText = {
+  userFileId: string
   extractedAt: string
-  pages: MaterialPdfPage[]
+  pages: UserFilePdfPage[]
 }

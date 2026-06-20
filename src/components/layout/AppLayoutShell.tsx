@@ -10,14 +10,14 @@ type AppLayoutShellProps = {
   userName?: string
 }
 
-const isDashboardPath = (pathname: string) =>
-  pathname === "/dashboard" || pathname.startsWith("/dashboard/")
+const isLibraryPath = (pathname: string) =>
+  pathname === "/library" || pathname.startsWith("/library/")
 
 const isStudyPath = (pathname: string) => pathname.startsWith("/study/")
 
 export const AppLayoutShell = ({ children, userName }: AppLayoutShellProps) => {
   const pathname = usePathname()
-  const hideNav = isDashboardPath(pathname) || isStudyPath(pathname)
+  const hideNav = isLibraryPath(pathname) || isStudyPath(pathname)
 
   if (hideNav) {
     return (

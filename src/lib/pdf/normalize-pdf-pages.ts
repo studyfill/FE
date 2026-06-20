@@ -1,9 +1,9 @@
-import type { MaterialPdfPage } from "@/types/pdf-text"
+import type { UserFilePdfPage } from "@/types/pdf-text"
 
 export const normalizePdfPages = (
-  pages: MaterialPdfPage[],
+  pages: UserFilePdfPage[],
   pageCount?: number
-): MaterialPdfPage[] => {
+): UserFilePdfPage[] => {
   if (!pages.length) return []
 
   const sorted = [...pages].sort((a, b) => a.pageNumber - b.pageNumber)
