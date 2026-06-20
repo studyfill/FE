@@ -1,7 +1,7 @@
-import type { MaterialPdfPage } from "@/types/pdf-text"
+import type { UserFilePdfPage } from "@/types/pdf-text"
 
 type StaticPdfPaneProps = {
-  pages: MaterialPdfPage[]
+  pages: UserFilePdfPage[]
 }
 
 export const StaticPdfPane = ({ pages }: StaticPdfPaneProps) => {

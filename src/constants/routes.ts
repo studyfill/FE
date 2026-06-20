@@ -1,14 +1,13 @@
 export const ROUTES = {
   home: "/",
-  dashboard: "/dashboard",
-  dashboardFolder: (folderId: string) => `/dashboard/${folderId}`,
-  /** @deprecated Use ROUTES.dashboard — redirects for compatibility */
-  materials: "/materials",
-  /** @deprecated Use ROUTES.dashboardFolder */
-  materialsFolder: (folderId: string) => `/materials/${folderId}`,
+  library: "/library",
+  libraryFolder: (folderId: string) => `/library/${folderId}`,
   study: (id: string) => `/study/${id}`,
-  studyExplanation: (id: string) => `/study/${id}/explanation`,
-  studyBlankStudy: (id: string) => `/study/${id}/blank-study`,
+  studyNote: (id: string) => `/study/${id}/note`,
+  studyBlank: (id: string) => `/study/${id}/blank`,
 } as const
 
-export const PROTECTED_PREFIXES = ["/dashboard", "/materials", "/study"]
+/** @deprecated /library 로 redirect 되는 레거시 경로 (북마크 호환용) */
+export const LEGACY_LIBRARY_PREFIXES = ["/dashboard", "/materials"] as const
+
+export const PROTECTED_PREFIXES = ["/library", "/dashboard", "/materials", "/study"]

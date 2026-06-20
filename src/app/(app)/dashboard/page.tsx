@@ -1,13 +1,7 @@
-import { DashboardShell } from "@/components/layout/DashboardShell"
-import { DashboardLibraryPage } from "@/features/dashboard/components/DashboardLibraryPage"
-import { getServerSession } from "@/features/auth/session"
+import { redirect } from "next/navigation"
 
-export default async function DashboardPage() {
-  const session = await getServerSession()
+import { ROUTES } from "@/constants/routes"
 
-  return (
-    <DashboardShell folderId={null} userName={session?.name}>
-      <DashboardLibraryPage userName={session?.name} />
-    </DashboardShell>
-  )
+export default function DashboardRedirectPage() {
+  redirect(ROUTES.library)
 }

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 
 import { getPdfBlob } from "@/lib/storage/pdf-blob-store"
 
-export const useImageBlob = (materialId: string) => {
+export const useImageBlob = (userFileId: string) => {
   const [objectUrl, setObjectUrl] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [hasBlob, setHasBlob] = useState<boolean | null>(null)
@@ -18,7 +18,7 @@ export const useImageBlob = (materialId: string) => {
       setObjectUrl(null)
 
       try {
-        const blob = await getPdfBlob(materialId)
+        const blob = await getPdfBlob(userFileId)
         if (cancelled) return
 
         if (!blob) {
@@ -50,7 +50,7 @@ export const useImageBlob = (materialId: string) => {
       cancelled = true
       if (url) URL.revokeObjectURL(url)
     }
-  }, [materialId])
+  }, [userFileId])
 
   return { objectUrl, isLoading, hasBlob }
 }

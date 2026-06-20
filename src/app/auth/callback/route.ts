@@ -41,7 +41,7 @@ export const GET = async (request: Request) => {
     }
 
     const { accessToken, refreshToken, expiresIn, user } = data
-    const response = NextResponse.redirect(new URL(ROUTES.dashboard, url.origin))
+    const response = NextResponse.redirect(new URL(ROUTES.library, url.origin))
     response.cookies.set(
       SESSION_COOKIE,
       serializeSession({

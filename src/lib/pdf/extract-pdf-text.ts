@@ -1,9 +1,9 @@
 import { loadPdfJs } from "@/lib/pdf/pdfjs-config"
-import type { MaterialPdfPage } from "@/types/pdf-text"
+import type { UserFilePdfPage } from "@/types/pdf-text"
 
 export const extractPdfTextFromBytes = async (
   pdfBytes: ArrayBuffer
-): Promise<MaterialPdfPage[]> => {
+): Promise<UserFilePdfPage[]> => {
   const pdfjs = await loadPdfJs()
   const loadingTask = pdfjs.getDocument({
     data: pdfBytes.slice(0),
@@ -11,7 +11,7 @@ export const extractPdfTextFromBytes = async (
   })
   const doc = await loadingTask.promise
 
-  const pages: MaterialPdfPage[] = []
+  const pages: UserFilePdfPage[] = []
 
   for (let pageNumber = 1; pageNumber <= doc.numPages; pageNumber += 1) {
     const page = await doc.getPage(pageNumber)

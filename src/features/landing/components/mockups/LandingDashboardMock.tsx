@@ -2,18 +2,18 @@
 
 import { DndContext } from "@dnd-kit/core"
 
-import { LibrarySidebar } from "@/features/dashboard/components/LibrarySidebar"
-import { LibraryToolbar } from "@/features/dashboard/components/LibraryToolbar"
-import { MaterialGrid } from "@/features/dashboard/components/MaterialGrid"
-import { RecentFoldersStrip } from "@/features/dashboard/components/RecentFoldersStrip"
+import { LibrarySidebar } from "@/features/library/components/LibrarySidebar"
+import { LibraryToolbar } from "@/features/library/components/LibraryToolbar"
+import { UserFileGrid } from "@/features/library/components/UserFileGrid"
+import { RecentFoldersStrip } from "@/features/library/components/RecentFoldersStrip"
 import { LandingBrowserFrame } from "@/features/landing/components/mockups/LandingBrowserFrame"
 import { useClientMounted } from "@/features/landing/hooks/useClientMounted"
 import type { RecentFolderItem } from "@/lib/mocks/recent-folders"
-import type { FolderTreeNode, Material } from "@/types/material"
+import type { FolderTreeNode, UserFile } from "@/types/user-file"
 
 type LandingDashboardMockProps = {
   folderTree: FolderTreeNode[]
-  materials: Material[]
+  userFiles: UserFile[]
   recentFolders: RecentFolderItem[]
   totalCount: number
 }
@@ -29,7 +29,7 @@ const DashboardMockPlaceholder = () => (
 
 export const LandingDashboardMock = ({
   folderTree,
-  materials,
+  userFiles,
   recentFolders,
   totalCount,
 }: LandingDashboardMockProps) => {
@@ -83,10 +83,10 @@ export const LandingDashboardMock = ({
                     내 라이브러리
                   </h3>
                   <span className="text-caption text-muted-foreground">
-                    {Math.min(materials.length, 6)}개 자료
+                    {Math.min(userFiles.length, 6)}개 자료
                   </span>
                 </div>
-                <MaterialGrid materials={materials.slice(0, 4)} layout="grid" />
+                <UserFileGrid userFiles={userFiles.slice(0, 4)} layout="grid" />
               </div>
             </div>
           </main>

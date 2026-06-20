@@ -1,7 +1,7 @@
-import type { BlankItem, BlankStudySession } from "@/types/blank-study"
-import type { ExplanationEdits, LectureExplanation } from "@/types/explanation"
-import type { MaterialPdfText } from "@/types/pdf-text"
-import type { Folder, Material } from "@/types/material"
+import type { BlankItem, BlankSession } from "@/types/blank"
+import type { NoteEdits, LectureNote } from "@/types/note"
+import type { UserFilePdfText } from "@/types/pdf-text"
+import type { Folder, UserFile } from "@/types/user-file"
 import type { User } from "@/types/auth"
 
 import {
@@ -16,11 +16,11 @@ import { FOLDER_IDS } from "./folder-ids"
 export type MockStoreData = {
   users: User[]
   folders: Folder[]
-  materials: Material[]
-  explanations: Record<string, LectureExplanation>
-  explanationEdits: Record<string, ExplanationEdits>
-  pdfTexts: Record<string, MaterialPdfText>
-  blankSessions: Record<string, BlankStudySession>
+  userFiles: UserFile[]
+  notes: Record<string, LectureNote>
+  noteEdits: Record<string, NoteEdits>
+  pdfTexts: Record<string, UserFilePdfText>
+  blankSessions: Record<string, BlankSession>
   /** @deprecated migrated to blankSessions */
   blankItems: Record<string, BlankItem[]>
 }
@@ -35,7 +35,7 @@ const seedFolders: Folder[] = [
   { id: FOLDER_IDS.exam, name: "시험대비", parentId: null, color: "red", pinned: true },
 ]
 
-const seedMaterials: Material[] = [
+const seedUserFiles: UserFile[] = [
   {
     id: "mat-1",
     name: "자료구조 5주차 — 트리와 이진탐색트리.pdf",
@@ -143,9 +143,9 @@ const defaultStore: MockStoreData = {
     },
   ],
   folders: seedFolders,
-  materials: seedMaterials,
-  explanations: {},
-  explanationEdits: {},
+  userFiles: seedUserFiles,
+  notes: {},
+  noteEdits: {},
   pdfTexts: {},
   blankSessions: {},
   blankItems: {},
@@ -165,11 +165,11 @@ const LEGACY_FOLDER_COLORS: Record<string, FolderColorId> = {
   [FOLDER_IDS.exam]: "red",
 }
 
-const normalizeMaterials = (materials: Material[]): Material[] =>
-  materials.map((material) => ({
-    ...material,
+const normalizeUserFiles = (userFiles: UserFile[]): UserFile[] =>
+  userFiles.map((userFile) => ({
+    ...userFile,
     fileType:
-      material.fileType ?? getFileTypeFromName(material.name) ?? "pdf",
+      userFile.fileType ?? getFileTypeFromName(userFile.name) ?? "pdf",
   }))
 
 const normalizeFolders = (folders: Folder[]): Folder[] =>
@@ -208,10 +208,10 @@ export const loadMockStore = (): MockStoreData => {
         folders: normalizeFolders(
           parsed.folders?.length ? parsed.folders : defaultStore.folders
         ),
-        materials: normalizeMaterials(
-          parsed.materials?.length ? parsed.materials : defaultStore.materials
+        userFiles: normalizeUserFiles(
+          parsed.userFiles?.length ? parsed.userFiles : defaultStore.userFiles
         ),
-        explanationEdits: parsed.explanationEdits ?? {},
+        noteEdits: parsed.noteEdits ?? {},
         pdfTexts: parsed.pdfTexts ?? {},
         blankSessions: parsed.blankSessions ?? {},
         blankItems: parsed.blankItems ?? {},

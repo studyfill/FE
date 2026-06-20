@@ -8,7 +8,7 @@ import { LandingPage } from "@/features/landing/components/LandingPage"
 export default async function HomePage() {
   const session = await getServerSession()
   if (isSessionAuthenticated(session)) {
-    redirect(ROUTES.dashboard)
+    redirect(ROUTES.library)
   }
 
   return <LandingPage />

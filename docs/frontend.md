@@ -27,11 +27,11 @@ src/~
   features/
     landing/        # 랜딩 페이지 (Phase A)
     auth/
-    dashboard/      # 내 라이브러리: 폴더, 검색, 업로드, PDF 그리드
+    library/        # 내 라이브러리: 폴더, 검색, 업로드, PDF 그리드
     pdf/
-    explanation/
+    note/           # 쉽게 설명 (백엔드 note 도메인)
     quiz/
-    blank-study/
+    blank/          # 빈칸 학습 (백엔드 blank 도메인)
     review/
     tutor/
   lib/

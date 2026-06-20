@@ -1,20 +1,14 @@
-import { DashboardShell } from "@/components/layout/DashboardShell"
-import { DashboardLibraryPage } from "@/features/dashboard/components/DashboardLibraryPage"
-import { getServerSession } from "@/features/auth/session"
+import { redirect } from "next/navigation"
 
-type DashboardFolderPageProps = {
+import { ROUTES } from "@/constants/routes"
+
+type DashboardFolderRedirectProps = {
   params: Promise<{ folderId: string }>
 }
 
-export default async function DashboardFolderPage({
+export default async function DashboardFolderRedirectPage({
   params,
-}: DashboardFolderPageProps) {
+}: DashboardFolderRedirectProps) {
   const { folderId } = await params
-  const session = await getServerSession()
-
-  return (
-    <DashboardShell folderId={folderId} userName={session?.name}>
-      <DashboardLibraryPage userName={session?.name} />
-    </DashboardShell>
-  )
+  redirect(ROUTES.libraryFolder(folderId))
 }

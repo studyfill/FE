@@ -2,9 +2,9 @@ import {
   UPLOAD_ACCEPTED_EXTENSIONS,
   UPLOAD_MAX_SIZE_MB,
 } from "@/constants/upload"
-import type { MaterialFileType } from "@/types/material"
+import type { UserFileType } from "@/types/user-file"
 
-export const getFileTypeFromName = (fileName: string): MaterialFileType | null => {
+export const getFileTypeFromName = (fileName: string): UserFileType | null => {
   const lower = fileName.toLowerCase()
   if (lower.endsWith(".pdf")) return "pdf"
   if (

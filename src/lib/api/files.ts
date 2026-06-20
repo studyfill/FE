@@ -10,7 +10,7 @@ import type {
   FileUpdateRequest,
   PageResponseFileResponse,
 } from "./types"
-import type { ExtractionStatus, Material, MaterialFileType } from "@/types/material"
+import type { ExtractionStatus, UserFile, UserFileType } from "@/types/user-file"
 
 export { validateUploadFile } from "@/lib/utils/upload-file"
 
@@ -32,15 +32,15 @@ const mapAnalysisStatus = (status?: string): ExtractionStatus => {
   }
 }
 
-const mapFileType = (fileType?: string): MaterialFileType =>
+const mapFileType = (fileType?: string): UserFileType =>
   fileType?.toUpperCase() === "PDF" ? "pdf" : "image"
 
 /**
- * 백엔드 FileResponse → 프론트 Material.
+ * 백엔드 FileResponse → 프론트 UserFile.
  * 진행상태(currentPage/progressPercent)는 백엔드에 없어 기본값(1/0)으로 둔다.
  * 실제 진행상태는 호출부에서 로컬 미러(mock store)와 병합한다.
  */
-export const mapFileToMaterial = (file: FileResponse): Material => ({
+export const mapFileToUserFile = (file: FileResponse): UserFile => ({
   id: file.id ?? "",
   name: file.name ?? file.originalName ?? "제목 없는 자료",
   folderId: file.folderId ?? null,
@@ -56,19 +56,19 @@ export const mapFileToMaterial = (file: FileResponse): Material => ({
 /** 폴더별 자료 목록. folderId 가 null 이면 전체(루트 포함). */
 export const listFiles = async (
   folderId: string | null,
-): Promise<Material[]> => {
+): Promise<UserFile[]> => {
   const search = new URLSearchParams({ page: "0", size: "100" })
   if (folderId) search.set("folderId", folderId)
   const page = await bffFetch<PageResponseFileResponse>(
     `/files?${search.toString()}`,
   )
-  return (page.content ?? []).map(mapFileToMaterial)
+  return (page.content ?? []).map(mapFileToUserFile)
 }
 
-/** 자료 단건 조회 → Material. study 로컬 하이드레이션 시 메타데이터 확보용. */
-export const getFileDetail = async (fileId: string): Promise<Material> => {
+/** 자료 단건 조회 → UserFile. study 로컬 하이드레이션 시 메타데이터 확보용. */
+export const getFileDetail = async (fileId: string): Promise<UserFile> => {
   const file = await bffFetch<FileResponse>(`/files/${fileId}`)
-  return mapFileToMaterial(file)
+  return mapFileToUserFile(file)
 }
 
 /** 파일 원본 바이트(BFF content 프록시 경유 — 토큰/CORS 없이 same-origin). */

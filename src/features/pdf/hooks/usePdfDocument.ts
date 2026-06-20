@@ -6,7 +6,7 @@ import type { PDFDocumentProxy } from "pdfjs-dist"
 import { loadPdfJs } from "@/lib/pdf/pdfjs-config"
 import { getPdfBlob } from "@/lib/storage/pdf-blob-store"
 
-export const usePdfDocument = (materialId: string) => {
+export const usePdfDocument = (userFileId: string) => {
   const [pdfDoc, setPdfDoc] = useState<PDFDocumentProxy | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -24,7 +24,7 @@ export const usePdfDocument = (materialId: string) => {
       setPdfDoc(null)
 
       try {
-        const blob = await getPdfBlob(materialId)
+        const blob = await getPdfBlob(userFileId)
         if (cancelled) return
 
         if (!blob) {
@@ -62,7 +62,7 @@ export const usePdfDocument = (materialId: string) => {
         void loadingTask.destroy()
       }
     }
-  }, [materialId])
+  }, [userFileId])
 
   return { pdfDoc, isLoading, error, hasBlob }
 }

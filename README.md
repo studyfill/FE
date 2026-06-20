@@ -40,11 +40,11 @@ src/
     ui/             # shadcn/ui components
   features/
     auth/
-    dashboard/      # 내 라이브러리: folders, search, upload, PDF grid
+    library/        # 내 라이브러리: folders, search, upload, PDF grid
     pdf/
-    explanation/
+    note/           # 쉽게 설명 (백엔드 note 도메인)
     quiz/
-    blank-study/
+    blank/          # 빈칸 학습 (백엔드 blank 도메인)
     review/         # study session, review mode
     tutor/
   lib/

@@ -121,7 +121,7 @@ chore/deps-update-next
 
 ## Allowed Scopes
 
-Match feature folders: `auth`, `dashboard`, `landing`, `pdf`, `explanation`, `blank-study`, `study`, `ui`, `lib`, `deps`
+Match feature folders: `auth`, `library`, `landing`, `pdf`, `note`, `blank`, `study`, `ui`, `lib`, `deps`
 
 ## Commit Title (required)
 

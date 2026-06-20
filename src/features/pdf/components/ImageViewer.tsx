@@ -4,15 +4,15 @@ import { Search } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { useImageBlob } from "@/features/pdf/hooks/useImageBlob"
-import type { Material } from "@/types/material"
+import type { UserFile } from "@/types/user-file"
 
 type ImageViewerProps = {
-  material: Material
+  userFile: UserFile
 }
 
-export const ImageViewer = ({ material }: ImageViewerProps) => {
-  const { objectUrl, isLoading, hasBlob } = useImageBlob(material.id)
-  const displayName = material.name.replace(/\.(jpg|jpeg|png)$/i, "")
+export const ImageViewer = ({ userFile }: ImageViewerProps) => {
+  const { objectUrl, isLoading, hasBlob } = useImageBlob(userFile.id)
+  const displayName = userFile.name.replace(/\.(jpg|jpeg|png)$/i, "")
 
   return (
     <div className="flex h-full min-h-0 flex-col">
@@ -48,7 +48,7 @@ export const ImageViewer = ({ material }: ImageViewerProps) => {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={objectUrl}
-              alt={material.name}
+              alt={userFile.name}
               className="max-h-full max-w-full rounded-lg shadow-sm"
             />
           </div>

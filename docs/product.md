@@ -19,20 +19,20 @@
 |-----------|-------|----------------|-------|
 | 랜딩 | `/` | `landing` | A |
 | 인증 | 랜딩 `AuthDialog` | `auth` | A — Google OAuth + 게스트 |
-| 내 라이브러리 | `/dashboard`, `/dashboard/[folderId]` | `dashboard` | A |
-| PDF·학습 워크스페이스 | `/study/[id]`, … | `pdf`, `explanation`, `blank-study` | A |
+| 내 라이브러리 | `/library`, `/library/[folderId]` | `library` | A |
+| PDF·학습 워크스페이스 | `/study/[id]`, … | `pdf`, `note`, `blank` | A |
 | 퀴즈 | `/study/[id]/quiz` | `quiz` | B |
-| 오답노트 | 대시보드 폴더 | `review` | B |
+| 오답노트 | 라이브러리 폴더 | `review` | B |
 | AI 튜터 | `/study/[id]/tutor` | `tutor` | B |
 
-Legacy: `/login`, `/signup` → redirect `/`; `/materials` → `/dashboard`.
+Legacy: `/login`, `/signup` → redirect `/`; `/dashboard`·`/materials` → `/library`.
 
 ## Phase A scope (active)
 
 - `landing`: 마케팅 페이지 (구현된 기능만 홍보)
 - `auth`: Google OAuth + 게스트 데모 (이메일 mock 제거)
-- `dashboard`: 무제한 depth 폴더, 3종 정렬, PDF/JPG/PNG 업로드, 파일명 검색
-- `pdf` + `explanation` + `blank-study`: split-pane 학습 워크스페이스
+- `library`: 무제한 depth 폴더, 3종 정렬, PDF/JPG/PNG 업로드, 파일명 검색
+- `pdf` + `note` + `blank`: split-pane 학습 워크스페이스
 - Inline error retry, 태블릿 반응형
 
 ## Phase B scope (deferred)
@@ -47,8 +47,8 @@ Legacy: `/login`, `/signup` → redirect `/`; `/materials` → `/dashboard`.
 ## Product constraints
 
 - **Not** a generic AI chat app (튜터는 문서·노트 맥락만 — Phase B)
-- **Not** flashcard UI for blank study — inline active recall (`src/features/blank-study/CLAUDE.md`)
-- **Blank sources**: `pdf` or `explanation` — user picks before generate
+- **Not** flashcard UI for blank study — inline active recall (`src/features/blank/CLAUDE.md`)
+- **Blank sources**: `pdf` or `note` — user picks before generate
 - **On-demand AI**: 업로드 시 추출만; 설명·빈칸은 사용자 버튼 요청 시 생성
 - **Inline errors**: 상세 시스템 에러 미노출; `GenerateErrorAlert` 재시도 패턴
 - **No collaboration**: 1인 학습 환경
@@ -57,5 +57,5 @@ Legacy: `/login`, `/signup` → redirect `/`; `/materials` → `/dashboard`.
 ## Agent workflow
 
 1. Phase A tasks only unless user requests Phase B/C
-2. Library → `src/features/dashboard/CLAUDE.md`; study tabs → per-feature `CLAUDE.md`
+2. Library → `src/features/library/CLAUDE.md`; study tabs → per-feature `CLAUDE.md`
 3. Use the `blank-study` skill (`.claude/skills/blank-study/SKILL.md`) for large blank-study work

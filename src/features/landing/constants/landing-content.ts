@@ -28,7 +28,7 @@ export const LANDING_FEATURES = [
     ],
   },
   {
-    id: "explanation",
+    id: "note",
     label: "AI 노트 편집",
     title: "교수님보다 잘 설명해 드려요",
     description:
@@ -42,7 +42,7 @@ export const LANDING_FEATURES = [
     ],
   },
   {
-    id: "blank-study",
+    id: "blank",
     label: "빈칸 암기",
     title: "외울 때까지 빈칸이 닫히지 않아요",
     description:

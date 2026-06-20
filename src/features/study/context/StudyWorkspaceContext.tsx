@@ -2,11 +2,11 @@
 
 import { createContext, useContext, useState, type ReactNode } from "react"
 
-import type { Material } from "@/types/material"
+import type { UserFile } from "@/types/user-file"
 
 type StudyWorkspaceContextValue = {
-  materialId: string
-  material: Material
+  userFileId: string
+  userFile: UserFile
   setPage: (page: number) => void
   highlightPage: number | null
   setHighlightPage: (page: number | null) => void
@@ -17,15 +17,15 @@ const StudyWorkspaceContext = createContext<StudyWorkspaceContextValue | null>(
 )
 
 type StudyWorkspaceProviderProps = {
-  materialId: string
-  material: Material
+  userFileId: string
+  userFile: UserFile
   setPage: (page: number) => void
   children: ReactNode
 }
 
 export const StudyWorkspaceProvider = ({
-  materialId,
-  material,
+  userFileId,
+  userFile,
   setPage,
   children,
 }: StudyWorkspaceProviderProps) => {
@@ -34,8 +34,8 @@ export const StudyWorkspaceProvider = ({
   return (
     <StudyWorkspaceContext.Provider
       value={{
-        materialId,
-        material,
+        userFileId,
+        userFile,
         setPage,
         highlightPage,
         setHighlightPage,

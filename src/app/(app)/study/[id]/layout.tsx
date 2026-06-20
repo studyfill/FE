@@ -13,5 +13,5 @@ export default async function StudyLayout({
 }: StudyLayoutProps) {
   const { id } = await params
 
-  return <StudyShell materialId={id}>{children}</StudyShell>
+  return <StudyShell userFileId={id}>{children}</StudyShell>
 }
