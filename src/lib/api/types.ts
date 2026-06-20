@@ -25,3 +25,8 @@ export type FolderCreateRequest = Schemas["FolderCreateRequest"]
 export type FolderUpdateRequest = Schemas["FolderUpdateRequest"]
 export type FolderMoveRequest = Schemas["FolderMoveRequest"]
 export type FolderDeletePreviewResponse = Schemas["FolderDeletePreviewResponse"]
+
+// Search
+export type SearchResponse = Schemas["SearchResponse"]
+export type FolderSearchResult = Schemas["FolderSearchResult"]
+export type FileSearchResult = Schemas["FileSearchResult"]
