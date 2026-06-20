@@ -3,7 +3,7 @@
 //
 // 참고: src/lib/utils/upload-file.ts(클라 측 검증)와 역할이 다르다. 여기는 백엔드 연동 전용.
 
-import { bffFetch } from "./client"
+import { bffFetch, bffFetchBlob } from "./client"
 import type {
   FileMoveRequest,
   FileResponse,
@@ -64,6 +64,16 @@ export const listFiles = async (
   )
   return (page.content ?? []).map(mapFileToMaterial)
 }
+
+/** 자료 단건 조회 → Material. study 로컬 하이드레이션 시 메타데이터 확보용. */
+export const getFileDetail = async (fileId: string): Promise<Material> => {
+  const file = await bffFetch<FileResponse>(`/files/${fileId}`)
+  return mapFileToMaterial(file)
+}
+
+/** 파일 원본 바이트(BFF content 프록시 경유 — 토큰/CORS 없이 same-origin). */
+export const fetchFileBlob = (fileId: string): Promise<Blob> =>
+  bffFetchBlob(`/files/${fileId}/content`)
 
 /** multipart 업로드. folderId/name 은 쿼리 파라미터로 전달된다(백엔드 계약). */
 export const uploadFileToBackend = (

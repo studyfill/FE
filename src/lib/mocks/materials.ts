@@ -6,6 +6,8 @@ import type {
 } from "@/types/material"
 
 import { validateUploadFile, getFileTypeFromName } from "@/lib/utils/upload-file"
+import { fetchFileBlob, getFileDetail } from "@/lib/api/files"
+import { getPdfPageCountFromFile } from "@/lib/utils/pdf-page-count"
 import { savePdfBlob } from "@/lib/storage/pdf-blob-store"
 import { normalizePdfPages } from "@/lib/pdf/normalize-pdf-pages"
 import { extractPdfTextFromBytes } from "@/lib/pdf/extract-pdf-text"
@@ -139,6 +141,53 @@ export const processMaterialLocally = async (params: {
   }
 
   return material
+}
+
+/** 동시 하이드레이션 중복 방지(StudyShell·StudyPage 가 같은 id 로 동시에 호출). */
+const hydrationInFlight = new Map<string, Promise<Material | undefined>>()
+
+/**
+ * 로컬 미러에 없는 자료를 백엔드에서 받아 로컬 처리(processMaterialLocally)한다.
+ * 다른 기기/브라우저에서 업로드했거나 로컬 store 가 비워진 경우 study 진입을 가능케 한다.
+ * 백엔드 단건 조회로 메타데이터를, content 프록시로 원본 바이트를 받아 동일 id 로 미러링한다.
+ */
+export const hydrateMaterialFromBackend = (
+  id: string,
+): Promise<Material | undefined> => {
+  const existing = getMaterial(id)
+  if (existing) return Promise.resolve(existing)
+
+  const inFlight = hydrationInFlight.get(id)
+  if (inFlight) return inFlight
+
+  const promise = (async (): Promise<Material | undefined> => {
+    const meta = await getFileDetail(id)
+    const blob = await fetchFileBlob(id)
+    const file = new File([blob], meta.name, {
+      type:
+        meta.fileType === "pdf"
+          ? "application/pdf"
+          : blob.type || "application/octet-stream",
+    })
+    const pageCount =
+      meta.fileType === "pdf"
+        ? meta.pageCount > 0
+          ? meta.pageCount
+          : await getPdfPageCountFromFile(file)
+        : 1
+
+    return processMaterialLocally({
+      id,
+      name: meta.name,
+      folderId: meta.folderId,
+      fileType: meta.fileType,
+      file,
+      pageCount,
+    })
+  })().finally(() => hydrationInFlight.delete(id))
+
+  hydrationInFlight.set(id, promise)
+  return promise
 }
 
 export const uploadMaterial = async (
