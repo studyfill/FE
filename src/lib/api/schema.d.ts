@@ -260,6 +260,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/files/{fileId}/download-url": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getDownloadUrl"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/files/recent": {
         parameters: {
             query?: never;
@@ -268,6 +284,22 @@ export interface paths {
             cookie?: never;
         };
         get: operations["getRecent"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/files/content/{key}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getContent"];
         put?: never;
         post?: never;
         delete?: never;
@@ -492,6 +524,17 @@ export interface components {
             totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+        };
+        ApiResponseFileDownloadResponse: {
+            success?: boolean;
+            data?: components["schemas"]["FileDownloadResponse"];
+            code?: string;
+            message?: string;
+        };
+        FileDownloadResponse: {
+            url?: string;
+            /** Format: int64 */
+            expiresIn?: number;
         };
         ApiResponseListFileResponse: {
             success?: boolean;
@@ -1020,6 +1063,28 @@ export interface operations {
             };
         };
     };
+    getDownloadUrl: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                fileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseFileDownloadResponse"];
+                };
+            };
+        };
+    };
     getRecent: {
         parameters: {
             query?: never;
@@ -1036,6 +1101,28 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["ApiResponseListFileResponse"];
+                };
+            };
+        };
+    };
+    getContent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                key: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": string;
                 };
             };
         };
