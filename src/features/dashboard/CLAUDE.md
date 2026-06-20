@@ -23,7 +23,8 @@
 
 - 형식: PDF, JPG, PNG / 최대 50MB / PDF 최대 100p (TRD)
 - 이미지: 단일 페이지 뷰어 (OCR은 Phase C)
-- 백엔드 연동 시 multipart 업로드는 `src/lib/api/upload.ts`의 `uploadFile` 사용
+- 자료(files)는 실 백엔드 연동: 업로드/목록/이동은 `src/lib/api/files.ts`(BFF 라우트 `src/app/api/files/**` 경유).
+  업로드는 하이브리드 — 백엔드 저장 + `processMaterialLocally`로 로컬 PDF 처리(미배포 study 기능용). 폴더는 mock 유지.
 
 ## 검색
 

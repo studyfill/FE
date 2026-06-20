@@ -82,6 +82,12 @@ export const DashboardLibraryPage = ({
           </p>
         ) : null}
 
+        {library.materialsError ? (
+          <p className="text-sm text-destructive" role="alert">
+            {library.materialsError}
+          </p>
+        ) : null}
+
         {library.createFolderError ? (
           <p className="text-sm text-destructive" role="alert">
             {library.createFolderError}

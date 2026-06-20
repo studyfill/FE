@@ -129,6 +129,47 @@ export const apiFetchBlob = async (
   return res.blob()
 }
 
+// ── BFF (same-origin) ────────────────────────────────────────────
+// 서버 라우트 핸들러(src/app/api/**)가 httpOnly 세션 쿠키의 토큰을 읽어 백엔드로 프록시한다.
+// 클라이언트는 same-origin 으로 호출 → 쿠키가 자동 전송되고 Authorization 을 직접 다루지 않는다.
+// (토큰을 JS 에 노출하지 않는 BFF 모델. 백엔드 직접 호출은 apiFetch, BFF 경유는 bffFetch.)
+const BFF_PREFIX = "/api"
+
+export const bffFetch = async <T>(
+  path: string,
+  init?: FetchInit,
+): Promise<T> => {
+  const isFormData = init?.body instanceof FormData
+
+  const res = await fetch(`${BFF_PREFIX}${path}`, {
+    ...init,
+    headers: {
+      ...(isFormData || init?.body == null
+        ? {}
+        : { "Content-Type": "application/json" }),
+      ...init?.headers,
+    },
+    body: isFormData
+      ? (init?.body as FormData)
+      : init?.body != null
+        ? JSON.stringify(init.body)
+        : undefined,
+  })
+
+  const body = (await res.json().catch(() => null)) as ApiResponse<T> | null
+  if (!body) {
+    throw new ApiError(
+      ErrorCode.COMMON_INTERNAL_ERROR,
+      "응답을 해석할 수 없습니다",
+      res.status,
+    )
+  }
+  if (!body.success) {
+    throw new ApiError(body.code, body.message, res.status)
+  }
+  return body.data as T
+}
+
 // 편의 메서드
 export const api = {
   get: <T>(path: string, init?: FetchInit) =>
