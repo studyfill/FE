@@ -4,7 +4,13 @@
 //  - 실패 시 ApiError(code) throw
 //  - 401(AUTH_002 만료) 시 /auth/refresh 로 1회 자동 갱신 후 재시도
 
-import { ApiError, type ApiResponse, ErrorCode } from "./errors"
+import {
+  ApiError,
+  type ApiResponse,
+  ErrorCode,
+  REAUTH_REQUIRED_CODES,
+} from "./errors"
+import { ROUTES } from "@/constants/routes"
 import {
   clearTokens,
   getAccessToken,
@@ -135,6 +141,15 @@ export const apiFetchBlob = async (
 // (토큰을 JS 에 노출하지 않는 BFF 모델. 백엔드 직접 호출은 apiFetch, BFF 경유는 bffFetch.)
 const BFF_PREFIX = "/api"
 
+// 세션 토큰 갱신까지 실패(쿠키 정리됨)한 BFF 401 → 랜딩으로 유도해 재로그인.
+// (만료 후 자동 갱신 성공 시엔 200 이 와서 여기로 오지 않는다.)
+const redirectIfReauthRequired = (status: number, code: string): void => {
+  if (typeof window === "undefined") return
+  if (status === 401 && REAUTH_REQUIRED_CODES.has(code)) {
+    window.location.href = ROUTES.home
+  }
+}
+
 export const bffFetch = async <T>(
   path: string,
   init?: FetchInit,
@@ -165,6 +180,7 @@ export const bffFetch = async <T>(
     )
   }
   if (!body.success) {
+    redirectIfReauthRequired(res.status, body.code)
     throw new ApiError(body.code, body.message, res.status)
   }
   return body.data as T
@@ -178,11 +194,9 @@ export const bffFetchBlob = async (
   const res = await fetch(`${BFF_PREFIX}${path}`, init)
   if (!res.ok) {
     const body = (await res.json().catch(() => null)) as ApiResponse<unknown> | null
-    throw new ApiError(
-      body?.code ?? ErrorCode.COMMON_INTERNAL_ERROR,
-      body?.message ?? "파일을 가져오지 못했습니다",
-      res.status,
-    )
+    const code = body?.code ?? ErrorCode.COMMON_INTERNAL_ERROR
+    redirectIfReauthRequired(res.status, code)
+    throw new ApiError(code, body?.message ?? "파일을 가져오지 못했습니다", res.status)
   }
   return res.blob()
 }
