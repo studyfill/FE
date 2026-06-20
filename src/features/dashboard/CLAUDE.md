@@ -1,7 +1,6 @@
 # Dashboard (도메인 가이드 — Phase A)
 
 내 라이브러리: 폴더 트리, 정렬, 업로드, 파일명 검색. 전역 규칙은 루트 `CLAUDE.md`.
-(Cursor용 동일 규칙: `.cursor/rules/features/dashboard.mdc` — 함께 갱신)
 
 ## 폴더
 

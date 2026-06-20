@@ -1,7 +1,7 @@
 # Study Feature Tab (공통 도메인 가이드)
 
 학습 워크스페이스의 탭(설명/빈칸, Phase B 퀴즈 등)이 공유하는 셸 패턴.
-explanation·blank-study도 이 패턴을 따른다. (Cursor용: `.cursor/rules/features/study-feature-tab.mdc`)
+explanation·blank-study도 이 패턴을 따른다.
 
 ## 레이아웃
 

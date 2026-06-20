@@ -196,6 +196,22 @@ export interface paths {
         patch: operations["move_1"];
         trace?: never;
     };
+    "/api/v1/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["search"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/folders/{folderId}/delete-preview": {
         parameters: {
             query?: never;
@@ -391,6 +407,30 @@ export interface components {
         FileMoveRequest: {
             /** Format: uuid */
             targetFolderId?: string;
+        };
+        ApiResponseSearchResponse: {
+            success?: boolean;
+            data?: components["schemas"]["SearchResponse"];
+            code?: string;
+            message?: string;
+        };
+        FileSearchResult: {
+            /** Format: uuid */
+            id?: string;
+            name?: string;
+            path?: string;
+            /** @enum {string} */
+            fileType?: "PDF" | "PNG" | "JPG";
+        };
+        FolderSearchResult: {
+            /** Format: uuid */
+            id?: string;
+            name?: string;
+            path?: string;
+        };
+        SearchResponse: {
+            folders?: components["schemas"]["FolderSearchResult"][];
+            files?: components["schemas"]["FileSearchResult"][];
         };
         ApiResponseListFolderResponse: {
             success?: boolean;
@@ -888,6 +928,29 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["ApiResponseFileResponse"];
+                };
+            };
+        };
+    };
+    search: {
+        parameters: {
+            query: {
+                q: string;
+                type?: "FOLDER" | "FILE" | "ALL";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseSearchResponse"];
                 };
             };
         };

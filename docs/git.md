@@ -1,9 +1,6 @@
----
-description: StudyFill Git workflow — issues, branches, commits, and pull requests
-alwaysApply: true
----
+# StudyFill Git Rules (상세)
 
-# StudyFill Git Rules
+> 루트 `CLAUDE.md`의 git 워크플로 상세판 — 이슈/브랜치/커밋/PR. 충돌 시 `CLAUDE.md`를 우선한다.
 
 ## Branch Strategy
 
