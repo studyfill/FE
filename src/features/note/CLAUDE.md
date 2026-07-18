@@ -7,8 +7,12 @@
 ## 동작
 
 - 온디맨드 생성: 업로드 시 생성 안 함. `NoteGeneratePanel`에서 생성 클릭 시 콘텐츠 생성.
+- **백엔드 연동(BFF)**: 생성은 비동기다. `POST /generate`(접수, noteId) → `GET /{noteId}/status`
+  폴링(2초, 최대 ~2분) → 완료 시 `GET /{noteId}` 상세. 마운트 시 `GET (목록)`으로 기존 노트를
+  로드하고 `GENERATING`이면 폴링을 재개한다. files 도메인과 동일하게 `src/app/api/files/[fileId]/notes/**`
+  BFF 라우트 + `bffFetch`(클라 토큰 미노출). API 클라이언트는 `src/lib/api/notes.ts`.
 - 결과: `NoteResultView` — 강의 노트형 prose(번호 나열식 지양, study-feature-tab 패턴 준수)
-- 생성 실패: `GenerateErrorAlert` 인라인 재시도(raw 에러 미노출)
+- 생성 실패: `GenerateErrorAlert` 인라인 재시도(raw 에러 미노출). 에러 코드 매핑은 `notes.ts` `noteErrorMessage`.
 
 ## 노트 편집 (하이라이트·밑줄)
 
@@ -19,7 +23,10 @@
 ## 핵심 파일
 
 - 컴포넌트: `NoteGeneratePanel`, `NoteResultView`, `EditableText`, `TextFormatToolbar`, `NoteGenerateIcon`
-- 타입: `src/types/note.ts` / mock: `src/lib/mocks/note.ts`, `note-content.ts`, `note-edits.ts`
+- 데이터 훅: `hooks/useNote.ts`(백엔드 연동) → API `src/lib/api/notes.ts` + BFF `src/app/api/files/[fileId]/notes/**`
+- 타입: `src/types/note.ts`(`LectureNoteContent`=백엔드 content 계약, `LectureNote`=content+래퍼)
+- mock: `note-content.ts`·`note.ts`는 이제 landing 프리뷰/`blank` 목업 전용. 편집 저장(`note-edits.ts`)은
+  아직 localStorage(`useNoteEdits`) — 서버 `fieldEdits` 연동은 후속 작업(TODO).
 - 라우트: `src/app/(app)/study/[id]/note/page.tsx`
 
 ## 연계

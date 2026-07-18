@@ -5,6 +5,7 @@ import { Loader2, Sparkles } from "lucide-react"
 import { GenerateErrorAlert } from "@/components/common/GenerateErrorAlert"
 import { SegmentedOptionGroup } from "@/components/common/SegmentedOptionGroup"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { NoteGenerateIcon } from "@/features/note/components/NoteGenerateIcon"
 import { NoteResultView } from "@/features/note/components/NoteResultView"
@@ -62,30 +63,65 @@ export const NoteGeneratePanel = ({
             </div>
 
             <div className="flex w-full flex-col gap-5">
-              <SegmentedOptionGroup
-                label="범위"
-                value={options.range}
-                onChange={(range) =>
-                  setOptions((prev) => ({ ...prev, range }))
-                }
-                options={[
-                  { value: "all", label: "전체" },
-                  { value: "chapter", label: "현재 챕터" },
-                  { value: "page", label: "현재 페이지" },
-                ]}
-              />
-              <SegmentedOptionGroup
-                label="형태"
-                value={options.format}
-                onChange={(format) =>
-                  setOptions((prev) => ({ ...prev, format }))
-                }
-                options={[
-                  { value: "lecture-notes", label: "강의 노트" },
-                  { value: "bullet-points", label: "글머리 핵심" },
-                  { value: "exam-prep", label: "시험 대비" },
-                ]}
-              />
+              <div className="space-y-2.5">
+                <SegmentedOptionGroup
+                  label="범위"
+                  columns={2}
+                  value={options.range}
+                  onChange={(range) =>
+                    setOptions((prev) => ({
+                      ...prev,
+                      range,
+                      ...(range === "all"
+                        ? { pageStart: null, pageEnd: null }
+                        : {}),
+                    }))
+                  }
+                  options={[
+                    { value: "all", label: "전체" },
+                    { value: "page", label: "페이지 지정" },
+                  ]}
+                />
+                {options.range === "page" ? (
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="number"
+                      min={1}
+                      inputMode="numeric"
+                      placeholder="시작"
+                      aria-label="시작 페이지"
+                      value={options.pageStart ?? ""}
+                      onChange={(e) =>
+                        setOptions((prev) => ({
+                          ...prev,
+                          pageStart:
+                            e.target.value === ""
+                              ? null
+                              : Number(e.target.value),
+                        }))
+                      }
+                    />
+                    <span className="text-muted-foreground">~</span>
+                    <Input
+                      type="number"
+                      min={1}
+                      inputMode="numeric"
+                      placeholder="끝"
+                      aria-label="끝 페이지"
+                      value={options.pageEnd ?? ""}
+                      onChange={(e) =>
+                        setOptions((prev) => ({
+                          ...prev,
+                          pageEnd:
+                            e.target.value === ""
+                              ? null
+                              : Number(e.target.value),
+                        }))
+                      }
+                    />
+                  </div>
+                ) : null}
+              </div>
               <SegmentedOptionGroup
                 label="난이도"
                 columns={2}
@@ -94,8 +130,12 @@ export const NoteGeneratePanel = ({
                   setOptions((prev) => ({ ...prev, difficulty }))
                 }
                 options={[
-                  { value: "easy", label: "쉽게", sublabel: "비유 중심" },
-                  { value: "detailed", label: "자세히", sublabel: "정의 중심" },
+                  { value: "summary", label: "정리", sublabel: "내용 정리" },
+                  {
+                    value: "explanation",
+                    label: "설명",
+                    sublabel: "내용 정리 + 추가 설명",
+                  },
                 ]}
               />
             </div>

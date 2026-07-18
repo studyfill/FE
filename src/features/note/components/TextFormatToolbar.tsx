@@ -11,7 +11,7 @@ import {
   PenLine,
   Underline,
 } from "lucide-react"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { createPortal } from "react-dom"
 
 import { Button } from "@/components/ui/button"
@@ -66,6 +66,7 @@ type ToolbarPosition = { top: number; left: number }
 export const TextFormatToolbar = () => {
   const [position, setPosition] = useState<ToolbarPosition | null>(null)
   const [mounted, setMounted] = useState(false)
+  const toolbarRef = useRef<HTMLDivElement>(null)
   const [lastPenColor, setLastPenColor] = useState<PenColor>("red")
   const [lastUnderlineStyle, setLastUnderlineStyle] =
     useState<UnderlineStyle>("solid")
@@ -111,6 +112,19 @@ export const TextFormatToolbar = () => {
     }
   }, [updatePosition])
 
+  useEffect(() => {
+    if (!position) return
+
+    const handlePointerDown = (event: PointerEvent) => {
+      const target = event.target as Node | null
+      if (target && toolbarRef.current?.contains(target)) return
+      setPosition(null)
+    }
+
+    document.addEventListener("pointerdown", handlePointerDown)
+    return () => document.removeEventListener("pointerdown", handlePointerDown)
+  }, [position])
+
   const handleFormat = (action: () => void) => {
     syncSavedSelection()
     action()
@@ -121,6 +135,7 @@ export const TextFormatToolbar = () => {
 
   return createPortal(
     <div
+      ref={toolbarRef}
       className="fixed z-50 flex max-w-[28rem] flex-wrap items-center gap-0.5 rounded-xl border border-border bg-background/95 p-1 shadow-lg backdrop-blur-sm"
       style={{ top: position.top, left: position.left }}
       role="toolbar"

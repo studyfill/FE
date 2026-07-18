@@ -70,8 +70,9 @@ const NoteDocument = ({
   data,
   onSourceClick,
 }: NoteResultViewProps) => {
-  const difficultyLabel =
-    data.options?.difficulty === "detailed" ? "자세히 설명" : "쉽게 설명"
+  const isExplanation =
+    data.style === "EXPLANATION" || data.options?.difficulty === "explanation"
+  const difficultyLabel = isExplanation ? "정리 + 추가 설명" : "내용 정리"
 
   let sectionIndex = 0
   const nextSection = () => {
@@ -102,10 +103,12 @@ const NoteDocument = ({
               <Clock3 className="size-3.5" />
               예상 {data.estimatedMinutes}분
             </span>
-            <span className="inline-flex items-center gap-1 rounded-full border border-primary/20 bg-primary/5 px-2.5 py-1 text-xs font-medium text-primary">
-              <CheckCircle2 className="size-3.5" />
-              정확도 {data.accuracyPercent}%
-            </span>
+            {data.accuracyPercent != null ? (
+              <span className="inline-flex items-center gap-1 rounded-full border border-primary/20 bg-primary/5 px-2.5 py-1 text-xs font-medium text-primary">
+                <CheckCircle2 className="size-3.5" />
+                정확도 {data.accuracyPercent}%
+              </span>
+            ) : null}
           </div>
         </header>
 

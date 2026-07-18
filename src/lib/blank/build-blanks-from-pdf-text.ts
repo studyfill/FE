@@ -1,5 +1,4 @@
-import type { NoteRange } from "@/types/note"
-import type { BlankDensity } from "@/types/blank"
+import type { BlankDensity, BlankRange } from "@/types/blank"
 import { BLANK_DENSITY_COUNTS } from "@/types/blank"
 import type { UserFilePdfPage } from "@/types/pdf-text"
 
@@ -130,7 +129,7 @@ const findSentenceSpans = (fullText: string): SentenceSpan[] => {
 
 const filterPagesByRange = (
   pages: UserFilePdfPage[],
-  range: NoteRange,
+  range: BlankRange,
   currentPage: number
 ): UserFilePdfPage[] => {
   if (range === "all") return pages
@@ -219,7 +218,7 @@ const buildPageNodes = (
 
 export const buildBlanksFromPdfText = (
   pages: UserFilePdfPage[],
-  range: NoteRange,
+  range: BlankRange,
   currentPage: number,
   density: BlankDensity
 ): PdfProseDraftPage[] => {

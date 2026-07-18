@@ -9,7 +9,7 @@ type NoteMockPreviewProps = {
 
 export const NoteMockPreview = ({ data }: NoteMockPreviewProps) => {
   const difficultyLabel =
-    data.options?.difficulty === "detailed" ? "자세히 설명" : "쉽게 설명"
+    data.options?.difficulty === "explanation" ? "정리 + 추가 설명" : "내용 정리"
 
   return (
     <div className="space-y-5 text-body-sm leading-relaxed text-foreground/90">

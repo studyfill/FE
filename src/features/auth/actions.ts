@@ -12,11 +12,7 @@ import {
   createMockGoogleProfile,
   mapGoogleProfileToSession,
 } from "@/lib/auth/google"
-
-/** 구글 동의 화면 redirect_uri. 백엔드 GOOGLE_REDIRECT_URI · Google Console 승인 URI 와 동일해야 함. */
-const getGoogleRedirectUri = () =>
-  process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI ??
-  `${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/auth/callback`
+import { GOOGLE_CLIENT_ID, GOOGLE_REDIRECT_URI } from "@/lib/env"
 
 export const enterGuestModeAction = async () => {
   await setSessionCookie({
@@ -30,7 +26,7 @@ export const enterGuestModeAction = async () => {
 }
 
 export const googleSignInAction = async () => {
-  const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
+  const clientId = GOOGLE_CLIENT_ID
 
   // client_id 미설정(로컬 등) → mock 로그인 폴백
   if (!clientId) {
@@ -42,7 +38,7 @@ export const googleSignInAction = async () => {
   // Authorization Code 발급 → /auth/callback 에서 백엔드와 code 교환
   const params = new URLSearchParams({
     client_id: clientId,
-    redirect_uri: getGoogleRedirectUri(),
+    redirect_uri: GOOGLE_REDIRECT_URI,
     response_type: "code",
     scope: "openid email profile",
     access_type: "offline",
