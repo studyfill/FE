@@ -10,7 +10,7 @@ import {
   userFileDragId,
   type LibraryDragData,
 } from "@/features/library/types/dnd"
-import { getFolderName } from "@/lib/mocks/folders"
+import { getFolderName } from "@/lib/api/folders"
 import { formatRelativeTime } from "@/lib/utils/format-relative-time"
 import {
   getFolderAccentBorderClassNameForFolderId,

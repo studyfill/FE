@@ -83,7 +83,7 @@ export type RootFolderSummary = {
   id: string
   name: string
   fileCount: number
-  pinned?: boolean
+  favorite?: boolean
 }
 
 export const listRootFolderSummaries = (): RootFolderSummary[] => {
@@ -101,7 +101,7 @@ export const listRootFolderSummaries = (): RootFolderSummary[] => {
       id: folder.id,
       name: folder.name,
       fileCount: countUserFilesInScope(folder.id, folders, userFiles),
-      pinned: folder.pinned,
+      favorite: folder.favorite,
     }))
 }
 
@@ -190,8 +190,8 @@ export const moveFolder = (folderId: string, newParentId: string): Folder => {
 export type FolderGridItem = Folder & { fileCount: number }
 
 const compareSiblingFolders = (a: Folder, b: Folder) => {
-  if (a.pinned && !b.pinned) return -1
-  if (!a.pinned && b.pinned) return 1
+  if (a.favorite && !b.favorite) return -1
+  if (!a.favorite && b.favorite) return 1
   return a.name.localeCompare(b.name, "ko")
 }
 
@@ -259,8 +259,8 @@ export const listFolderTree = (): FolderTreeNode[] => {
   return folders
     .filter((f) => f.parentId === null)
     .sort((a, b) => {
-      if (a.pinned && !b.pinned) return -1
-      if (!a.pinned && b.pinned) return 1
+      if (a.favorite && !b.favorite) return -1
+      if (!a.favorite && b.favorite) return 1
       return a.name.localeCompare(b.name, "ko")
     })
     .map(buildNode)

@@ -82,6 +82,18 @@ export const LibraryPage = ({
           </p>
         ) : null}
 
+        {library.folderActionError ? (
+          <p className="text-sm text-destructive" role="alert">
+            {library.folderActionError}
+          </p>
+        ) : null}
+
+        {library.foldersError ? (
+          <p className="text-sm text-destructive" role="alert">
+            {library.foldersError}
+          </p>
+        ) : null}
+
         {library.userFilesError ? (
           <p className="text-sm text-destructive" role="alert">
             {library.userFilesError}

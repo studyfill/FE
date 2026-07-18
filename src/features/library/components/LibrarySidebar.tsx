@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useState } from "react"
-import { BookOpen, Layers, Plus, Search } from "lucide-react"
+import { BookOpen, Layers, Plus, Search, Star } from "lucide-react"
 
 import { APP_NAME } from "@/constants"
 import { ROUTES } from "@/constants/routes"
@@ -10,16 +10,18 @@ import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { CreateFolderDialog } from "@/features/library/components/CreateFolderDialog"
+import { FavoriteFolderList } from "@/features/library/components/FavoriteFolderList"
 import { FolderTree } from "@/features/library/components/FolderTree"
 import { LibrarySidebarFooter } from "@/features/library/components/LibrarySidebarFooter"
 import { cn } from "@/lib/utils"
 import type { FolderColorId } from "@/constants/folder-colors"
-import type { FolderTreeNode } from "@/types/user-file"
+import type { FolderListItem, FolderTreeNode } from "@/types/user-file"
 
 type LibrarySidebarProps = {
   searchQuery: string
   onSearchChange: (value: string) => void
   folderTree: FolderTreeNode[]
+  favoriteFolders: FolderListItem[]
   activeFolderId: string | null
   userName?: string
   onCreateFolder: (name: string, color: FolderColorId) => Promise<void>
@@ -30,6 +32,7 @@ export const LibrarySidebar = ({
   searchQuery,
   onSearchChange,
   folderTree,
+  favoriteFolders,
   activeFolderId,
   userName,
   onCreateFolder,
@@ -85,6 +88,24 @@ export const LibrarySidebar = ({
             <BookOpen className="size-icon-md shrink-0" aria-hidden />
             내 라이브러리
           </Link>
+
+          {favoriteFolders.length > 0 ? (
+            <div className="mb-3">
+              <div className="mb-2 flex items-center gap-1.5 px-2.5">
+                <Star
+                  className="size-3 fill-amber-400 text-amber-500"
+                  aria-hidden
+                />
+                <span className="text-caption font-medium text-muted-foreground">
+                  즐겨찾기
+                </span>
+              </div>
+              <FavoriteFolderList
+                folders={favoriteFolders}
+                activeFolderId={activeFolderId}
+              />
+            </div>
+          ) : null}
 
           <div className="mb-2 flex items-center justify-between px-2.5">
             <span className="text-caption font-medium text-muted-foreground">폴더</span>

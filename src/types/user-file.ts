@@ -22,11 +22,22 @@ export type Folder = {
   name: string
   parentId: string | null
   color: FolderColorId
-  pinned?: boolean
+  favorite?: boolean
 }
 
 export type FolderTreeNode = Folder & {
   children: FolderTreeNode[]
+  fileCount: number
+}
+
+export type FolderListItem = Folder & {
+  fileCount: number
+}
+
+export type RecentFolderItem = {
+  id: string
+  name: string
+  color: FolderColorId
   fileCount: number
 }
 

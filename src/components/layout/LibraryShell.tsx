@@ -29,6 +29,7 @@ const LibraryShellInner = ({
           searchQuery={library.searchQuery}
           onSearchChange={library.setSearchQuery}
           folderTree={library.folderTree}
+          favoriteFolders={library.favoriteFolders}
           activeFolderId={folderId}
           userName={userName}
           onCreateFolder={library.handleCreateFolder}
