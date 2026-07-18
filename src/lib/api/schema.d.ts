@@ -11,7 +11,15 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /**
+         * 내 프로필 조회
+         * @description 현재 로그인한 사용자의 프로필(이름·이메일·플랜 등)을 반환한다.
+         */
         get: operations["getMyProfile"];
+        /**
+         * 내 프로필 수정
+         * @description 현재 로그인한 사용자의 프로필(이름 등)을 수정한다.
+         */
         put: operations["updateMyProfile"];
         post?: never;
         delete?: never;
@@ -27,9 +35,21 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /**
+         * 폴더 상세
+         * @description 폴더 정보와 하위 폴더·파일 등 상세 내용을 반환한다.
+         */
         get: operations["getDetail"];
+        /**
+         * 폴더 이름 수정
+         * @description 폴더 이름을 변경한다. 같은 부모 내 동일 이름은 중복 불가.
+         */
         put: operations["rename"];
         post?: never;
+        /**
+         * 폴더 삭제
+         * @description 폴더와 하위 폴더·파일을 cascade 즉시 삭제한다(휴지통/복구 없음). 파일은 스토리지 원본도 제거된다.
+         */
         delete: operations["delete"];
         options?: never;
         head?: never;
@@ -43,10 +63,66 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /**
+         * 파일 상세
+         * @description 파일의 메타데이터(이름·타입·페이지 수·열람 시각 등)를 반환한다.
+         */
         get: operations["getDetail_1"];
+        /**
+         * 파일 이름 수정
+         * @description 파일 이름을 변경한다.
+         */
         put: operations["rename_1"];
         post?: never;
+        /**
+         * 파일 삭제
+         * @description 파일을 삭제하고 스토리지 원본도 함께 제거한다(복구 없음).
+         */
         delete: operations["delete_1"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/files/{fileId}/notes/{noteId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 노트 상세
+         * @description 노트 본문(고정 구조 JSON)과 서식 주석을 조회한다.
+         */
+        get: operations["getDetail_2"];
+        /**
+         * 노트 편집 저장
+         * @description 본문/서식 주석을 부분 갱신한다(생성 미완료 시 NOTE_003).
+         */
+        put: operations["update"];
+        post?: never;
+        /**
+         * 노트 삭제
+         * @description 노트와 버전을 삭제한다.
+         */
+        delete: operations["delete_2"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/ai/callback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["callback"];
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -59,8 +135,16 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /**
+         * 루트 폴더 목록
+         * @description 최상위(부모 없는) 폴더 목록을 반환한다.
+         */
         get: operations["getRootFolders"];
         put?: never;
+        /**
+         * 폴더 생성
+         * @description 지정한 부모 아래(미지정 시 루트)에 폴더를 만든다. 같은 부모 내 동일 이름은 중복 불가.
+         */
         post: operations["create"];
         delete?: never;
         options?: never;
@@ -77,7 +161,55 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * 열람 기록
+         * @description 파일 열람을 기록하여 최근 열람 목록과 last_viewed_at 을 갱신한다.
+         */
         post: operations["recordView"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/files/{fileId}/notes/generate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * 노트 생성 요청
+         * @description 분석 완료된 파일에 대해 고정 구조 설명 노트 생성을 AI Worker에 위임한다.
+         */
+        post: operations["generate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/files/{fileId}/analysis": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 분석 결과 조회
+         * @description 분석 완료 후 페이지 수/언어 등 결과를 조회한다.
+         */
+        get: operations["getResult"];
+        put?: never;
+        /**
+         * 분석 시작
+         * @description 파일을 AI Worker에 분석 위임하고 작업을 생성한다.
+         */
+        post: operations["start"];
         delete?: never;
         options?: never;
         head?: never;
@@ -93,6 +225,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * 파일 업로드
+         * @description PDF/PNG/JPG 파일을 업로드한다(WEBP 미지원). folderId 미지정 시 루트에 저장된다.
+         *     MIME 타입과 확장자를 이중 검증하며 용량·페이지 수 제한이 적용된다.
+         */
         post: operations["upload"];
         delete?: never;
         options?: never;
@@ -109,6 +246,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * Access Token 재발급
+         * @description 유효한 refreshToken 으로 새 accessToken 을 발급한다. 인증 불필요.
+         */
         post: operations["refresh"];
         delete?: never;
         options?: never;
@@ -125,6 +266,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * 로그아웃
+         * @description refreshToken 을 무효화하고 현재 accessToken 의 jti 를 남은 만료 시간만큼 블랙리스트에 등록한다.
+         */
         post: operations["logout"];
         delete?: never;
         options?: never;
@@ -141,6 +286,11 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /**
+         * 구글 로그인
+         * @description 프론트가 전달한 구글 authorization code 를 서버가 구글 토큰 엔드포인트에서 교환·검증한다.
+         *     최초 로그인이면 계정을 자동 생성한 뒤 accessToken/refreshToken 을 발급한다. 인증 불필요.
+         */
         post: operations["google"];
         delete?: never;
         options?: never;
@@ -161,6 +311,10 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
+        /**
+         * 폴더 이동
+         * @description 폴더를 다른 부모로 이동한다. 자기 자신/하위로의 순환 이동은 금지된다.
+         */
         patch: operations["move"];
         trace?: never;
     };
@@ -177,6 +331,10 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
+        /**
+         * 즐겨찾기 토글
+         * @description 폴더의 즐겨찾기 상태를 켜거나 끈다. (파일 즐겨찾기는 미지원)
+         */
         patch: operations["toggleFavorite"];
         trace?: never;
     };
@@ -193,6 +351,10 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
+        /**
+         * 파일 이동
+         * @description 파일을 다른 폴더로 이동한다.
+         */
         patch: operations["move_1"];
         trace?: never;
     };
@@ -203,6 +365,11 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /**
+         * 통합 검색
+         * @description 현재 사용자 소유의 폴더·파일을 이름 부분 일치로 검색한다.
+         *     결과는 이름과 전체 경로를 포함하며 폴더 우선 → 이름순으로 정렬된다.
+         */
         get: operations["search"];
         put?: never;
         post?: never;
@@ -219,6 +386,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /**
+         * 삭제 미리보기
+         * @description 삭제 시 함께 제거될 하위 폴더 수(subFolderCount)·파일 수(fileCount)를 미리 안내한다.
+         */
         get: operations["getDeletePreview"];
         put?: never;
         post?: never;
@@ -235,6 +406,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /**
+         * 즐겨찾기 폴더 목록
+         * @description 즐겨찾기로 등록한 폴더를 sort_order 순으로 반환한다.
+         */
         get: operations["getFavorites"];
         put?: never;
         post?: never;
@@ -251,7 +426,51 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /**
+         * 파일 목록
+         * @description 지정한 폴더(미지정 시 루트)의 파일을 페이지 단위로 반환한다.
+         */
         get: operations["list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/files/{fileId}/notes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 노트 목록
+         * @description 파일의 노트 목록을 조회한다(MVP: 최대 1건).
+         */
+        get: operations["list_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/files/{fileId}/notes/{noteId}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 노트 생성 상태
+         * @description 노트 생성 상태를 폴링한다.
+         */
+        get: operations["getStatus"];
         put?: never;
         post?: never;
         delete?: never;
@@ -267,7 +486,31 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /**
+         * 다운로드 URL 발급
+         * @description 파일 원본을 내려받을 수 있는 presigned 다운로드 URL(만료 시간 포함)을 발급한다.
+         */
         get: operations["getDownloadUrl"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/files/{fileId}/analysis/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 분석 상태 조회
+         * @description 분석 작업 상태를 폴링한다.
+         */
+        get: operations["getStatus_1"];
         put?: never;
         post?: never;
         delete?: never;
@@ -283,6 +526,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /**
+         * 최근 열람 파일
+         * @description 최근에 열람한 파일을 열람 시각 내림차순으로 반환한다.
+         */
         get: operations["getRecent"];
         put?: never;
         post?: never;
@@ -299,6 +546,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /**
+         * 파일 콘텐츠 스트리밍(개발 전용)
+         * @description local 스토리지의 파일 바이트를 직접 스트리밍한다. 운영(S3) 환경은 presigned URL을 사용한다.
+         */
         get: operations["getContent"];
         put?: never;
         post?: never;
@@ -318,6 +569,10 @@ export interface paths {
         get?: never;
         put?: never;
         post?: never;
+        /**
+         * 회원 탈퇴
+         * @description 현재 사용자 계정과 소유 데이터(파일·폴더·노트 등)를 cascade 삭제한다. 복구 불가.
+         */
         delete: operations["deleteAccount"];
         options?: never;
         head?: never;
@@ -349,6 +604,11 @@ export interface components {
         };
         FolderUpdateRequest: {
             name: string;
+            /**
+             * @description 폴더 색상(선택). null이면 색을 변경하지 않는다.
+             * @enum {string}
+             */
+            color?: "red" | "orange" | "yellow" | "green" | "blue" | "indigo" | "violet" | "pink";
         };
         ApiResponseFolderResponse: {
             success?: boolean;
@@ -365,6 +625,9 @@ export interface components {
             /** Format: int32 */
             depth?: number;
             favorite?: boolean;
+            color?: string;
+            /** Format: int32 */
+            fileCount?: number;
             /** Format: date-time */
             createdAt?: string;
         };
@@ -395,14 +658,89 @@ export interface components {
             /** Format: date-time */
             createdAt?: string;
         };
-        FolderCreateRequest: {
-            name: string;
+        JsonNode: unknown;
+        NoteUpdateRequest: {
+            content?: components["schemas"]["JsonNode"];
+            fieldEdits?: components["schemas"]["JsonNode"];
+        };
+        ApiResponseNoteDetailResponse: {
+            success?: boolean;
+            data?: components["schemas"]["NoteDetailResponse"];
+            code?: string;
+            message?: string;
+        };
+        NoteDetailResponse: {
             /** Format: uuid */
-            parentId?: string;
+            id?: string;
+            /** Format: uuid */
+            fileId?: string;
+            /** @enum {string} */
+            style?: "EASY" | "DETAILED";
+            content?: string;
+            fieldEdits?: string;
+            /** @enum {string} */
+            status?: "GENERATING" | "COMPLETED" | "FAILED";
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+        };
+        AiCallbackRequest: {
+            jobId?: string;
+            status?: string;
+            result?: components["schemas"]["JsonNode"];
+            errorMessage?: string;
         };
         ApiResponseVoid: {
             success?: boolean;
             data?: unknown;
+            code?: string;
+            message?: string;
+        };
+        FolderCreateRequest: {
+            name: string;
+            /** Format: uuid */
+            parentId?: string;
+            /**
+             * @description 폴더 색상
+             * @enum {string}
+             */
+            color: "red" | "orange" | "yellow" | "green" | "blue" | "indigo" | "violet" | "pink";
+        };
+        NoteGenerateRequest: {
+            /** @enum {string} */
+            style?: "EASY" | "DETAILED";
+            pageRange?: components["schemas"]["PageRange"];
+        };
+        PageRange: {
+            /** Format: int32 */
+            start?: number;
+            /** Format: int32 */
+            end?: number;
+        };
+        ApiResponseNoteGenerateResponse: {
+            success?: boolean;
+            data?: components["schemas"]["NoteGenerateResponse"];
+            code?: string;
+            message?: string;
+        };
+        NoteGenerateResponse: {
+            /** Format: uuid */
+            noteId?: string;
+            /** Format: uuid */
+            jobId?: string;
+            /** @enum {string} */
+            status?: "PENDING" | "PROCESSING" | "COMPLETED" | "FAILED";
+        };
+        AnalysisStartResponse: {
+            /** Format: uuid */
+            jobId?: string;
+            /** @enum {string} */
+            status?: "PENDING" | "PROCESSING" | "COMPLETED" | "FAILED";
+        };
+        ApiResponseAnalysisStartResponse: {
+            success?: boolean;
+            data?: components["schemas"]["AnalysisStartResponse"];
             code?: string;
             message?: string;
         };
@@ -485,6 +823,9 @@ export interface components {
             /** Format: int32 */
             depth?: number;
             favorite?: boolean;
+            color?: string;
+            /** Format: int32 */
+            fileCount?: number;
             /** Format: date-time */
             createdAt?: string;
             subFolders?: components["schemas"]["FolderResponse"][];
@@ -525,6 +866,37 @@ export interface components {
             /** Format: int32 */
             totalPages?: number;
         };
+        ApiResponseListNoteSummary: {
+            success?: boolean;
+            data?: components["schemas"]["NoteSummary"][];
+            code?: string;
+            message?: string;
+        };
+        NoteSummary: {
+            /** Format: uuid */
+            id?: string;
+            /** @enum {string} */
+            style?: "EASY" | "DETAILED";
+            /** @enum {string} */
+            status?: "GENERATING" | "COMPLETED" | "FAILED";
+            /** Format: date-time */
+            createdAt?: string;
+            /** Format: date-time */
+            updatedAt?: string;
+        };
+        ApiResponseNoteStatusResponse: {
+            success?: boolean;
+            data?: components["schemas"]["NoteStatusResponse"];
+            code?: string;
+            message?: string;
+        };
+        NoteStatusResponse: {
+            /** Format: uuid */
+            noteId?: string;
+            /** @enum {string} */
+            status?: "GENERATING" | "COMPLETED" | "FAILED";
+            errorMessage?: string;
+        };
         ApiResponseFileDownloadResponse: {
             success?: boolean;
             data?: components["schemas"]["FileDownloadResponse"];
@@ -535,6 +907,30 @@ export interface components {
             url?: string;
             /** Format: int64 */
             expiresIn?: number;
+        };
+        AnalysisResultResponse: {
+            /** Format: int32 */
+            pageCount?: number;
+            language?: string;
+        };
+        ApiResponseAnalysisResultResponse: {
+            success?: boolean;
+            data?: components["schemas"]["AnalysisResultResponse"];
+            code?: string;
+            message?: string;
+        };
+        AnalysisStatusResponse: {
+            /** Format: uuid */
+            jobId?: string;
+            /** @enum {string} */
+            status?: "PENDING" | "PROCESSING" | "COMPLETED" | "FAILED";
+            errorMessage?: string;
+        };
+        ApiResponseAnalysisStatusResponse: {
+            success?: boolean;
+            data?: components["schemas"]["AnalysisStatusResponse"];
+            code?: string;
+            message?: string;
         };
         ApiResponseListFileResponse: {
             success?: boolean;
@@ -735,6 +1131,105 @@ export interface operations {
             };
         };
     };
+    getDetail_2: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                fileId: string;
+                noteId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseNoteDetailResponse"];
+                };
+            };
+        };
+    };
+    update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                fileId: string;
+                noteId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NoteUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseNoteDetailResponse"];
+                };
+            };
+        };
+    };
+    delete_2: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                fileId: string;
+                noteId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseVoid"];
+                };
+            };
+        };
+    };
+    callback: {
+        parameters: {
+            query?: never;
+            header?: {
+                "X-Internal-Secret"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AiCallbackRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseVoid"];
+                };
+            };
+        };
+    };
     getRootFolders: {
         parameters: {
             query?: never;
@@ -797,6 +1292,76 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["ApiResponseVoid"];
+                };
+            };
+        };
+    };
+    generate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                fileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NoteGenerateRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseNoteGenerateResponse"];
+                };
+            };
+        };
+    };
+    getResult: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                fileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseAnalysisResultResponse"];
+                };
+            };
+        };
+    };
+    start: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                fileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseAnalysisStartResponse"];
                 };
             };
         };
@@ -978,7 +1543,12 @@ export interface operations {
     search: {
         parameters: {
             query: {
+                /**
+                 * @description 검색어(부분 일치)
+                 * @example 수학
+                 */
                 q: string;
+                /** @description 검색 대상: FOLDER | FILE | ALL(기본) */
                 type?: "FOLDER" | "FILE" | "ALL";
             };
             header?: never;
@@ -1063,6 +1633,51 @@ export interface operations {
             };
         };
     };
+    list_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                fileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseListNoteSummary"];
+                };
+            };
+        };
+    };
+    getStatus: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                fileId: string;
+                noteId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseNoteStatusResponse"];
+                };
+            };
+        };
+    };
     getDownloadUrl: {
         parameters: {
             query?: never;
@@ -1081,6 +1696,28 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["ApiResponseFileDownloadResponse"];
+                };
+            };
+        };
+    };
+    getStatus_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                fileId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseAnalysisStatusResponse"];
                 };
             };
         };

@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useDraggable, useDroppable, useDndContext } from "@dnd-kit/core"
-import { ChevronDown, ChevronRight, Folder, Pin } from "lucide-react"
+import { ChevronDown, ChevronRight, Folder, Star } from "lucide-react"
 import { useEffect, useMemo, useState, type PointerEvent } from "react"
 
 import { ROUTES } from "@/constants/routes"
@@ -186,10 +186,10 @@ const FolderTreeItem = ({
               aria-hidden
             />
             <span className="truncate">{node.name}</span>
-            {node.pinned ? (
-              <Pin
-                className="size-3 shrink-0 fill-rose-500/15 text-rose-500"
-                aria-label="고정됨"
+            {node.favorite ? (
+              <Star
+                className="size-3 shrink-0 fill-amber-400 text-amber-500"
+                aria-label="즐겨찾기"
               />
             ) : null}
             <span className="ml-auto shrink-0 text-caption tabular-nums text-muted-foreground">
