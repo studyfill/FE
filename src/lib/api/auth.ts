@@ -7,6 +7,8 @@
 // 참고: 현재 FE 는 쿠키 기반 mock 세션(src/features/auth/actions.ts)을 사용 중이다.
 // 백엔드 토큰 플로우로의 전환은 후속 작업이며, 이 파일은 그 토대다.
 
+import { API_BASE_URL } from "@/lib/env"
+
 const ACCESS_KEY = "sf.accessToken"
 const REFRESH_KEY = "sf.refreshToken"
 
@@ -51,7 +53,7 @@ export const clearTokens = (): void => {
  */
 export const loginWithGoogleCode = async (
   code: string,
-  baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080",
+  baseUrl = API_BASE_URL,
 ): Promise<{ tokens: AuthTokens; user: AuthUser }> => {
   const res = await fetch(`${baseUrl}/api/v1/auth/google`, {
     method: "POST",

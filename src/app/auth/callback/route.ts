@@ -9,8 +9,9 @@ import { SESSION_COOKIE } from "@/constants/auth"
 import { ROUTES } from "@/constants/routes"
 import { serializeSession, sessionCookieOptions } from "@/features/auth/session"
 import type { AuthResponse } from "@/lib/api/types"
+import { API_BASE_URL } from "@/lib/env"
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080"
+const API_BASE = API_BASE_URL
 
 export const GET = async (request: Request) => {
   const url = new URL(request.url)

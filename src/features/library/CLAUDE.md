@@ -5,8 +5,13 @@
 
 ## 폴더
 
-- 무제한 depth 트리 (백엔드 연동 시 Adjacency List 모델)
-- 폴더/자료 DnD 이동 (`@dnd-kit`, `LibraryDndProvider`)
+- **실 백엔드 연동** (`src/lib/api/folders.ts` + BFF `src/app/api/folders/**`). 무제한 depth 트리
+  (`parentId` Adjacency List). 트리는 루트→자식 재귀로 즉시 로드하고, folderId→이름/색 동기 조회는
+  폴더 캐시(`getCachedFolder`)로 처리한다.
+- 폴더/자료 DnD 이동 (`@dnd-kit`, `LibraryDndProvider`) · 폴더 카드/리스트 kebab 메뉴로
+  이동/삭제/즐겨찾기 (`FolderActionsMenu` + `MoveFolderDialog`·`DeleteFolderDialog`)
+- **즐겨찾기**: `PATCH /folders/{id}/favorite` 로 DB 영속(`folder_favorites` 조인 테이블, 토글).
+  사이드바 최상단 즐겨찾기 섹션 + 트리에도 유지(Star 표시).
 - 최근 폴더 strip (최근 방문 10개)
 - **leaf 폴더에만 업로드** (자식 있는 폴더는 업로드 차단)
 
@@ -25,7 +30,8 @@
 - 형식: PDF, JPG, PNG / 최대 50MB / PDF 최대 100p (TRD)
 - 이미지: 단일 페이지 뷰어 (OCR은 Phase C)
 - 자료(files)는 실 백엔드 연동: 업로드/목록/이동은 `src/lib/api/files.ts`(BFF 라우트 `src/app/api/files/**` 경유).
-  업로드는 하이브리드 — 백엔드 저장 + `processUserFileLocally`로 로컬 PDF 처리(미배포 study 기능용). 폴더는 mock 유지.
+  업로드는 하이브리드 — 백엔드 저장 + `processUserFileLocally`로 로컬 PDF 처리(미배포 study 기능용).
+  폴더(생성·이동·삭제·즐겨찾기)도 실 백엔드 연동(`src/lib/api/folders.ts`).
 
 ## 검색
 
@@ -35,4 +41,5 @@
 
 - `components/LibraryToolbar.tsx`, `hooks/useLibrary.ts`, `context/LibraryContext.tsx`
 - `components/FileUploadDialog.tsx`
-- mock: `src/lib/mocks/user-files.ts`, `src/lib/mocks/folders.ts` / 상수: `src/constants/upload.ts`
+- 폴더 API: `src/lib/api/folders.ts` (+ BFF `src/app/api/folders/**`), 최근 폴더: `src/lib/api/recent-folders.ts`
+- mock: `src/lib/mocks/user-files.ts` / `src/lib/mocks/folders.ts`는 **랜딩 목업 전용** / 상수: `src/constants/upload.ts`

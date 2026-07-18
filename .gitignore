@@ -30,9 +30,9 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files — single committed source is .env (공개값만). 로컬 override 는 .env.local(gitignore).
 .env*
-!.env.example
+!.env
 
 # vercel
 .vercel
