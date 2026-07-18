@@ -3,14 +3,14 @@ import {
   FOLDER_COLOR_THEMES,
   type FolderColorId,
 } from "@/constants/folder-colors"
-import { getFolder } from "@/lib/mocks/folders"
+import { getCachedFolder } from "@/lib/api/folders"
 
 const getTheme = (color: FolderColorId) =>
   FOLDER_COLOR_THEMES[color] ?? FOLDER_COLOR_THEMES[DEFAULT_FOLDER_COLOR]
 
 export const getFolderColorById = (folderId: string | null): FolderColorId | null => {
   if (!folderId) return null
-  return getFolder(folderId)?.color ?? null
+  return getCachedFolder(folderId)?.color ?? null
 }
 
 export const getFolderIconClassNameForColor = (color: FolderColorId): string =>

@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useMemo } from "react"
+import { useEffect, useState } from "react"
 
 import {
   Breadcrumb,
@@ -12,18 +12,28 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { ROUTES } from "@/constants/routes"
-import { loadMockStore } from "@/lib/mocks/mock-store"
-import { getFolderAncestorPath } from "@/lib/utils/folder-path"
-import type { UserFile } from "@/types/user-file"
+import { fetchFolderAncestorPath } from "@/lib/api/folders"
+import type { Folder, UserFile } from "@/types/user-file"
 
 type StudyBreadcrumbsProps = {
   userFile: UserFile
 }
 
 export const StudyBreadcrumbs = ({ userFile }: StudyBreadcrumbsProps) => {
-  const folderPath = useMemo(() => {
-    const { folders } = loadMockStore()
-    return getFolderAncestorPath(userFile.folderId, folders)
+  const [folderPath, setFolderPath] = useState<Folder[]>([])
+
+  useEffect(() => {
+    let active = true
+    fetchFolderAncestorPath(userFile.folderId)
+      .then((path) => {
+        if (active) setFolderPath(path)
+      })
+      .catch(() => {
+        if (active) setFolderPath([])
+      })
+    return () => {
+      active = false
+    }
   }, [userFile.folderId])
 
   const displayName = userFile.name.replace(/\.pdf$/i, "")

@@ -32,7 +32,7 @@ const seedFolders: Folder[] = [
   { id: FOLDER_IDS.ds, name: "자료구조", parentId: FOLDER_IDS.major, color: "green" },
   { id: FOLDER_IDS.os, name: "운영체제", parentId: FOLDER_IDS.major, color: "indigo" },
   { id: FOLDER_IDS.liberal, name: "교양", parentId: null, color: "yellow" },
-  { id: FOLDER_IDS.exam, name: "시험대비", parentId: null, color: "red", pinned: true },
+  { id: FOLDER_IDS.exam, name: "시험대비", parentId: null, color: "red", favorite: true },
 ]
 
 const seedUserFiles: UserFile[] = [
@@ -180,6 +180,11 @@ const normalizeFolders = (folders: Folder[]): Folder[] =>
       folder.color ??
       LEGACY_FOLDER_COLORS[folder.id] ??
       DEFAULT_FOLDER_COLOR,
+    // 레거시 스토어의 pinned → favorite 이관
+    favorite:
+      folder.favorite ??
+      (folder as Folder & { pinned?: boolean }).pinned ??
+      false,
   }))
 
 const isLegacyStore = (data: MockStoreData) =>

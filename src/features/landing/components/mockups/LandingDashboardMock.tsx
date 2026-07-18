@@ -47,6 +47,7 @@ export const LandingDashboardMock = ({
             searchQuery=""
             onSearchChange={() => {}}
             folderTree={folderTree}
+            favoriteFolders={[]}
             activeFolderId={null}
             userName="김민준"
             onCreateFolder={async () => {}}

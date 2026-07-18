@@ -4,11 +4,14 @@ import { FolderCard } from "@/features/library/components/FolderCard"
 import { FolderListRow } from "@/features/library/components/FolderListRow"
 import { UserFileCard } from "@/features/library/components/UserFileCard"
 import { UserFileListRow } from "@/features/library/components/UserFileListRow"
-import type { FolderGridItem } from "@/lib/mocks/folders"
-import type { UserFile, UserFileViewLayout } from "@/types/user-file"
+import type {
+  FolderListItem,
+  UserFile,
+  UserFileViewLayout,
+} from "@/types/user-file"
 
 type UserFileGridProps = {
-  folders?: FolderGridItem[]
+  folders?: FolderListItem[]
   userFiles: UserFile[]
   layout?: UserFileViewLayout
   hideUserFileFolderTag?: boolean

@@ -11,7 +11,20 @@ StudyFill의 **Next.js 프론트엔드** 레포입니다. 백엔드(`studyfill/B
 - **서비스**: AI 기반 PDF/이미지 학습 플랫폼. 핵심 플로우(Phase A): 업로드 → AI 강의식 설명 → 빈칸 암기.
 - **스택**: Next.js 16 (App Router) / React 19 / TypeScript / TailwindCSS 4 / shadcn/ui + Radix / lucide-react
 - **패키지 매니저**: **pnpm** (npm/yarn 사용 금지)
-- **백엔드**: Spring Boot, 별도 레포(`studyfill/BE`). HTTP REST + OpenAPI 계약.
+- **백엔드**: Spring Boot, 별도 레포(`studyfill/BE`). HTTP REST + OpenAPI 계약. 로컬 소스는 아래 "연동 레포 로컬 경로" 참조.
+
+## 연동 레포 로컬 경로 (백엔드 · AI 워커)
+
+같은 머신에 백엔드와 AI 워커 소스가 클론돼 있다. **계약·동작·에러 코드 등 각 파트의 세부가 필요하면
+추측하지 말고 해당 경로의 코드/문서를 직접 읽어 확인한다.**
+
+| 파트 | 경로 | 먼저 볼 문서 |
+|------|------|-------------|
+| 백엔드 (Spring Boot) | `C:\Users\qqq73\OneDrive\Desktop\be` | `CLAUDE.md`, `API_SPEC.md`, `ERROR_CODE.md`, `ARCHITECTURE.md`, `PACKAGE_STRUCTURE.md`, `FRONTEND_INTEGRATION.md` / 소스 `src/main` |
+| AI 워커 (Python) | `C:\Users\qqq73\OneDrive\Desktop\ai-worker` | `CLAUDE.md`, `AI_GENERATION.md`, `INTEGRATION.md`, `ARCHITECTURE.md`, `ERROR_HANDLING.md`, `PACKAGE_STRUCTURE.md` / 소스 `app/` |
+
+- **읽기 전용**: 위 두 레포는 참조용이다. 이 작업에서 두 레포의 파일을 **수정·커밋하지 않는다**(요청 시에만).
+- **계약 우선순위**: 실제 엔드포인트 계약은 여전히 **배포 백엔드 Swagger가 1차 소스**(아래 "백엔드 API 연동 규칙"). 로컬 `be` 소스는 Swagger에 안 드러나는 구현 디테일·미배포 동작을 확인할 때, `ai-worker`는 생성 파이프라인·프롬프트·스키마를 확인할 때 본다.
 
 ## 제품 범위 (Phase)
 
