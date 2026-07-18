@@ -1,14 +1,15 @@
-import type { NoteRange } from "@/types/note"
-
 export type BlankItemStatus = "pending" | "correct" | "incorrect"
 
 export type BlankSource = "pdf" | "note"
 
 export type BlankDensity = "light" | "normal" | "dense"
 
+/** 빈칸 생성 범위. note 와 독립(빈칸은 전체/현재 챕터/현재 페이지 유지). */
+export type BlankRange = "all" | "chapter" | "page"
+
 export type BlankGenerateOptions = {
   source: BlankSource
-  range: NoteRange
+  range: BlankRange
   density: BlankDensity
 }
 

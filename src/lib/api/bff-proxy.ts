@@ -12,9 +12,9 @@ import {
   setSessionCookie,
 } from "@/features/auth/session"
 import type { AuthResponse } from "@/lib/api/types"
+import { API_BASE_URL } from "@/lib/env"
 
-const BACKEND_BASE =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080"
+const BACKEND_BASE = API_BASE_URL
 const API_PREFIX = "/api/v1"
 
 /** 미인증 응답(백엔드 래퍼 형식 유지 → bffFetch 가 ApiError 로 처리). */

@@ -116,12 +116,14 @@ src/
 
 ## 환경변수
 
-`.env.local` (예시는 `.env.example`):
+단일 소스는 커밋되는 `.env` (공개값만 — 시크릿 금지). 코드에서는 `process.env` 대신
+`src/lib/env.ts`를 통해 소비한다. 머신별 override 가 필요하면 `.env.local`(gitignore)로 덮는다.
 ```dotenv
 NEXT_PUBLIC_API_BASE_URL=http://localhost:8080
 NEXT_PUBLIC_GOOGLE_CLIENT_ID=<백엔드 GOOGLE_CLIENT_ID와 동일>
 ```
 > `redirect_uri`는 백엔드 `GOOGLE_REDIRECT_URI`와 **반드시 동일**해야 합니다.
+> 배포(Vercel)는 대시보드 환경변수가 `.env` 값을 override 한다.
 
 ## 디렉터리 규칙 — `src/lib/api/`
 

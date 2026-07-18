@@ -11,6 +11,7 @@ import {
   REAUTH_REQUIRED_CODES,
 } from "./errors"
 import { ROUTES } from "@/constants/routes"
+import { API_BASE_URL } from "@/lib/env"
 import {
   clearTokens,
   getAccessToken,
@@ -18,7 +19,7 @@ import {
   setTokens,
 } from "./auth"
 
-const BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080"
+const BASE = API_BASE_URL
 const API_PREFIX = "/api/v1"
 
 type FetchInit = Omit<RequestInit, "body"> & { body?: unknown }

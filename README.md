@@ -14,7 +14,6 @@ AI-powered PDF study platform frontend.
 
 ```bash
 pnpm install
-cp .env.example .env.local
 pnpm dev
 ```
 
